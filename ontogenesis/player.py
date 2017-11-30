@@ -31,6 +31,11 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vy = self.speed
 
+        # diagonal movement fix
+        if self.vx != 0 and self.vy != 0:
+            self.vx *= 0.7071
+            self.vy *= 0.7071
+
     def move(self):
         pass
 
