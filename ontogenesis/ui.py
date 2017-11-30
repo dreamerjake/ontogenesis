@@ -69,7 +69,8 @@ class UI:
         pg.display.flip()
 
     def draw_hud(self):
-        self.draw_player_health(5, 25, .8)
+        health_pct = self.game.player.hp_current / self.game.player.hp_max
+        self.draw_player_health(5, 25, health_pct)
         self.optional_messages()
         if self.game.debug:
             self.debug_messages()

@@ -10,6 +10,7 @@ class Player(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
 
+        # references
         self.game = game
 
         # assets
@@ -18,8 +19,6 @@ class Player(pg.sprite.Sprite):
 
         # graphics
         self.image = self.standing_frames[0]
-        # self.image = pg.Surface((settings.TILESIZE, settings.TILESIZE))
-        # self.image.fill(settings.YELLOW)
 
         # physics
         self.rect = self.image.get_rect()
@@ -28,6 +27,9 @@ class Player(pg.sprite.Sprite):
 
         # default stats
         self.speed = 100
+        self.hp_current = 80
+        self.hp_max = 100
+        self.regen = 1  # hp per second
 
         # item management
         self.inventory = []
@@ -79,6 +81,7 @@ class Player(pg.sprite.Sprite):
                 self.rect.y = self.y
 
     def update(self):
+        self.hp_current = min(self.hp_current + (self.regen * self.game.delta_time), self.hp_max)
         self.get_keys()
         self.x += self.vx * self.game.delta_time
         self.y += self.vy * self.game.delta_time
