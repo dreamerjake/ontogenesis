@@ -69,6 +69,8 @@ class Game:
 
         self.ui = UI(self)
 
+        self.player = None
+
         # sprite groups
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
@@ -99,7 +101,7 @@ class Game:
                     if settings.DEBUG:
                         print("Player starting coordinates set to: {}".format(self.player_start))
 
-        Player(self, self.player_start)
+        self.player = Player(self, self.player_start)
 
         if settings.DEBUG:
             print("Spawned Player at {}".format(self.player_start))
