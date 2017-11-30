@@ -69,7 +69,7 @@ class UI:
         pg.display.flip()
 
     def draw_hud(self):
-        self.draw_player_health(5, 20, .8)
+        self.draw_player_health(5, 25, .8)
         self.optional_messages()
         if self.game.debug:
             self.debug_messages()

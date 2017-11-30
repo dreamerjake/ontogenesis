@@ -5,11 +5,23 @@ import settings
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, start):
+        # pygame sprite stuff
+        self._layer = settings.PLAYER_LAYER
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
+
         self.game = game
-        self.image = pg.Surface((settings.TILESIZE, settings.TILESIZE))
-        self.image.fill(settings.YELLOW)
+
+        # assets
+        self.standing_frames = None
+        self.load_images()
+
+        # graphics
+        self.image = self.standing_frames[0]
+        # self.image = pg.Surface((settings.TILESIZE, settings.TILESIZE))
+        # self.image.fill(settings.YELLOW)
+
+        # physics
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x, self.y = start
@@ -23,6 +35,11 @@ class Player(pg.sprite.Sprite):
             'armor': None,
             'weapon': None,
         }
+
+    def load_images(self):
+
+        # 256   0  320  64
+        self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64)]
 
     def get_keys(self):
         self.vx, self.vy = 0, 0

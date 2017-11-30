@@ -9,6 +9,19 @@ from ui import UI
 import settings
 
 
+class Spritesheet:
+    """ Helper class for working with spritesheets"""
+    def __init__(self, filename):
+        self.spritesheet = pg.image.load(filename).convert()
+
+    def get_image(self, x, y, width, height):
+        """ Gets a single image from the spritesheet"""
+        image = pg.Surface((width, height))
+        image.blit(self.spritesheet, (0, 0), (x, y, width, height))
+        image = pg.transform.scale(image, (width // 2, height // 2))
+        return image
+
+
 class StateMachine:
     """
     A very simple FSM class.
@@ -50,16 +63,20 @@ class Game:
     }
 
     def __init__(self, name):
+        # pygame initialization
         # pg.mixer.pre_init(44100, -16, 4, 2048)
         pg.init()
 
         self.name = name
 
+        # state machine
         self.fsm = StateMachine(initial='main_menu', table=self.state_table, owner=self)
 
+        # display
         self.screen = pg.display.set_mode((settings.WIDTH, settings.HEIGHT))
         pg.display.set_caption(settings.TITLE)
 
+        # time
         self.clock = pg.time.Clock()
         self.delta_time = None
 
@@ -67,8 +84,8 @@ class Game:
         self.debug = settings.DEBUG
         self.show_fps = settings.SHOW_FPS
 
+        # components
         self.ui = UI(self)
-
         self.player = None
 
         # sprite groups
@@ -83,6 +100,8 @@ class Game:
 
         # assets
         self.hud_font = None
+        self.player_move_spritesheet = None
+        self.load_assets()
 
     def new(self):
         self.map = self.map_generator.generate_level(settings.MAP_WIDTH, settings.MAP_HEIGHT)
@@ -173,5 +192,9 @@ class Game:
         game_folder = path.dirname(__file__)
         assets_folder = path.join(game_folder, 'assets')
         fonts_folder = path.join(assets_folder, 'fonts')
+        images_folder = path.join(assets_folder, 'images')
+        player_images_folder = path.join(images_folder, 'player')
 
         self.hud_font = path.join(fonts_folder, 'Dense-Regular.ttf')
+
+        self.player_move_spritesheet = Spritesheet(path.join(player_images_folder, 'player-move.png'))
