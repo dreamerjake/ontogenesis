@@ -1,0 +1,33 @@
+# game settings
+HEIGHT = 768
+WIDTH = 1024
+TITLE = "Ontogenesis"
+
+# configs
+SHOW_FPS = True
+DEBUG = True
+
+# define some colors (R, G, B)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+DARKGREY = (40, 40, 40)
+LIGHTGREY = (100, 100, 100)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
+BROWN = (106, 55, 5)
+CYAN = (0, 255, 255)
+
+# map settings
+BGCOLOR = DARKGREY
+TILESIZE = 32
+MAP_HEIGHT = 60
+MAP_WIDTH = 80
+
+# Layers
+WALL_LAYER = 1
+PLAYER_LAYER = 2
+BULLET_LAYER = 3
+MOB_LAYER = 2
+EFFECTS_LAYER = 4
+ITEMS_LAYER = 1
