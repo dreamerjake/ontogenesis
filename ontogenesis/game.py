@@ -12,11 +12,11 @@ import settings
 class Spritesheet:
     """ Helper class for working with spritesheets"""
     def __init__(self, filename):
-        self.spritesheet = pg.image.load(filename).convert()
+        self.spritesheet = pg.image.load(filename).convert_alpha()
 
     def get_image(self, x, y, width, height):
         """ Gets a single image from the spritesheet"""
-        image = pg.Surface((width, height))
+        image = pg.Surface((width, height), pg.SRCALPHA)
         image.blit(self.spritesheet, (0, 0), (x, y, width, height))
         image = pg.transform.scale(image, (width // 2, height // 2))
         return image
