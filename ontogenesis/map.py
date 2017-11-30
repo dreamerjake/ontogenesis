@@ -6,9 +6,17 @@ import pygame as pg
 import settings
 
 
+class Camera:
+    pass
+
+
 class Map:
     # generator
     # player start
+    # self.tile_width
+    # self.tile_height
+    # self.width
+    # self.height
     pass
 
 

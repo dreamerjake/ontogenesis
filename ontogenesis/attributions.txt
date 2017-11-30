@@ -1,0 +1,11 @@
+Tutorials
+=========
+Chris Bradfield - https://github.com/kidscancode/ http://kidscancode.org/
+Michael Coates - https://bitbucket.org/Azhain/ https://www.youtube.com/channel/UCYpYQNHs2NN-J-UC7Pn4G5A
+
+Code Snippets
+=============
+Finite State Machine class adapted from code snippet in https://news.ycombinator.com/item?id=14634947
+
+Assets
+======

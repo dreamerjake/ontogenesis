@@ -13,11 +13,16 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x, self.y = start
-        # self.rect.x = self.x * settings.TILESIZE
-        # self.rect.y = self.y * settings.TILESIZE
 
         # default stats
         self.speed = 100
+
+        # item management
+        self.inventory = []
+        self.equipped = {
+            'armor': None,
+            'weapon': None,
+        }
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
