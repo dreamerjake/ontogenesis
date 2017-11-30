@@ -13,8 +13,8 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x, self.y = start
-        self.rect.x = self.x * settings.TILESIZE
-        self.rect.y = self.y * settings.TILESIZE
+        # self.rect.x = self.x * settings.TILESIZE
+        # self.rect.y = self.y * settings.TILESIZE
 
         # default stats
         self.speed = 100
@@ -36,5 +36,6 @@ class Player(pg.sprite.Sprite):
 
     def update(self):
         self.get_keys()
-        self.rect.x += self.vx * self.game.delta_time
-        self.rect.y += self.vy * self.game.delta_time
+        self.x += self.vx * self.game.delta_time
+        self.y += self.vy * self.game.delta_time
+        self.rect.topleft = self.x, self.y

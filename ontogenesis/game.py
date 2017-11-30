@@ -84,8 +84,9 @@ class Game:
 
     def new(self):
         self.map = self.map_generator.generate_level(settings.MAP_WIDTH, settings.MAP_HEIGHT)
-        for y in range(settings.HEIGHT // settings.TILESIZE):
-            for x in range(settings.WIDTH // settings.TILESIZE):
+        for x in range(settings.WIDTH // settings.TILESIZE):
+            for y in range(settings.HEIGHT // settings.TILESIZE):
+
                 if self.map[x][y] == 1:
                     Wall(self, x, y)
 
@@ -93,7 +94,7 @@ class Game:
                         print("Spawned Wall at ({}, {})".format(x, y))
 
                 elif self.player_start is None:
-                    self.player_start = (x, y)
+                    self.player_start = (x * settings.TILESIZE, y * settings.TILESIZE)
 
                     if settings.DEBUG:
                         print("Player starting coordinates set to: {}".format(self.player_start))
