@@ -1,3 +1,5 @@
+import math
+
 import pygame as pg
 
 import settings
@@ -19,9 +21,12 @@ class Player(pg.sprite.Sprite):
 
         # graphics
         self.image = self.standing_frames[0]
+        self.orig_image = self.image
 
         # physics
-        self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect(center=start)
+        self.hit_rect = pg.Rect(0, 0, settings.TILESIZE - 5, settings.TILESIZE - 5)
+        self.hit_rect.center = self.rect.center
         self.vx, self.vy = 0, 0
         self.x, self.y = start
 
@@ -45,6 +50,7 @@ class Player(pg.sprite.Sprite):
     def process_input(self):
         self.vx, self.vy = 0, 0
         keys = pg.key.get_pressed()
+        # mouse_x, mouse_y = pg.mouse.get_pos()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
             self.vx = -self.speed
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
@@ -59,32 +65,46 @@ class Player(pg.sprite.Sprite):
             self.vx *= 0.7071
             self.vy *= 0.7071
 
+    @staticmethod
+    def collide_hit_rect(one, two):
+        return one.hit_rect.colliderect(two.rect)
+
     def collide_with_walls(self, direction):
         if direction == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
             if hits:
                 if self.vx > 0:  # sprite was moving to the right prior to collision
-                    self.x = hits[0].rect.left - self.rect.width
+                    self.x = hits[0].rect.left - self.hit_rect.width / 2
                 if self.vx < 0:
-                    self.x = hits[0].rect.right
+                    self.x = hits[0].rect.right + self.hit_rect.width / 2
                 self.vx = 0
-                self.rect.x = self.x
+                self.hit_rect.centerx = self.x
         if direction == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
             if hits:
                 if self.vy > 0:
-                    self.y = hits[0].rect.top - self.rect.height
+                    self.y = hits[0].rect.top - self.hit_rect.height / 2
                 if self.vy < 0:
-                    self.y = hits[0].rect.bottom
+                    self.y = hits[0].rect.bottom + self.hit_rect.height / 2
                 self.vy = 0
-                self.rect.y = self.y
+                self.hit_rect.centery = self.y
+
+    def rotate(self):
+        # face the mouse position
+        _, angle = (pg.mouse.get_pos() - pg.math.Vector2(self.rect.center)).as_polar()
+        # self.image = pg.transform.rotozoom(self.orig_image, -angle - 90, 1)
+        self.image = pg.transform.rotate(self.orig_image, -angle - 90)
+        self.rect = self.image.get_rect(center=self.rect.center)
 
     def update(self):
         self.hp_current = min(self.hp_current + (self.regen * self.game.delta_time), self.hp_max)
         self.process_input()
+        self.rotate()
+        # self.rect.center = self.x, self.y
         self.x += self.vx * self.game.delta_time
         self.y += self.vy * self.game.delta_time
-        self.rect.x = self.x
+        self.hit_rect.centerx = self.x
         self.collide_with_walls('x')
-        self.rect.y = self.y
+        self.hit_rect.centery = self.y
         self.collide_with_walls('y')
+        self.rect.center = self.hit_rect.center

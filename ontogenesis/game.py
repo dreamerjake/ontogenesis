@@ -115,7 +115,9 @@ class Game:
                         print("Spawned Wall at ({}, {})".format(x, y))
 
                 elif self.player_start is None:
-                    self.player_start = (x * settings.TILESIZE, y * settings.TILESIZE)
+                    tile_center_x = x * settings.TILESIZE + settings.TILESIZE / 2
+                    tile_center_y = y * settings.TILESIZE + settings.TILESIZE / 2
+                    self.player_start = (tile_center_x, tile_center_y)
 
                     if settings.DEBUG:
                         print("Player starting coordinates set to: {}".format(self.player_start))
@@ -179,6 +181,11 @@ class Game:
         if settings.DEBUG:
             self.draw_grid()
         self.all_sprites.draw(self.screen)
+
+        if self.debug:
+            pg.draw.rect(self.screen, settings.WHITE, self.player, 2)
+            pg.draw.rect(self.screen, settings.GREEN, self.player.hit_rect, 2)
+
         self.ui.draw()
         pg.display.flip()
 

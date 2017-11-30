@@ -33,7 +33,10 @@ class UI:
 
     def draw_state(self):
         state = self.game.fsm.current_state
-        self.draw_text(state, self.game.hud_font, 18, settings.WHITE, settings.WIDTH - 5, 5, align='topright')
+        self.draw_text(state, self.game.hud_font, 18, settings.WHITE, settings.WIDTH - 5, 25, align='topright')
+
+    def draw_debug_warning(self):
+        self.draw_text('DEBUG MODE', self.game.hud_font, 18, settings.WHITE, settings.WIDTH - 5, 5, align='topright')
 
     def draw_player_health(self, x, y, pct):
         if pct < 0:
@@ -76,6 +79,7 @@ class UI:
             self.debug_messages()
 
     def debug_messages(self):
+        self.draw_debug_warning()
         self.draw_state()
 
     def optional_messages(self):
