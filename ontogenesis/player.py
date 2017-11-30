@@ -10,7 +10,7 @@ class Player(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
 
-        # references
+        # object references
         self.game = game
 
         # assets
@@ -39,11 +39,10 @@ class Player(pg.sprite.Sprite):
         }
 
     def load_images(self):
-
-        # 256   0  320  64
+        # TODO: use metadata file
         self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64)]
 
-    def get_keys(self):
+    def process_input(self):
         self.vx, self.vy = 0, 0
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
@@ -82,7 +81,7 @@ class Player(pg.sprite.Sprite):
 
     def update(self):
         self.hp_current = min(self.hp_current + (self.regen * self.game.delta_time), self.hp_max)
-        self.get_keys()
+        self.process_input()
         self.x += self.vx * self.game.delta_time
         self.y += self.vy * self.game.delta_time
         self.rect.x = self.x
