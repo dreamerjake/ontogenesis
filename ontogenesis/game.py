@@ -169,16 +169,21 @@ class Game:
                     self.debug = not self.debug
 
     def update(self):
-        """update logic for main game loop"""
+        """ update logic for main game loop """
         self.all_sprites.update()
         self.camera.update(target=self.player)
 
-    def draw_grid(self):
-        # TODO: update this so it works with the camera
-        for x in range(0, settings.WIDTH, settings.TILESIZE):
-            pg.draw.line(self.screen, settings.LIGHTGREY, (x, 0), (x, settings.HEIGHT))
-        for y in range(0, settings.HEIGHT, settings.TILESIZE):
-            pg.draw.line(self.screen, settings.LIGHTGREY, (0, y), (settings.WIDTH, y))
+    def draw_grid(self, line_width=1):
+        """ draws a grid of lines to display the boundaries of empty tiles """
+        for x in range(0, self.map.width, settings.TILESIZE):
+            start_pos = (x + self.camera.offset[0], 0)
+            end_pos = (x + self.camera.offset[0], settings.HEIGHT)
+            pg.draw.line(self.screen, settings.LIGHTGREY, start_pos, end_pos, line_width)
+
+        for y in range(0, self.map.height, settings.TILESIZE):
+            start_pos = (0, y + self.camera.offset[1])
+            end_pos = (settings.WIDTH, y + self.camera.offset[1])
+            pg.draw.line(self.screen, settings.LIGHTGREY, start_pos, end_pos, line_width)
 
     def draw(self):
         self.screen.fill(settings.BGCOLOR)
@@ -190,9 +195,8 @@ class Game:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
         if self.debug:
-            # TODO: update this so it works with the camera
-            pg.draw.rect(self.screen, settings.WHITE, self.player, 2)
-            pg.draw.rect(self.screen, settings.GREEN, self.player.hit_rect, 2)
+            pg.draw.rect(self.screen, settings.WHITE, self.camera.apply(self.player), 2)
+            pg.draw.rect(self.screen, settings.GREEN, self.camera.apply(self.player, hit_rect=True), 2)
 
         self.ui.draw()
         pg.display.flip()

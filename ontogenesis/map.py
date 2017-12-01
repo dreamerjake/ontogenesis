@@ -11,8 +11,11 @@ class Camera:
         self.camera = pg.Rect(0, 0, width, height)
         self.width = width
         self.height = height
+        self.offset = None
 
-    def apply(self, entity):
+    def apply(self, entity, hit_rect=False):
+        if hit_rect:
+            return entity.hit_rect.move(self.camera.topleft)
         return entity.rect.move(self.camera.topleft)
 
     def update(self, target):
@@ -24,6 +27,10 @@ class Camera:
         y = min(0, y)
         x = max(-(self.width - settings.WIDTH), x)
         y = max(-(self.height - settings.HEIGHT), y)
+
+        self.offset = (x, y)
+
+        # print(self.offset)
 
         self.camera = pg.Rect(x, y, self.width, self.height)
 
