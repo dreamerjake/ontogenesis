@@ -9,6 +9,7 @@ from map import Map, Camera
 from player import Player
 from ui import UI
 import settings
+from settings import colors
 
 
 # debug timings decorator
@@ -159,11 +160,11 @@ class Game:
         sys.exit()
 
     def events(self):
+        """ Event processing for the game object - handles system controls"""
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.fsm('quit')
             if event.type == pg.KEYDOWN:
-                # system controls
                 if event.key == pg.K_ESCAPE:
                     self.fsm('quit')
                 if event.key == pg.K_p:
@@ -177,10 +178,12 @@ class Game:
                     self.debug = not self.debug
 
     def screen_update(self):
+        """ Create the display - called on Game init and display settings change"""
         if self.fullscreen:
             screen = pg.display.set_mode(self.screensize, FULLSCREEN)
         else:
             screen = pg.display.set_mode(self.screensize)
+
         return screen
 
     def update(self):
@@ -193,12 +196,12 @@ class Game:
         for x in range(0, self.map.width, settings.TILESIZE):
             start_pos = (x + self.camera.offset[0], 0)
             end_pos = (x + self.camera.offset[0], settings.HEIGHT)
-            pg.draw.line(self.screen, settings.LIGHTGREY, start_pos, end_pos, line_width)
+            pg.draw.line(self.screen, colors.lightgrey, start_pos, end_pos, line_width)
 
         for y in range(0, self.map.height, settings.TILESIZE):
             start_pos = (0, y + self.camera.offset[1])
             end_pos = (settings.WIDTH, y + self.camera.offset[1])
-            pg.draw.line(self.screen, settings.LIGHTGREY, start_pos, end_pos, line_width)
+            pg.draw.line(self.screen, colors.lightgrey, start_pos, end_pos, line_width)
 
     def draw(self):
         self.screen.fill(settings.BGCOLOR)
@@ -210,12 +213,12 @@ class Game:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
         if self.debug:
-            pg.draw.rect(self.screen, settings.WHITE, self.camera.apply(self.player), 2)
-            pg.draw.rect(self.screen, settings.GREEN, self.camera.apply(self.player, hit_rect=True), 2)
+            pg.draw.rect(self.screen, colors.white, self.camera.apply(self.player), 2)
+            pg.draw.rect(self.screen, colors.green, self.camera.apply(self.player, hit_rect=True), 2)
 
         self.ui.draw()
 
-        # pg.draw.circle(self.screen, settings.WHITE, pg.mouse.get_pos(), 10, 1)
+        # pg.draw.circle(self.screen, colors.white, pg.mouse.get_pos(), 10, 1)
 
         pg.display.flip()
 

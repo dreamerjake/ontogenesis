@@ -15,6 +15,10 @@
             * Attributes
                 * Slot
     
+    * Assets
+        * Sprites
+            * Use spritesheet metadata file
+    
     * Player
         * Attributes
             * World Map Location
@@ -50,6 +54,11 @@
         * Settings as SimpleNamespace?? (tuple keys??? e.g. game.settings[a, b, c])
 
 * ####UI
+    * GUI Toolkit
+        * Button
+        * Checkbox
+        * Slider?
+        * Text Input?
     * Character Screen
     * Inventory Screen (merge into Character Screen???)
     * Map Screen
@@ -61,6 +70,9 @@
     * Minimap
 
 * ####SYSTEM
-    * ~~Fullscreen Mode~~
-    * Resolution Changing
-    * Resizeable Windows
+    * Display
+        * ~~Fullscreen Mode~~
+        * Resolution Changing
+        * Resizeable Windows
+    * Audio
+    

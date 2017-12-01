@@ -42,7 +42,6 @@ class Player(pg.sprite.Sprite):
         }
 
     def load_images(self):
-        # TODO: use metadata file
         self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64)]
 
     def process_input(self):

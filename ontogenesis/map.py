@@ -4,6 +4,7 @@ import random
 import pygame as pg
 
 import settings
+from settings import colors
 
 
 class Camera:
@@ -75,7 +76,7 @@ class Wall(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((settings.TILESIZE, settings.TILESIZE))
-        self.image.fill(settings.BROWN)
+        self.image.fill(colors.brown)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -131,7 +132,6 @@ class CellularAutomata:
                     self.level[x][y] = 0
 
     def create_caves(self, map_width, map_height):
-        # ==== Create distinct caves ====
         for i in range(0, self.iterations):
             # Pick a random point with a buffer around the edges of the map
             tile_x = random.randint(1, map_width - 2)  # (2, map_width - 3)
@@ -156,12 +156,12 @@ class CellularAutomata:
                             self.level[x][y] = 0
 
     def create_tunnel(self, point1, point2, current_cave, map_width, map_height):
-        # run a heavily weighted random Walk
-        # from point1 to point1
+        # run a heavily weighted Random Walk from point1 to point1
         drunkard_x = point2[0]
         drunkard_y = point2[1]
+
         while (drunkard_x, drunkard_y) not in current_cave:
-            # ==== Choose Direction ====
+            # Choose direction
             north = 1.0
             south = 1.0
             east = 1.0
@@ -210,8 +210,9 @@ class CellularAutomata:
                     self.level[drunkard_x][drunkard_y] = 0
 
     def get_adjacent_walls_simple(self, x, y):  # finds the walls in four directions
+
         wall_counter = 0
-        # print("(",x,",",y,") = ",self.level[x][y])
+
         if self.level[x][y - 1] == 1:  # Check north
             wall_counter += 1
         if self.level[x][y + 1] == 1:  # Check south
@@ -234,7 +235,7 @@ class CellularAutomata:
         return wall_counter
 
     def get_caves(self, map_width, map_height):
-        # locate all the caves within self.level and stor them in self.caves
+        """ locate all the caves within self.level and store them in self.caves """
         for x in range(0, map_width):
             for y in range(0, map_height):
                 if self.level[x][y] == 0:
@@ -244,27 +245,16 @@ class CellularAutomata:
             for tile in tileset:
                 self.level[tile[0]][tile[1]] = 0
 
-        # check for 2 that weren't changed.
-        """
-        The following bit of code doesn't do anything. I 
-        put this in to help find mistakes in an earlier 
-        version of the algorithm. Still, I don't really 
-        want to remove it.
-        """
-        for x in range(0, map_width):
-            for y in range(0, map_height):
-                if self.level[x][y] == 2:
-                    print("(", x, ",", y, ")")
-
     def flood_fill(self, x, y):
         """
-        flood fill the separate regions of the level, discard
-        the regions that are smaller than a minimum size, and
-        create a reference for the rest.
+        1. flood fill the separate regions of the level
+        2. discard the regions that are smaller than a minimum size
+        3. create a reference for the rest.
         """
         cave = set()
         tile = [(x, y)]
         to_be_filled = set(tile)
+
         while to_be_filled:
             tile = to_be_filled.pop()
 
@@ -291,10 +281,10 @@ class CellularAutomata:
             self.caves.append(cave)
 
     def connect_caves(self, map_width, map_height):
+
         # Find the closest cave to the current cave
         for current_cave in self.caves:
-            for point1 in current_cave:
-                break  # get an element from cave1
+            point1 = next(iter(current_cave))  # get an arbitrary element from cave1
             point2 = None
             distance = None
             for next_cave in self.caves:
@@ -320,12 +310,9 @@ class CellularAutomata:
         # floods cave1, then checks a point in cave2 for the flood
 
         connected_region = set()
-
-        # for start in cave1:
-        #     break  # get an element from cave1
         start = [next(iter(cave1))]
-
         to_be_filled = set(start)
+
         while to_be_filled:
             tile = to_be_filled.pop()
 
@@ -346,8 +333,6 @@ class CellularAutomata:
                         if direction not in to_be_filled and direction not in connected_region:
                             to_be_filled.add(direction)
 
-        # for end in cave2:
-        #     break  # get an element from cave2
         end = next(iter(cave2))
 
         if end in connected_region:
