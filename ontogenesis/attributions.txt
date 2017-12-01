@@ -7,14 +7,22 @@ Michael Coates
     - https://bitbucket.org/Azhain/
     - https://www.youtube.com/channel/UCYpYQNHs2NN-J-UC7Pn4G5A
 
+
 Code Snippets
 =============
 Finite State Machine class
-    - adapted from code snippet in https://news.ycombinator.com/item?id=14634947
+    - adapted from https://news.ycombinator.com/item?id=14634947
 Dungeon Generation Implementation
     - adapted from https://github.com/AtTheMatinee
 
-Assets
-======
-Player Sprites - Warlock's Gauntlet artists - rAum, jackFlower, DrZoliparia, Neil2D
+
+Player Sprites
+==============
+Warlock's Gauntlet artists - rAum, jackFlower, DrZoliparia, Neil2D
     - https://opengameart.org/content/top-down-mage-animations
+
+
+Dense-Regular Font
+==================
+Justin Armstrong
+    - https://github.com/justinmeister/

@@ -96,10 +96,6 @@ class Game:
 
         # map stuff
         self.map = Map(self, settings.MAP_WIDTH, settings.MAP_HEIGHT)
-        # self.map_generator = CellularAutomata()
-        # self.map = None
-        # self.map_image = pg.Surface((settings.MAP_WIDTH * settings.TILESIZE, settings.MAP_HEIGHT * settings.TILESIZE))
-        # self.map_rect = self.map_image.get_rect()
         self.player_start = self.map.player_start
 
         # assets
@@ -108,9 +104,9 @@ class Game:
         self.load_assets()
 
     def new(self):
-        # self.map.generate_layout()
-        self.player = Player(self, self.player_start)
+        # we've generated a map object in the init method, so no need to create one now
 
+        self.player = Player(self, self.player_start)
         if self.debug:
             print("Spawned Player at {}".format(self.player_start))
 
