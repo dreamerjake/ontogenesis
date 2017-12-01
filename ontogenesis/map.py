@@ -49,39 +49,39 @@ class Map:
         self.data = self.generator.generate_level(self.tilewidth, self.tileheight)
         self.player_start = None
 
-        # TODO: this should probably be a function, in case we generate map objects during gameplay
-        for x in range(self.tilewidth):
-            for y in range(self.tileheight):
-
-                if self.data[x][y] == 1:
-                    Wall(self.game, x, y)
-
-                    if self.game.debug:
-                        print("Spawned Wall at ({}, {})".format(x, y))
-
-                elif self.player_start is None:
-                    tile_center_x = x * settings.TILESIZE + settings.TILESIZE / 2
-                    tile_center_y = y * settings.TILESIZE + settings.TILESIZE / 2
-                    self.player_start = (int(tile_center_x), int(tile_center_y))
-
-                    if self.game.debug:
-                        print("Player starting coordinates set to: {}".format(self.player_start))
+    # TODO: this should probably be a function, in case we generate map objects during gameplay
+    # def generate_maptiles(self):
+    #     for x in range(self.tilewidth):
+    #         for y in range(self.tileheight):
+    #
+    #             if self.data[x][y] == 1:
+    #                 self.game.spawn(self.game, Wall, (x, y))
+    #                 #Wall(self.game, x, y)
+    #
+    #             elif self.player_start is None:
+    #                 tile_center_x = x * settings.TILESIZE + settings.TILESIZE / 2
+    #                 tile_center_y = y * settings.TILESIZE + settings.TILESIZE / 2
+    #                 self.player_start = (int(tile_center_x), int(tile_center_y))
+    #
+    #                 if self.game.configs.debug:
+    #                     print("Player starting coordinates set to: {}".format(self.player_start))
 
 
 class Wall(pg.sprite.Sprite):
     """ Your basic movement-blocking map element """
-    # Destructable?
-    def __init__(self, game, x, y):
+
+    debugname = 'Wall'
+
+    def __init__(self, game, start_pos):
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((settings.TILESIZE, settings.TILESIZE))
         self.image.fill(colors.brown)
         self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
-        self.rect.x = x * settings.TILESIZE
-        self.rect.y = y * settings.TILESIZE
+        self.x, self.y = start_pos
+        self.rect.x = self.x  # * settings.TILESIZE
+        self.rect.y = self.y  # * settings.TILESIZE
 
 
 class CellularAutomata:

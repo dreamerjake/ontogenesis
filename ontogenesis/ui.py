@@ -60,7 +60,7 @@ class UI:
         self.screen.fill(colors.black)
         self.draw_menu_title()
         self.optional_messages()
-        if self.game.debug:
+        if self.game.configs.debug:
             self.debug_messages()
         pg.display.flip()
 
@@ -68,7 +68,7 @@ class UI:
         self.screen.fill(colors.black)
         self.draw_menu_title()
         self.optional_messages()
-        if self.game.debug:
+        if self.game.configs.debug:
             self.debug_messages()
         pg.display.flip()
 
@@ -76,7 +76,7 @@ class UI:
         health_pct = self.game.player.hp_current / self.game.player.hp_max
         self.draw_player_health(5, 25, health_pct)
         self.optional_messages()
-        if self.game.debug:
+        if self.game.configs.debug:
             self.debug_messages()
 
     def debug_messages(self):
@@ -84,7 +84,7 @@ class UI:
         self.draw_state()
 
     def optional_messages(self):
-        if self.game.show_fps:
+        if self.game.configs.show_fps:
             self.draw_fps()
 
     def draw_text(self, text, font_name, size, color, x, y, align="topleft"):

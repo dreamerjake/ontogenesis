@@ -14,6 +14,12 @@
             * Class Definition
             * Attributes
                 * Slot
+                
+    * Currency System
+        * Concept: Food as the universal currency - constantly depleting and accepted in all trading
+    
+    * Controls
+        * Namespace for controls mapping?
     
     * Assets
         * Sprites
@@ -22,6 +28,7 @@
     * Player
         * Attributes
             * World Map Location
+            * Currency
         * Animations
         * State Tracking
         
@@ -35,6 +42,8 @@
     * Map
         * World Map
             * Class Definition
+        * Walls
+            * Destructible walls?
         
     * Combat
         * Floating Damage Numbers
@@ -52,6 +61,9 @@
     
     * Settings
         * Settings as SimpleNamespace?? (tuple keys??? e.g. game.settings[a, b, c])
+        
+    * Debugging
+        * Decorator to record spawn messages
 
 * ####UI
     * GUI Toolkit
@@ -63,7 +75,11 @@
     * Inventory Screen (merge into Character Screen???)
     * Map Screen
     * Skills Screen
-    * HUD - Active Skill
+    * HUD
+        * Active Skill
+        * Player Health
+        * Player Resource
+        * Player Currency
     * Settings Screen
     * Help Screen
         * Keybinds Display

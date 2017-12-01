@@ -7,8 +7,10 @@ TITLE = "Ontogenesis"
 FULLSCREEN = False
 
 # configs
-SHOW_FPS = True
-DEBUG = True
+game_configs = SimpleNamespace(
+    show_fps=True,
+    debug=True
+)
 
 # define some colors as (R, G, B) tuples
 colors = SimpleNamespace(
@@ -38,4 +40,3 @@ layers = SimpleNamespace(
     effects=4,
     items=1,
 )
-

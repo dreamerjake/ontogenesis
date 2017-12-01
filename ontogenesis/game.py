@@ -5,17 +5,18 @@ import time
 import pygame as pg
 from pygame.locals import FULLSCREEN
 
-from map import Map, Camera
+from map import Map, Camera, Wall
 from player import Player
 from ui import UI
 import settings
 from settings import colors
+from settings import game_configs as configs
 
 
 # debug timings decorator
 def timeit(method):
     def timed(*args, **kwargs):
-        if not settings.DEBUG:
+        if not configs.debug:
             return method(*args, **kwargs)
         ts = time.time()
         result = method(*args, **kwargs)
@@ -26,6 +27,17 @@ def timeit(method):
         return result
 
     return timed
+
+
+# def spawner(method):
+#     def spawned(*args, **kwargs):
+#         result = method(*args, **kwargs)
+#         # print('{} completed in {:.2f} ms'.format(method.__qualname__, (te - ts) * 1000))
+#         print('Spawned {} at {}'.format(False, kwargs['pos']))
+#
+#         return result
+#
+#     return spawned
 
 
 class Spritesheet:
@@ -60,7 +72,7 @@ class StateMachine:
         """Trigger one state transition."""
         next_state = self.state_table.get((self.current_state, event), self.current_state)
         changed = self.current_state != next_state
-        if settings.DEBUG:
+        if configs.debug:
             debug_msg = "{} | State change event: {} - current state: {} - next state: {} (Changed={})"
             print(debug_msg.format(self.owner.name, event, self.current_state, next_state, changed))
         if changed:
@@ -104,8 +116,9 @@ class Game:
         self.delta_time = None
 
         # configs
-        self.debug = settings.DEBUG
-        self.show_fps = settings.SHOW_FPS
+        self.configs = configs
+        # self.debug = settings.DEBUG
+        # self.show_fps = settings.SHOW_FPS
 
         # components
         self.ui = UI(self)
@@ -127,13 +140,42 @@ class Game:
         self.load_assets()
 
     def new(self):
-        # we've generated a map object in the init method, so no need to create one now
 
-        self.player = Player(self, self.player_start)
-        if self.debug:
-            print("Spawned Player at {}".format(self.player_start))
+        self.generate_maptiles()
+
+        self.player = self.spawn(Player, self.player_start)
 
         self.camera = Camera(self.map.width, self.map.height)
+
+    def spawn(self, entity, start_pos):
+        """
+        universal function to spawn a new sprite of any type
+        mainly exists to provide a target for debugging hooks
+        """
+        if self.configs.debug:
+            print('Spawned {} at {}'.format(entity.debugname, start_pos))
+        return entity(self, start_pos)
+
+    def generate_maptiles(self):
+        """
+        loops through self.map.data and spawns walls
+        currently, this function also sets the player start position when it finds an empty tile
+            - this is kind of an efficiency hack since we're looping through the data anyways,
+              but might need to be replaced later to separate functionality or as part of procedural gen
+        """
+        for x in range(self.map.tilewidth):
+            for y in range(self.map.tileheight):
+
+                if self.map.data[x][y] == 1:
+                    self.spawn(Wall, (x, y))
+
+                elif self.player_start is None:
+                    tile_center_x = x * settings.TILESIZE + settings.TILESIZE / 2
+                    tile_center_y = y * settings.TILESIZE + settings.TILESIZE / 2
+                    self.player_start = (int(tile_center_x), int(tile_center_y))
+
+                    if self.configs.debug:
+                        print("Player starting coordinates set to: {}".format(self.player_start))
 
     def run(self):
         state_map = {
@@ -175,7 +217,7 @@ class Game:
                     self.fullscreen = not self.fullscreen
                     self.screen_update()
                 if event.key == pg.K_F12:
-                    self.debug = not self.debug
+                    self.configs.debug = not self.configs.debug
 
     def screen_update(self):
         """ Create the display - called on Game init and display settings change"""
@@ -206,19 +248,24 @@ class Game:
     def draw(self):
         self.screen.fill(settings.BGCOLOR)
 
-        if self.debug:
+        if self.configs.debug:
             self.draw_grid()
 
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
-        if self.debug:
+        # show various object boundaries in debug mode
+        if self.configs.debug:
+            # player.rect as white box
             pg.draw.rect(self.screen, colors.white, self.camera.apply(self.player), 2)
+
+            # player.hit_rect as green box
             pg.draw.rect(self.screen, colors.green, self.camera.apply(self.player, hit_rect=True), 2)
 
-        self.ui.draw()
+            # circle around detected mouse position
+            pg.draw.circle(self.screen, colors.white, pg.mouse.get_pos(), 10, 1)
 
-        # pg.draw.circle(self.screen, colors.white, pg.mouse.get_pos(), 10, 1)
+        self.ui.draw()
 
         pg.display.flip()
 

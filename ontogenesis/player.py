@@ -5,7 +5,10 @@ from settings import layers
 
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, game, start):
+
+    debugname = "Player"
+
+    def __init__(self, game, start_pos):
         # pygame sprite stuff
         self._layer = layers.player
         self.groups = game.all_sprites
@@ -23,11 +26,11 @@ class Player(pg.sprite.Sprite):
         self.orig_image = self.image
 
         # physics
-        self.rect = self.image.get_rect(center=start)
+        self.rect = self.image.get_rect(center=start_pos)
         self.hit_rect = pg.Rect(0, 0, settings.TILESIZE - 5, settings.TILESIZE - 5)
         self.hit_rect.center = self.rect.center
         self.vx, self.vy = 0, 0
-        self.x, self.y = start
+        self.x, self.y = start_pos
 
         # default stats
         self.speed = 100
@@ -46,7 +49,7 @@ class Player(pg.sprite.Sprite):
         self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64)]
 
     def process_input(self):
-        self.vx, self.vy = 0, 0
+        self.vx, self.vy = 0, 0  # this might be a problem later on, if external forces can effect player position
         keys = pg.key.get_pressed()
         # mouse_x, mouse_y = pg.mouse.get_pos()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
@@ -91,7 +94,6 @@ class Player(pg.sprite.Sprite):
         # face the mouse position
         adj_pos = self.game.camera.apply(self.game.player).center
         _, angle = (pg.mouse.get_pos() - pg.math.Vector2(adj_pos)).as_polar()
-        # self.image = pg.transform.rotozoom(self.orig_image, -angle - 90, 1)
         self.image = pg.transform.rotate(self.orig_image, -angle - 90)
         self.rect = self.image.get_rect(center=self.rect.center)
 
