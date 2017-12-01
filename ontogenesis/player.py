@@ -91,7 +91,9 @@ class Player(pg.sprite.Sprite):
 
     def rotate(self):
         # face the mouse position
-        _, angle = (pg.mouse.get_pos() - pg.math.Vector2(self.rect.center)).as_polar()
+        adj_pos = self.game.camera.apply(self.game.player).center
+        print(adj_pos)
+        _, angle = (pg.mouse.get_pos() - pg.math.Vector2(adj_pos)).as_polar()
         # self.image = pg.transform.rotozoom(self.orig_image, -angle - 90, 1)
         self.image = pg.transform.rotate(self.orig_image, -angle - 90)
         self.rect = self.image.get_rect(center=self.rect.center)

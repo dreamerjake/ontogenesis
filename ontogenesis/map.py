@@ -18,9 +18,13 @@ class Camera:
             return entity.hit_rect.move(self.camera.topleft)
         return entity.rect.move(self.camera.topleft)
 
-    def update(self, target):
-        x = -target.rect.x + int(settings.WIDTH / 2)
-        y = -target.rect.y + int(settings.HEIGHT / 2)
+    def update(self, target, hit_rect=False):
+        if hit_rect:
+            x = -target.hit_rect.x + int(settings.WIDTH / 2)
+            y = -target.hit_rect.y + int(settings.HEIGHT / 2)
+        else:
+            x = -target.rect.x + int(settings.WIDTH / 2)
+            y = -target.rect.y + int(settings.HEIGHT / 2)
 
         # limit scrolling to map boundaries
         x = min(0, x)

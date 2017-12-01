@@ -171,7 +171,7 @@ class Game:
     def update(self):
         """ update logic for main game loop """
         self.all_sprites.update()
-        self.camera.update(target=self.player)
+        self.camera.update(target=self.player, hit_rect=True)
 
     def draw_grid(self, line_width=1):
         """ draws a grid of lines to display the boundaries of empty tiles """
@@ -199,6 +199,9 @@ class Game:
             pg.draw.rect(self.screen, settings.GREEN, self.camera.apply(self.player, hit_rect=True), 2)
 
         self.ui.draw()
+
+        # pg.draw.circle(self.screen, settings.WHITE, pg.mouse.get_pos(), 10, 1)
+
         pg.display.flip()
 
     @timeit
