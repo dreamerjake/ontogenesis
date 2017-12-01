@@ -34,8 +34,6 @@ class Camera:
 
         self.offset = (x, y)
 
-        # print(self.offset)
-
         self.camera = pg.Rect(x, y, self.width, self.height)
 
 

@@ -1,5 +1,3 @@
-import math
-
 import pygame as pg
 
 import settings
@@ -92,7 +90,6 @@ class Player(pg.sprite.Sprite):
     def rotate(self):
         # face the mouse position
         adj_pos = self.game.camera.apply(self.game.player).center
-        print(adj_pos)
         _, angle = (pg.mouse.get_pos() - pg.math.Vector2(adj_pos)).as_polar()
         # self.image = pg.transform.rotozoom(self.orig_image, -angle - 90, 1)
         self.image = pg.transform.rotate(self.orig_image, -angle - 90)
