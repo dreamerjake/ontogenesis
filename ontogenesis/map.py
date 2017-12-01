@@ -39,6 +39,8 @@ class Camera:
 
 
 class Map:
+    """ who needs a map? """
+    # TODO: this should probably be refactored, currently it's just a container with no methods
     def __init__(self, game, tilewidth, tileheight):
         self.game = game
         self.tilewidth = tilewidth
@@ -48,23 +50,6 @@ class Map:
         self.generator = CellularAutomata()
         self.data = self.generator.generate_level(self.tilewidth, self.tileheight)
         self.player_start = None
-
-    # TODO: this should probably be a function, in case we generate map objects during gameplay
-    # def generate_maptiles(self):
-    #     for x in range(self.tilewidth):
-    #         for y in range(self.tileheight):
-    #
-    #             if self.data[x][y] == 1:
-    #                 self.game.spawn(self.game, Wall, (x, y))
-    #                 #Wall(self.game, x, y)
-    #
-    #             elif self.player_start is None:
-    #                 tile_center_x = x * settings.TILESIZE + settings.TILESIZE / 2
-    #                 tile_center_y = y * settings.TILESIZE + settings.TILESIZE / 2
-    #                 self.player_start = (int(tile_center_x), int(tile_center_y))
-    #
-    #                 if self.game.configs.debug:
-    #                     print("Player starting coordinates set to: {}".format(self.player_start))
 
 
 class Wall(pg.sprite.Sprite):

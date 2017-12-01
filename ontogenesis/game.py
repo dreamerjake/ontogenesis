@@ -13,9 +13,12 @@ from settings import colors
 from settings import game_configs as configs
 
 
-# debug timings decorator
 def timeit(method):
+    """ basic timing decorator that prints debug messages to stdout if configs.debug is True"""
+    # TODO: attach the debug checking to game instance
     def timed(*args, **kwargs):
+        _ = [print(x) for x in dir(method)]
+
         if not configs.debug:
             return method(*args, **kwargs)
         ts = time.time()
@@ -27,17 +30,6 @@ def timeit(method):
         return result
 
     return timed
-
-
-# def spawner(method):
-#     def spawned(*args, **kwargs):
-#         result = method(*args, **kwargs)
-#         # print('{} completed in {:.2f} ms'.format(method.__qualname__, (te - ts) * 1000))
-#         print('Spawned {} at {}'.format(False, kwargs['pos']))
-#
-#         return result
-#
-#     return spawned
 
 
 class Spritesheet:
@@ -117,8 +109,6 @@ class Game:
 
         # configs
         self.configs = configs
-        # self.debug = settings.DEBUG
-        # self.show_fps = settings.SHOW_FPS
 
         # components
         self.ui = UI(self)
@@ -152,8 +142,9 @@ class Game:
         universal function to spawn a new sprite of any type
         mainly exists to provide a target for debugging hooks
         """
-        if self.configs.debug:
+        if self.configs.debug and entity.debugname not in self.configs.debug_exclude:
             print('Spawned {} at {}'.format(entity.debugname, start_pos))
+
         return entity(self, start_pos)
 
     def generate_maptiles(self):
@@ -167,7 +158,7 @@ class Game:
             for y in range(self.map.tileheight):
 
                 if self.map.data[x][y] == 1:
-                    self.spawn(Wall, (x, y))
+                    self.spawn(Wall, (x * settings.TILESIZE, y * settings.TILESIZE))
 
                 elif self.player_start is None:
                     tile_center_x = x * settings.TILESIZE + settings.TILESIZE / 2

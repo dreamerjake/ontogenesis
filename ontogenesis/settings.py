@@ -9,7 +9,8 @@ FULLSCREEN = False
 # configs
 game_configs = SimpleNamespace(
     show_fps=True,
-    debug=True
+    debug=True,
+    debug_exclude=['Wall']
 )
 
 # define some colors as (R, G, B) tuples
