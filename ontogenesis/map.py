@@ -99,7 +99,7 @@ class CellularAutomata:
 
         self.iterations = 30000
         self.neighbors = 4  # number of neighboring walls for this cell to become a wall
-        self.wall_probability = 0.50  # probability of a cell becoming a wall, recommended to be between .35 and .55
+        self.wall_probability = 0.35  # probability of a cell becoming a wall, recommended to be between .35 and .55
 
         self.room_min_size = 16  # size in total number of cells, not dimensions
         self.room_max_size = 500  # size in total number of cells, not dimensions
