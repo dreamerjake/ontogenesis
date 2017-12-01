@@ -39,6 +39,7 @@ class Map:
         self.data = self.generator.generate_level(self.tilewidth, self.tileheight)
         self.player_start = None
 
+        # TODO: this should probably be a function, in case we generate map objects during gameplay
         for x in range(self.tilewidth):
             for y in range(self.tileheight):
 
@@ -101,9 +102,7 @@ class CellularAutomata:
     def generate_level(self, map_width, map_height):
         # Creates an empty 2D array or clears existing array
 
-        self.level = [[1
-                       for _ in range(map_height)]
-                      for _ in range(map_width)]
+        self.level = [[1 for _ in range(map_height)] for _ in range(map_width)]
 
         self.random_fill_map(map_width, map_height)
 

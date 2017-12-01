@@ -174,6 +174,7 @@ class Game:
         self.camera.update(target=self.player)
 
     def draw_grid(self):
+        # TODO: update this so it works with the camera
         for x in range(0, settings.WIDTH, settings.TILESIZE):
             pg.draw.line(self.screen, settings.LIGHTGREY, (x, 0), (x, settings.HEIGHT))
         for y in range(0, settings.HEIGHT, settings.TILESIZE):
@@ -189,6 +190,7 @@ class Game:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
         if self.debug:
+            # TODO: update this so it works with the camera
             pg.draw.rect(self.screen, settings.WHITE, self.player, 2)
             pg.draw.rect(self.screen, settings.GREEN, self.player.hit_rect, 2)
 
