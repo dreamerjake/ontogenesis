@@ -14,12 +14,9 @@ from settings import game_configs as configs
 
 
 def timeit(method):
-    """ basic timing decorator that prints debug messages to stdout if configs.debug is True"""
-    # TODO: attach the debug checking to game instance
+    """ basic timing decorator that prints debug messages to stdout if SYSTEM_DEBUG is on"""
     def timed(*args, **kwargs):
-        _ = [print(x) for x in dir(method)]
-
-        if not configs.debug:
+        if not settings.SYSTEM_DEBUG:
             return method(*args, **kwargs)
         ts = time.time()
         result = method(*args, **kwargs)
@@ -107,6 +104,9 @@ class Game:
         self.clock = pg.time.Clock()
         self.delta_time = None
 
+        # debug and logging
+        self.suppressed_debug_messages = 0
+
         # configs
         self.configs = configs
 
@@ -142,8 +142,11 @@ class Game:
         universal function to spawn a new sprite of any type
         mainly exists to provide a target for debugging hooks
         """
-        if self.configs.debug and entity.debugname not in self.configs.debug_exclude:
-            print('Spawned {} at {}'.format(entity.debugname, start_pos))
+        if self.configs.debug:
+            if entity.debugname not in self.configs.debug_exclude:
+                print('Spawned {} at {}'.format(entity.debugname, start_pos))
+            else:
+                self.suppressed_debug_messages += 1
 
         return entity(self, start_pos)
 
@@ -187,8 +190,10 @@ class Game:
         self.update()
         self.draw()
 
-    @staticmethod
-    def quit():
+    # @staticmethod
+    def quit(self):
+        if settings.SYSTEM_DEBUG:
+            print('Suppressed Debug Messages: {}'.format(self.suppressed_debug_messages))
         pg.quit()
         sys.exit()
 

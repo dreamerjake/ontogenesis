@@ -5,6 +5,7 @@ HEIGHT = 768
 WIDTH = 1024
 TITLE = "Ontogenesis"
 FULLSCREEN = False
+SYSTEM_DEBUG = True
 
 # configs
 game_configs = SimpleNamespace(
