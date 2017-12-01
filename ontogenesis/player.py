@@ -1,12 +1,13 @@
 import pygame as pg
 
 import settings
+from settings import layers
 
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, start):
         # pygame sprite stuff
-        self._layer = settings.PLAYER_LAYER
+        self._layer = layers.player
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
 

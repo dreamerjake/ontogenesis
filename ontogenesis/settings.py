@@ -20,7 +20,8 @@ colors = SimpleNamespace(
     red=(255, 0, 0),
     yellow=(255, 255, 0),
     brown=(106, 55, 5),
-    cyan=(0, 255, 255))
+    cyan=(0, 255, 255)
+)
 
 # map settings
 BGCOLOR = colors.darkgrey
@@ -29,9 +30,12 @@ MAP_HEIGHT = 100
 MAP_WIDTH = 100
 
 # Layers
-WALL_LAYER = 1
-PLAYER_LAYER = 2
-BULLET_LAYER = 3
-MOB_LAYER = 2
-EFFECTS_LAYER = 4
-ITEMS_LAYER = 1
+layers = SimpleNamespace(
+    wall=1,
+    player=2,
+    bullet=3,
+    mob=2,
+    effects=4,
+    items=1,
+)
+
