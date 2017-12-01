@@ -3,7 +3,7 @@ import sys
 
 import pygame as pg
 
-from map import CellularAutomata, Wall
+from map import Map, Wall, Camera
 from player import Player
 from ui import UI
 import settings
@@ -63,11 +63,11 @@ class Game:
     }
 
     def __init__(self, name):
+        self.name = name
+
         # pygame initialization
         # pg.mixer.pre_init(44100, -16, 4, 2048)
         pg.init()
-
-        self.name = name
 
         # state machine
         self.fsm = StateMachine(initial='main_menu', table=self.state_table, owner=self)
@@ -87,6 +87,7 @@ class Game:
         # components
         self.ui = UI(self)
         self.player = None
+        self.camera = None
 
         # sprite groups
         self.all_sprites = pg.sprite.LayeredUpdates()
@@ -94,9 +95,12 @@ class Game:
         self.mobs = pg.sprite.Group()
 
         # map stuff
-        self.map_generator = CellularAutomata()
-        self.map = None
-        self.player_start = None
+        self.map = Map(self, settings.MAP_WIDTH, settings.MAP_HEIGHT)
+        # self.map_generator = CellularAutomata()
+        # self.map = None
+        # self.map_image = pg.Surface((settings.MAP_WIDTH * settings.TILESIZE, settings.MAP_HEIGHT * settings.TILESIZE))
+        # self.map_rect = self.map_image.get_rect()
+        self.player_start = self.map.player_start
 
         # assets
         self.hud_font = None
@@ -104,30 +108,13 @@ class Game:
         self.load_assets()
 
     def new(self):
-        self.map = self.map_generator.generate_level(settings.MAP_WIDTH, settings.MAP_HEIGHT)
-        for x in range(settings.WIDTH // settings.TILESIZE):
-            for y in range(settings.HEIGHT // settings.TILESIZE):
-
-                if self.map[x][y] == 1:
-                    Wall(self, x, y)
-
-                    if settings.DEBUG:
-                        print("Spawned Wall at ({}, {})".format(x, y))
-
-                elif self.player_start is None:
-                    tile_center_x = x * settings.TILESIZE + settings.TILESIZE / 2
-                    tile_center_y = y * settings.TILESIZE + settings.TILESIZE / 2
-                    self.player_start = (tile_center_x, tile_center_y)
-
-                    if settings.DEBUG:
-                        print("Player starting coordinates set to: {}".format(self.player_start))
-
+        # self.map.generate_layout()
         self.player = Player(self, self.player_start)
 
-        if settings.DEBUG:
+        if self.debug:
             print("Spawned Player at {}".format(self.player_start))
 
-        # self.camera = Camera(self.map.width, self.map.height)
+        self.camera = Camera(self.map.width, self.map.height)
 
     def run(self):
         state_map = {
@@ -164,11 +151,13 @@ class Game:
                     self.fsm('pause')
                 if event.key == pg.K_RETURN:
                     self.fsm('new_game')
+                if event.key == pg.K_F12:
+                    self.debug = not self.debug
 
     def update(self):
         """update logic for main game loop"""
         self.all_sprites.update()
-        # self.camera.update(self.player)
+        self.camera.update(target=self.player)
 
     def draw_grid(self):
         for x in range(0, settings.WIDTH, settings.TILESIZE):
@@ -178,9 +167,12 @@ class Game:
 
     def draw(self):
         self.screen.fill(settings.BGCOLOR)
-        if settings.DEBUG:
+
+        if self.debug:
             self.draw_grid()
-        self.all_sprites.draw(self.screen)
+
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
 
         if self.debug:
             pg.draw.rect(self.screen, settings.WHITE, self.player, 2)
@@ -188,12 +180,6 @@ class Game:
 
         self.ui.draw()
         pg.display.flip()
-
-    def draw_text(self, text, font_name, size, color, x, y, align="topleft"):
-        font = pg.font.Font(font_name, size)
-        text_surface = font.render(text, True, color)
-        text_rect = text_surface.get_rect(**{align: (x, y)})
-        self.screen.blit(text_surface, text_rect)
 
     def load_assets(self):
         game_folder = path.dirname(__file__)

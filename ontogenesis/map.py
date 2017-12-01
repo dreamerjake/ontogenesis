@@ -7,20 +7,59 @@ import settings
 
 
 class Camera:
-    pass
+    def __init__(self, width, height):
+        self.camera = pg.Rect(0, 0, width, height)
+        self.width = width
+        self.height = height
+
+    def apply(self, entity):
+        return entity.rect.move(self.camera.topleft)
+
+    def update(self, target):
+        x = -target.rect.x + int(settings.WIDTH / 2)
+        y = -target.rect.y + int(settings.HEIGHT / 2)
+
+        # limit scrolling to map boundaries
+        x = min(0, x)
+        y = min(0, y)
+        x = max(-(self.width - settings.WIDTH), x)
+        y = max(-(self.height - settings.HEIGHT), y)
+
+        self.camera = pg.Rect(x, y, self.width, self.height)
 
 
 class Map:
-    # generator
-    # player start
-    # self.tile_width
-    # self.tile_height
-    # self.width
-    # self.height
-    pass
+    def __init__(self, game, tilewidth, tileheight):
+        self.game = game
+        self.tilewidth = tilewidth
+        self.tileheight = tileheight
+        self.width = self.tilewidth * settings.TILESIZE
+        self.height = self.tileheight * settings.TILESIZE
+        self.generator = CellularAutomata()
+        self.data = self.generator.generate_level(self.tilewidth, self.tileheight)
+        self.player_start = None
+
+        for x in range(self.tilewidth):
+            for y in range(self.tileheight):
+
+                if self.data[x][y] == 1:
+                    Wall(self.game, x, y)
+
+                    if self.game.debug:
+                        print("Spawned Wall at ({}, {})".format(x, y))
+
+                elif self.player_start is None:
+                    tile_center_x = x * settings.TILESIZE + settings.TILESIZE / 2
+                    tile_center_y = y * settings.TILESIZE + settings.TILESIZE / 2
+                    self.player_start = (tile_center_x, tile_center_y)
+
+                    if self.game.debug:
+                        print("Player starting coordinates set to: {}".format(self.player_start))
 
 
 class Wall(pg.sprite.Sprite):
+    """ Your basic movement-blocking map element """
+    # Destructable?
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
