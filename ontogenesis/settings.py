@@ -2,6 +2,7 @@
 HEIGHT = 768
 WIDTH = 1024
 TITLE = "Ontogenesis"
+FULLSCREEN = False
 
 # configs
 SHOW_FPS = True

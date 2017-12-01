@@ -3,6 +3,7 @@ import sys
 import time
 
 import pygame as pg
+from pygame.locals import FULLSCREEN
 
 from map import Map, Camera
 from player import Player
@@ -91,7 +92,10 @@ class Game:
         self.fsm = StateMachine(initial='main_menu', table=self.state_table, owner=self)
 
         # display
-        self.screen = pg.display.set_mode((settings.WIDTH, settings.HEIGHT))
+        self.fullscreen = settings.FULLSCREEN
+        self.available_resolutions = pg.display.list_modes()
+        self.screensize = (settings.WIDTH, settings.HEIGHT)
+        self.screen = self.screen_update()
         pg.display.set_caption(settings.TITLE)
 
         # time
@@ -159,14 +163,25 @@ class Game:
             if event.type == pg.QUIT:
                 self.fsm('quit')
             if event.type == pg.KEYDOWN:
+                # system controls
                 if event.key == pg.K_ESCAPE:
                     self.fsm('quit')
                 if event.key == pg.K_p:
                     self.fsm('pause')
                 if event.key == pg.K_RETURN:
                     self.fsm('new_game')
+                if event.key == pg.K_F10:
+                    self.fullscreen = not self.fullscreen
+                    self.screen_update()
                 if event.key == pg.K_F12:
                     self.debug = not self.debug
+
+    def screen_update(self):
+        if self.fullscreen:
+            screen = pg.display.set_mode(self.screensize, FULLSCREEN)
+        else:
+            screen = pg.display.set_mode(self.screensize)
+        return screen
 
     def update(self):
         """ update logic for main game loop """
