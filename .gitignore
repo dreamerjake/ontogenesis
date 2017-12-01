@@ -1,7 +1,10 @@
+# dirs
 .idea/
 __pycache__/
 venv/
 
+# filetypes
 *.pyc
 
+# misc files
 all.anims
