@@ -51,7 +51,7 @@ class Map:
                 elif self.player_start is None:
                     tile_center_x = x * settings.TILESIZE + settings.TILESIZE / 2
                     tile_center_y = y * settings.TILESIZE + settings.TILESIZE / 2
-                    self.player_start = (tile_center_x, tile_center_y)
+                    self.player_start = (int(tile_center_x), int(tile_center_y))
 
                     if self.game.debug:
                         print("Player starting coordinates set to: {}".format(self.player_start))

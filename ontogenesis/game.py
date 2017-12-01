@@ -1,12 +1,29 @@
 from os import path
 import sys
+import time
 
 import pygame as pg
 
-from map import Map, Wall, Camera
+from map import Map, Camera
 from player import Player
 from ui import UI
 import settings
+
+
+# debug timings decorator
+def timeit(method):
+    def timed(*args, **kwargs):
+        if not settings.DEBUG:
+            return method(*args, **kwargs)
+        ts = time.time()
+        result = method(*args, **kwargs)
+        te = time.time()
+
+        print('{} completed in {:.2f} ms'.format(method.__qualname__, (te - ts) * 1000))
+
+        return result
+
+    return timed
 
 
 class Spritesheet:
@@ -62,6 +79,7 @@ class Game:
         ('paused', 'quit'): 'quit',
     }
 
+    @timeit
     def __init__(self, name):
         self.name = name
 
@@ -177,6 +195,7 @@ class Game:
         self.ui.draw()
         pg.display.flip()
 
+    @timeit
     def load_assets(self):
         game_folder = path.dirname(__file__)
         assets_folder = path.join(game_folder, 'assets')
