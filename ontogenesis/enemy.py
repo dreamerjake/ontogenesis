@@ -98,7 +98,6 @@ class Mob(pg.sprite.Sprite, Collider):
         self.vel += self.acc * self.game.delta_time
         self.pos += self.vel * self.game.delta_time + 0.5 * self.acc * self.game.delta_time ** 2
 
-        # self.rect.center = self.pos
         self.hit_rect.centerx = self.pos.x
         self.collide(self.game.walls, 'x')
         self.hit_rect.centery = self.pos.y

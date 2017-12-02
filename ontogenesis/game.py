@@ -111,6 +111,11 @@ class Game:
         # configs
         self.configs = configs
 
+        # assets
+        self.hud_font = None
+        self.player_move_spritesheet = None
+        self.load_assets()
+
         # components
         self.ui = UI(self)
         self.player = None
@@ -124,11 +129,6 @@ class Game:
         # map stuff
         self.map = Map(self, settings.MAP_WIDTH, settings.MAP_HEIGHT)
         self.player_start = self.map.player_start
-
-        # assets
-        self.hud_font = None
-        self.player_move_spritesheet = None
-        self.load_assets()
 
     def new(self):
 
@@ -204,6 +204,7 @@ class Game:
     def events(self):
         """ Event processing for the game object - handles system controls"""
         for event in pg.event.get():
+            self.ui.start_button.handle_event(event)
             if event.type == pg.QUIT:
                 self.fsm('quit')
             if event.type == pg.KEYDOWN:
@@ -290,6 +291,7 @@ class Game:
         player_images_folder = path.join(images_folder, 'player')
         player_audio_folder = path.join(audio_folder, 'player')
         mob_images_folder = path.join(images_folder, 'mob')
+        ui_images_folder = path.join(images_folder, 'ui')
 
         # fonts
         self.hud_font = path.join(fonts_folder, 'Dense-Regular.ttf')
@@ -299,6 +301,9 @@ class Game:
 
         # static images
         self.mob_zombie_image = pg.image.load(path.join(mob_images_folder, 'zombie1.png'))
+        self.button_play = pg.image.load(path.join(ui_images_folder, 'play.png'))
+        self.button_theme = pg.image.load(path.join(ui_images_folder, 'theme.png'))
+        self.button_scores = pg.image.load(path.join(ui_images_folder, 'scores.png'))
 
         # sound effects
         pg.mixer.music.load(path.join(music_folder, 'action.mp3'))

@@ -70,6 +70,7 @@
 * ####UI
     * GUI Toolkit
         * Button
+            * Resizeable?
         * Checkbox
         * Slider?
         * Text Input?
@@ -97,3 +98,5 @@
     * OSX Support
         * Keyboard Input
     
+### Notes
+tweenting library to keep in mind https://github.com/asweigart/pytweening

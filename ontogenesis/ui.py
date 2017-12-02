@@ -1,4 +1,5 @@
 import pygame as pg
+from pygame.locals import MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN
 
 import settings
 from settings import colors
@@ -17,6 +18,8 @@ class UI:
             'paused': self.draw_pause_menu,
         }
 
+        self.start_button = Button(0, 100, up=self.game.button_play, down=self.game.button_theme, highlight=self.game.button_scores)
+
     def draw(self):
         current_state = self.game.fsm.current_state
         self.state_map[current_state]()
@@ -25,6 +28,7 @@ class UI:
         title = self.game.fsm.current_state
         title = title.replace('_', ' ').upper()
         self.draw_text(title, self.game.hud_font, 32, colors.white, settings.WIDTH // 2, 20, align='center')
+        self.start_button.draw(self.screen)
 
     def draw_fps(self):
         fps = self.game.clock.get_fps()
@@ -92,3 +96,112 @@ class UI:
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect(**{align: (x, y)})
         self.screen.blit(text_surface, text_rect)
+
+
+class Button:
+
+    # states = ['down', 'up', 'hover']
+
+    def __init__(self, x, y, up, down, highlight, caption='', font=None):
+
+        # visibility attribute?
+
+        self.up_img = up
+        self.down_img = down
+        self.highlight_img = highlight
+
+        if self.up_img.get_size() != self.down_img.get_size() != self.highlight_img.get_size():
+            raise Exception('Button surfaces must all be the same size')
+
+        self.width, self.height = self.up_img.get_size()
+
+        self.rect = pg.Rect(x, y, self.width, self.height)
+
+        self.caption = caption
+        self.font = font
+
+        self.visible = True
+        # self.state = 'up'
+        self.down = False
+        self.mouseover = False
+        self.last_mousedown_over = False
+
+        self.callbacks = {
+            'enter': lambda x: None,
+            'exit': lambda x: None,
+            'up': lambda x: None,
+            'down': lambda x: None,
+            'move': lambda x: None,
+            'click': lambda x: None  # print('clicked')
+        }
+
+        # self.set_surfaces(up, down, highlight)
+
+    # def set_surfaces(self, up, down, highlight):
+    #     """
+    #
+    #     :param up: pygame.Surface
+    #     :param down: pygame.Surface
+    #     :param highlight: pygame.Surface
+    #     :return:
+    #     """
+    #     pass
+
+    def draw(self, surface):
+        if self.visible:
+            if self.down:
+                surface.blit(self.down_img, self.rect)
+            elif self.mouseover:
+                surface.blit(self.highlight_img, self.rect)
+            else:
+                surface.blit(self.up_img, self.rect)
+
+    def handle_event(self, event):
+        if not self.visible or event.type not in (MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN):
+            return
+
+        mouse_inside = self.rect.collidepoint(event.pos)
+        exited = False
+
+        # mouse enters button
+        if not self.mouseover and mouse_inside:
+            self.mouseover = True
+            self.callbacks['enter'](event)
+
+        # mouse exits button
+        elif self.mouseover and not mouse_inside:
+            self.mouseover = False
+            exited = True  # call 'enter' callback later, since we want 'move' callback to be handled first
+
+        if mouse_inside:
+            # mouse moves over button
+            if event.type == MOUSEMOTION:
+                self.callbacks['move'](event)
+
+            # mouse down over button
+            elif event.type == MOUSEBUTTONDOWN:
+                self.down = True
+                self.last_mousedown_over = True
+                self.callbacks['down'](event)
+
+        # mouse up/down outside button => next up won't cause click
+        elif event.type in (MOUSEBUTTONUP, MOUSEBUTTONDOWN):
+            self.last_mousedown_over = False
+
+        click = False
+
+        if event.type == MOUSEBUTTONUP:
+            if self.last_mousedown_over:
+                click = True
+            self.last_mousedown_over = False
+
+            if self.down:
+                self.down = False
+                self.callbacks['up'](event)
+
+            if click:
+                self.down = False
+                self.callbacks['click'](event)
+
+        if exited:
+            self.callbacks['exit'](event)
