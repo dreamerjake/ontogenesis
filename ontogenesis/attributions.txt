@@ -6,14 +6,19 @@ Chris Bradfield
 Michael Coates
     - https://bitbucket.org/Azhain/
     - https://www.youtube.com/channel/UCYpYQNHs2NN-J-UC7Pn4G5A
+Albert Sweigart
+    - https://inventwithpython.com/
+    - https://github.com/asweigart
 
 
 Code Snippets
 =============
-Finite State Machine class
+Finite State Machine Class
     - adapted from https://news.ycombinator.com/item?id=14634947
 Dungeon Generation Implementation
     - adapted from https://github.com/AtTheMatinee
+Button Class
+    - adapted from https://inventwithpython.com/blog/2012/10/30/designing-a-button-ui-module-for-pygame/
 
 
 Player Sprites
