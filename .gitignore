@@ -5,6 +5,7 @@ venv/
 
 # filetypes
 *.pyc
+*.ogg
 
 # misc files
 all.anims

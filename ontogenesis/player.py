@@ -71,18 +71,28 @@ class Player(pg.sprite.Sprite):
         return one.hit_rect.colliderect(two.rect)
 
     def collide_with_walls(self, direction):
+
         if direction == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
             if hits:
+
+                # TODO: set a timeout on playing sounds
+                self.game.player_sound_ow.play()
+
                 if self.vx > 0:  # sprite was moving to the right prior to collision
                     self.x = hits[0].rect.left - self.hit_rect.width / 2
                 if self.vx < 0:
                     self.x = hits[0].rect.right + self.hit_rect.width / 2
                 self.vx = 0
                 self.hit_rect.centerx = self.x
+
         if direction == 'y':
             hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
             if hits:
+
+                # TODO: set a timeout on playing sounds
+                self.game.player_sound_ow.play()
+
                 if self.vy > 0:
                     self.y = hits[0].rect.top - self.hit_rect.height / 2
                 if self.vy < 0:

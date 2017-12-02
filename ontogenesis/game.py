@@ -87,7 +87,7 @@ class Game:
         self.name = name
 
         # pygame initialization
-        # pg.mixer.pre_init(44100, -16, 4, 2048)
+        pg.mixer.pre_init(44100, -16, 4, 2048)  # frequency, size, channels, buffersize
         pg.init()
 
         # state machine
@@ -181,6 +181,8 @@ class Game:
 
         self.new()
 
+        pg.mixer.music.play(loops=-1)
+
         while True:
             self.delta_time = self.clock.tick(60) / 1000
             self.events()
@@ -214,6 +216,8 @@ class Game:
                     self.screen_update()
                 if event.key == pg.K_F12:
                     self.configs.debug = not self.configs.debug
+                if event.key == pg.K_F2:
+                    pg.mixer.music.set_volume(0)
 
     def screen_update(self):
         """ Create the display - called on Game init and display settings change"""
@@ -267,12 +271,25 @@ class Game:
 
     @timeit
     def load_assets(self):
+        # TODO: structure for mapping asset variables to filenames
+
+        # folders
         game_folder = path.dirname(__file__)
         assets_folder = path.join(game_folder, 'assets')
         fonts_folder = path.join(assets_folder, 'fonts')
+        audio_folder = path.join(assets_folder, 'audio')
+        music_folder = path.join(audio_folder, 'music')
         images_folder = path.join(assets_folder, 'images')
         player_images_folder = path.join(images_folder, 'player')
+        player_audio_folder = path.join(audio_folder, 'player')
 
+        # fonts
         self.hud_font = path.join(fonts_folder, 'Dense-Regular.ttf')
 
+        # spritesheets
         self.player_move_spritesheet = Spritesheet(path.join(player_images_folder, 'player-move.png'))
+
+        # sound effects
+        pg.mixer.music.load(path.join(music_folder, 'dark.ogg'))
+        self.player_sound_ow = pg.mixer.Sound(path.join(player_audio_folder, 'ow.wav'))
+

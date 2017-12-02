@@ -20,6 +20,8 @@
     
     * Controls
         * Namespace for controls mapping?
+        * System Contols
+            * Volume Control
     
     * Assets
         * Sprites
