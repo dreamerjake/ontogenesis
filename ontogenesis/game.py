@@ -214,7 +214,7 @@ class Game:
         pg.mixer.music.play(loops=-1)
 
         while True:
-            self.delta_time = self.clock.tick(60) / 1000
+            self.delta_time = self.clock.tick(self.configs.fps) / 1000
             self.events()
             state_map[self.fsm.current_state]()
 
@@ -222,7 +222,6 @@ class Game:
         self.update()
         self.draw()
 
-    # @staticmethod
     def quit(self):
         if settings.SYSTEM_DEBUG:
             print('Suppressed Debug Messages: {}'.format(self.suppressed_debug_messages))

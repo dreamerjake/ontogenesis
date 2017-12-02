@@ -9,6 +9,7 @@ SYSTEM_DEBUG = True
 
 # configs
 game_configs = SimpleNamespace(
+    fps=60,
     show_fps=True,
     debug=True,
     debug_exclude=['Wall'],
