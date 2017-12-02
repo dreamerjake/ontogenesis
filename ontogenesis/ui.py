@@ -117,12 +117,7 @@ class UI:
 
 class Button:
 
-    # states = ['down', 'up', 'hover']
-
     def __init__(self, x, y, up_img, down_img, highlight_img, caption='', font=None):
-
-        # visibility attribute?
-
         self.up_img = up_img
         self.down_img = down_img
         self.highlight_img = highlight_img
@@ -138,7 +133,6 @@ class Button:
         self.font = font
 
         self.visible = True
-        # self.state = 'up'
         self.down = False
         self.mouseover = False
         self.last_mousedown_over = False
@@ -151,18 +145,6 @@ class Button:
             'move': lambda x: None,
             'click': lambda x: None  # print('clicked')
         }
-
-        # self.set_surfaces(up, down, highlight)
-
-    # def set_surfaces(self, up, down, highlight):
-    #     """
-    #
-    #     :param up: pygame.Surface
-    #     :param down: pygame.Surface
-    #     :param highlight: pygame.Surface
-    #     :return:
-    #     """
-    #     pass
 
     def draw(self, surface):
         if self.visible:
