@@ -1,4 +1,5 @@
 from os import path
+# from queue import Queue
 import sys
 import time
 
@@ -12,6 +13,25 @@ from ui import UI
 import settings
 from settings import colors
 from settings import game_configs as configs
+
+
+class MessageQueue:
+    def __init__(self, max_size):
+        self._queue = []
+        self.max_size = max_size
+
+    def reap(self):
+        self._queue = [item for item in self._queue if item[0] > time.time()]
+
+    def put(self, message, ttl):
+        self.reap()
+        self._queue.append((time.time() + ttl, message))
+        if len(self._queue) > self.max_size:
+            self._queue.pop()
+
+    def get(self):
+        self.reap()
+        return [item[1] for item in self._queue]
 
 
 def timeit(method):
@@ -91,6 +111,9 @@ class Game:
         pg.mixer.pre_init(44100, -16, 4, 2048)  # frequency, size, channels, buffersize
         pg.init()
 
+        # configs
+        self.configs = configs
+
         # state machine
         self.fsm = StateMachine(initial='main_menu', table=self.state_table, owner=self)
 
@@ -105,14 +128,13 @@ class Game:
         self.clock = pg.time.Clock()
         self.delta_time = None
 
-        # debug and logging
+        # messages, debug, and logging
         self.suppressed_debug_messages = 0
-
-        # configs
-        self.configs = configs
+        self.message_flash_queue = MessageQueue(self.configs.flash_messages_queuesize)
 
         # assets
         self.hud_font = None
+        self.message_flash_font = None
         self.player_move_spritesheet = None
         self.load_assets()
 
@@ -221,6 +243,7 @@ class Game:
                     self.configs.debug = not self.configs.debug
                 if event.key == pg.K_F2:
                     pg.mixer.music.set_volume(0)
+                    self.flash_message("MUSIC MUTED", 2)
 
     def screen_update(self):
         """ Create the display - called on Game init and display settings change"""
@@ -277,6 +300,10 @@ class Game:
 
         pg.display.flip()
 
+    def flash_message(self, message, ttl):
+        # TODO: debug message
+        self.message_flash_queue.put(message, ttl)
+
     @timeit
     def load_assets(self):
         # TODO: structure for mapping asset variables to filenames
@@ -295,6 +322,7 @@ class Game:
 
         # fonts
         self.hud_font = path.join(fonts_folder, 'Dense-Regular.ttf')
+        self.message_flash_font = path.join(fonts_folder, 'Angerpoise-Lampshade.ttf')
 
         # spritesheets
         self.player_move_spritesheet = Spritesheet(path.join(player_images_folder, 'player-move.png'))

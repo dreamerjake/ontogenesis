@@ -18,7 +18,7 @@ class UI:
             'paused': self.draw_pause_menu,
         }
 
-        self.start_button = Button(0, 100, up=self.game.button_play, down=self.game.button_theme, highlight=self.game.button_scores)
+        self.start_button = Button(0, 100, up_img=self.game.button_play, down_img=self.game.button_theme, highlight_img=self.game.button_scores)
 
     def draw(self):
         current_state = self.game.fsm.current_state
@@ -43,6 +43,20 @@ class UI:
     def draw_debug_warning(self):
         self.draw_text('DEBUG MODE', self.game.hud_font, 18, colors.white, settings.WIDTH - 5, 5, align='topright')
 
+    def draw_flashed_messages(self):
+        for i, message in enumerate(self.game.message_flash_queue.get()[::-1]):
+            height = pg.font.Font(self.game.message_flash_font, 40).size(message)[1]
+            offset = i * height
+            self.draw_text(
+                # 'FLASHED MESSAGE',
+                message,
+                self.game.message_flash_font,
+                40,
+                colors.yellow,
+                settings.WIDTH / 2,
+                settings.HEIGHT / 2 - settings.HEIGHT * .10 - offset,
+                align='center')
+
     def draw_player_health(self, x, y, pct):
         if pct < 0:
             pct = 0
@@ -66,6 +80,7 @@ class UI:
         self.optional_messages()
         if self.game.configs.debug:
             self.debug_messages()
+        self.draw_flashed_messages()
         pg.display.flip()
 
     def draw_pause_menu(self):
@@ -74,6 +89,7 @@ class UI:
         self.optional_messages()
         if self.game.configs.debug:
             self.debug_messages()
+        self.draw_flashed_messages()
         pg.display.flip()
 
     def draw_hud(self):
@@ -82,6 +98,7 @@ class UI:
         self.optional_messages()
         if self.game.configs.debug:
             self.debug_messages()
+        self.draw_flashed_messages()
 
     def debug_messages(self):
         self.draw_debug_warning()
@@ -102,13 +119,13 @@ class Button:
 
     # states = ['down', 'up', 'hover']
 
-    def __init__(self, x, y, up, down, highlight, caption='', font=None):
+    def __init__(self, x, y, up_img, down_img, highlight_img, caption='', font=None):
 
         # visibility attribute?
 
-        self.up_img = up
-        self.down_img = down
-        self.highlight_img = highlight
+        self.up_img = up_img
+        self.down_img = down_img
+        self.highlight_img = highlight_img
 
         if self.up_img.get_size() != self.down_img.get_size() != self.highlight_img.get_size():
             raise Exception('Button surfaces must all be the same size')

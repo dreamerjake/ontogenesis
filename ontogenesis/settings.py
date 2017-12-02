@@ -11,7 +11,8 @@ SYSTEM_DEBUG = True
 game_configs = SimpleNamespace(
     show_fps=True,
     debug=True,
-    debug_exclude=['Wall']
+    debug_exclude=['Wall'],
+    flash_messages_queuesize=2
 )
 
 # define some colors as (R, G, B) tuples

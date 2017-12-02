@@ -22,6 +22,7 @@
         * Namespace for controls mapping?
         * System Contols
             * Volume Control
+            * ~~Music Mute~~
     
     * Assets
         * Sprites
@@ -39,7 +40,7 @@
         * Skill Training
         
     * Enemy
-        * Class Definition
+        * ~~Class Definition~~
         
     * Map
         * World Map
@@ -65,12 +66,13 @@
         * Settings as SimpleNamespace?? (tuple keys??? e.g. game.settings[a, b, c])
         
     * Debugging
-        * Decorator to record spawn messages
+        * ~~Decorator to record spawn messages~~
 
 * ####UI
     * GUI Toolkit
-        * Button
+        * ~~Button~~
             * Resizeable?
+            * Caption Text
         * Checkbox
         * Slider?
         * Text Input?
@@ -81,7 +83,7 @@
     * Skills Screen
     * HUD
         * Active Skill
-        * Player Health
+        * ~~Player Health~~
         * Player Resource
         * Player Currency
     * Settings Screen
@@ -94,7 +96,7 @@
         * ~~Fullscreen Mode~~
         * Resolution Changing
         * Resizeable Windows
-    * Audio
+    * ~~Audio~~
     * OSX Support
         * Keyboard Input
     

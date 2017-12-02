@@ -32,6 +32,11 @@ Dense-Regular Font
 Justin Armstrong
     - https://github.com/justinmeister/
 
+Angerpoise Lampshade Font
+=========================
+Typodermic Fonts Inc
+    - http://www.fontpalace.com/font-details/Angerpoise+Lampshade/
+
 Action Music
 ============
 https://opengameart.org/users/3uhox
