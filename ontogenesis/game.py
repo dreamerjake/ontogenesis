@@ -19,6 +19,13 @@ class MessageQueue:
         self._queue = []
         self.max_size = max_size
 
+    def __len__(self):
+        self.reap()
+        return len(self._queue)
+
+    def __bool__(self):
+        return len(self) > 0
+
     def reap(self):
         self._queue = [item for item in self._queue if item[0] > time.time()]
 
