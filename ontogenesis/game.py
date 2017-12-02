@@ -7,6 +7,7 @@ from pygame.locals import FULLSCREEN
 
 from map import Map, Camera, Wall
 from player import Player
+from enemy import Mob
 from ui import UI
 import settings
 from settings import colors
@@ -134,6 +135,7 @@ class Game:
         self.generate_maptiles()
 
         self.player = self.spawn(Player, self.player_start)
+        self.test_zombie = self.spawn(Mob, (self.player_start[0] + 300, self.player_start[1]))
 
         self.camera = Camera(self.map.width, self.map.height)
 
@@ -282,6 +284,7 @@ class Game:
         images_folder = path.join(assets_folder, 'images')
         player_images_folder = path.join(images_folder, 'player')
         player_audio_folder = path.join(audio_folder, 'player')
+        mob_images_folder = path.join(images_folder, 'mob')
 
         # fonts
         self.hud_font = path.join(fonts_folder, 'Dense-Regular.ttf')
@@ -289,7 +292,9 @@ class Game:
         # spritesheets
         self.player_move_spritesheet = Spritesheet(path.join(player_images_folder, 'player-move.png'))
 
+        # static images
+        self.mob_zombie_image = pg.image.load(path.join(mob_images_folder, 'zombie1.png'))
+
         # sound effects
         pg.mixer.music.load(path.join(music_folder, 'action.mp3'))
         self.player_sound_ow = pg.mixer.Sound(path.join(player_audio_folder, 'ow.wav'))
-
