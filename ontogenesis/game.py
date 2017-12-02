@@ -290,6 +290,6 @@ class Game:
         self.player_move_spritesheet = Spritesheet(path.join(player_images_folder, 'player-move.png'))
 
         # sound effects
-        pg.mixer.music.load(path.join(music_folder, 'dark.ogg'))
+        pg.mixer.music.load(path.join(music_folder, 'action.mp3'))
         self.player_sound_ow = pg.mixer.Sound(path.join(player_audio_folder, 'ow.wav'))
 
