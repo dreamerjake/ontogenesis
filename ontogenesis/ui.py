@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import pygame as pg
 from pygame.locals import MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN
 
@@ -118,12 +120,14 @@ class UI:
 class Button:
 
     def __init__(self, x, y, up_img, down_img, highlight_img, caption='', font=None):
+
+        # check for mismatched image sizes
+        if up_img.get_size() != down_img.get_size() != highlight_img.get_size():
+            raise Exception('Button surfaces must all be the same size')
+
         self.up_img = up_img
         self.down_img = down_img
         self.highlight_img = highlight_img
-
-        if self.up_img.get_size() != self.down_img.get_size() != self.highlight_img.get_size():
-            raise Exception('Button surfaces must all be the same size')
 
         self.width, self.height = self.up_img.get_size()
 
@@ -137,14 +141,16 @@ class Button:
         self.mouseover = False
         self.last_mousedown_over = False
 
-        self.callbacks = {
-            'enter': lambda x: None,
-            'exit': lambda x: None,
-            'up': lambda x: None,
-            'down': lambda x: None,
-            'move': lambda x: None,
-            'click': lambda x: None  # print('clicked')
-        }
+        # self.callbacks = {
+        #     'enter': lambda x: None,
+        #     'exit': lambda x: None,
+        #     'up': lambda x: None,
+        #     'down': lambda x: None,
+        #     'move': lambda x: None,
+        #     'click': lambda x: None  # print('clicked')
+        # }
+
+        self.callbacks = defaultdict(lambda: lambda x: None)
 
     def draw(self, surface):
         if self.visible:
