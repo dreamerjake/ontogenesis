@@ -102,13 +102,14 @@ class Player(pg.sprite.Sprite):
 
     def rotate(self):
         # face the mouse position
-        adj_pos = self.game.camera.apply(self.game.player).center
+        adj_pos = self.game.camera.apply(self).center
         _, angle = (pg.mouse.get_pos() - pg.math.Vector2(adj_pos)).as_polar()
         self.image = pg.transform.rotate(self.orig_image, -angle - 90)
         self.rect = self.image.get_rect(center=self.rect.center)
 
     def update(self):
-        self.hp_current = min(self.hp_current + (self.regen * self.game.delta_time), self.hp_max)
+        if self.regen != 0:
+            self.hp_current = min(self.hp_current + (self.regen * self.game.delta_time), self.hp_max)
         self.process_input()
         self.rotate()
         # self.rect.center = self.x, self.y

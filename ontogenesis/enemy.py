@@ -38,5 +38,28 @@ class Mob(pg.sprite.Sprite):
         self.hp_max = 100
         self.regen = 1  # hp per second
 
+        # item management
+        self.inventory = []
+
     def load_images(self):
         self.standing_frames = [self.game.mob_zombie_image]
+
+    def rotate(self, target):
+        # face the target
+        angle = (target - self.hit_rect.center).angle_to(pg.math.Vector2(1, 0))
+        self.image = pg.transform.rotate(self.orig_image, angle)
+        self.rect = self.image.get_rect(center=self.rect.center)
+
+    def update(self):
+        if self.regen != 0:
+            self.hp_current = min(self.hp_current + (self.regen * self.game.delta_time), self.hp_max)
+        # self.process_input()
+        self.rotate(pg.math.Vector2(self.game.player.hit_rect.center))
+        # self.rect.center = self.x, self.y
+        self.x += self.vx * self.game.delta_time
+        self.y += self.vy * self.game.delta_time
+        # self.hit_rect.centerx = self.x
+        # self.collide_with_walls('x')
+        # self.hit_rect.centery = self.y
+        # self.collide_with_walls('y')
+        # self.rect.center = self.hit_rect.center
