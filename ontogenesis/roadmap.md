@@ -102,3 +102,13 @@
     
 ### Notes
 tweenting library to keep in mind https://github.com/asweigart/pytweening
+
+### Idea Scratchpad
+Worldmap has a series of nodes representing map points
+    * Each map node has a native enemy type
+        * Traveling from node A to node B will encounter a mix of A & B enemies
+Reaching destination town(back home after quests???) will perma-unlock skills gained during run
+Track the hometown over runs, for permanence
+    * Play until you run out of population???
+    * Each run's quests based on the current stats(needs) of the town
+    * Finding the hometown is the objective of the story mode?
