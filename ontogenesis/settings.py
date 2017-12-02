@@ -39,8 +39,8 @@ MAP_WIDTH = 100
 layers = SimpleNamespace(
     wall=1,
     player=2,
-    bullet=3,
+    # bullet=3,
     mob=2,
-    effects=4,
-    items=1,
+    # effects=4,
+    # items=1,
 )

@@ -334,9 +334,9 @@ class Game:
 
         # static images
         self.mob_zombie_image = pg.image.load(path.join(mob_images_folder, 'zombie1.png'))
-        self.button_play = pg.image.load(path.join(ui_images_folder, 'play.png'))
-        self.button_theme = pg.image.load(path.join(ui_images_folder, 'theme.png'))
-        self.button_scores = pg.image.load(path.join(ui_images_folder, 'scores.png'))
+        self.button_up = pg.image.load(path.join(ui_images_folder, 'up.png'))
+        self.button_down = pg.image.load(path.join(ui_images_folder, 'down.png'))
+        self.button_hover = pg.image.load(path.join(ui_images_folder, 'hover.png'))
 
         # sound effects
         pg.mixer.music.load(path.join(music_folder, 'action.mp3'))

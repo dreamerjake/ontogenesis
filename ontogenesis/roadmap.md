@@ -102,6 +102,8 @@
     
 ### Notes
 tweenting library to keep in mind https://github.com/asweigart/pytweening
+fix for warning "libpng warning: iCCP: known incorrect sRGB profile"
+    mogrify *.png
 
 ### Idea Scratchpad
 Worldmap has a series of nodes representing map points

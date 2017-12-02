@@ -20,7 +20,7 @@ class UI:
             'paused': self.draw_pause_menu,
         }
 
-        self.start_button = Button(0, 100, up_img=self.game.button_play, down_img=self.game.button_theme, highlight_img=self.game.button_scores)
+        self.start_button = Button(0, 100, up_img=self.game.button_up, down_img=self.game.button_down, highlight_img=self.game.button_hover)
 
     def draw(self):
         current_state = self.game.fsm.current_state
