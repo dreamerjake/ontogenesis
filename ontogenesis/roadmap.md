@@ -73,6 +73,7 @@
         * Checkbox
         * Slider?
         * Text Input?
+    * Message Flashing (e.g. 'MUSIC MUTED')
     * Character Screen
     * Inventory Screen (merge into Character Screen???)
     * Map Screen

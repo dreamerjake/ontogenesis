@@ -264,6 +264,11 @@ class Game:
             # player.hit_rect as green box
             pg.draw.rect(self.screen, colors.green, self.camera.apply(self.player, hit_rect=True), 2)
 
+            # mob rects, hit_rects as white & green boxes
+            for mob in self.mobs:
+                pg.draw.rect(self.screen, colors.white, self.camera.apply(mob), 2)
+                pg.draw.rect(self.screen, colors.green, self.camera.apply(mob, hit_rect=True), 2)
+
             # circle around detected mouse position
             pg.draw.circle(self.screen, colors.white, pg.mouse.get_pos(), 10, 1)
 

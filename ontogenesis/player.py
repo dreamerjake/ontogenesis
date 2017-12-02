@@ -36,7 +36,7 @@ class Player(pg.sprite.Sprite):
         self.speed = 100
         self.hp_current = 80
         self.hp_max = 100
-        self.regen = 1  # hp per second
+        self.hps_regen = 1  # hp per second
 
         # item management
         self.inventory = []
@@ -102,14 +102,15 @@ class Player(pg.sprite.Sprite):
 
     def rotate(self):
         # face the mouse position
+        # TODO: use the cleaner method from the Mob class
         adj_pos = self.game.camera.apply(self).center
         _, angle = (pg.mouse.get_pos() - pg.math.Vector2(adj_pos)).as_polar()
         self.image = pg.transform.rotate(self.orig_image, -angle - 90)
         self.rect = self.image.get_rect(center=self.rect.center)
 
     def update(self):
-        if self.regen != 0:
-            self.hp_current = min(self.hp_current + (self.regen * self.game.delta_time), self.hp_max)
+        if self.hps_regen != 0:
+            self.hp_current = min(self.hp_current + (self.hps_regen * self.game.delta_time), self.hp_max)
         self.process_input()
         self.rotate()
         # self.rect.center = self.x, self.y
