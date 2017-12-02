@@ -135,7 +135,7 @@ class Game:
         self.generate_maptiles()
 
         self.player = self.spawn(Player, self.player_start)
-        self.test_zombie = self.spawn(Mob, (self.player_start[0] + 300, self.player_start[1]))
+        self.spawn(Mob, (self.player_start[0] + 300, self.player_start[1]))
 
         self.camera = Camera(self.map.width, self.map.height)
 
