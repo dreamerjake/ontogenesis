@@ -6,7 +6,7 @@ from settings import layers
 
 
 class Collider:
-
+    # TODO: merge this into master mobile class
     @staticmethod
     def collide_hit_rect(one, two):
         return one.hit_rect.colliderect(two.rect)
