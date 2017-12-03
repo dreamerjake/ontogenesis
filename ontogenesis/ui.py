@@ -21,7 +21,7 @@ class UI:
         }
 
         self.start_button = Button(
-            self.game, 0, 100,
+            self.game, settings.WIDTH // 2, 100,
             up_img=self.game.button_up,
             down_img=self.game.button_down,
             highlight_img=self.game.button_hover,
@@ -158,7 +158,7 @@ class Button:
 
         self.width, self.height = self.up_img.get_size()
 
-        self.rect = pg.Rect(x, y, self.width, self.height)
+        self.rect = pg.Rect(x - self.width // 2, y - self.height // 2, self.width, self.height)
 
         self.caption = caption
         self.font = pg.font.Font(font, self.game.configs.ui_button_text_size)
