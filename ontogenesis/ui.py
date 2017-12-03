@@ -52,6 +52,10 @@ class UI:
         state = self.game.fsm.current_state
         self.draw_text(state, self.game.hud_font, 18, colors.white, settings.WIDTH - 5, 25, align='topright')
 
+    def draw_mobcount(self):
+        mobcount = len(self.game.mobs)
+        self.draw_text('Mobs Remaining: {}'.format(mobcount), self.game.hud_font, 18, colors.white, settings.WIDTH - 5, 45, align='topright')
+
     def draw_debug_warning(self):
         self.draw_text('DEBUG MODE', self.game.hud_font, 18, colors.white, settings.WIDTH - 5, 5, align='topright')
 
@@ -122,6 +126,7 @@ class UI:
         self.hide_buttons(self.all_buttons)
         health_pct = self.game.player.hp_current / self.game.player.hp_max
         self.draw_player_health(5, 25, health_pct)
+        self.draw_mobcount()
         self.optional_messages()
         if self.game.configs.debug:
             self.debug_messages()
