@@ -109,7 +109,7 @@ class UI:
 
     def draw_pause_menu(self):
         self.hide_buttons(self.all_buttons)
-        self.show_buttons(self.main_menu_buttons)
+        # self.show_buttons(self.main_menu_buttons)
         self.screen.fill(colors.black)
         self.draw_menu_title()
         self.optional_messages()
