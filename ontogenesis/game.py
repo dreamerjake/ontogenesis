@@ -181,6 +181,7 @@ class Game:
 
         return entity(self, start_pos)
 
+    @timeit
     def generate_maptiles(self):
         """
         loops through self.map.data and spawns walls
@@ -205,8 +206,14 @@ class Game:
                 else:
                     # distance from player spawn
                     player_dist = self.map.generator.distance_formula((x, y), self.player_start)
-                    if player_dist > settings.safe_spawn_dist and random.random() > .9:
-                        self.spawn(Mob, (x * settings.TILESIZE, y * settings.TILESIZE))
+                    cluster_space = not any([self.map.generator.distance_formula((x, y), cluster) < settings.cluster_dist for cluster in self.map.clusters])
+                    if player_dist > settings.safe_spawn_dist and cluster_space:#  random.random() > .9:
+                        # self.spawn(Mob, (x * settings.TILESIZE, y * settings.TILESIZE))
+                        self.map.clusters.append((x, y))
+
+        # print(self.map.clusters)
+        for cluster in self.map.clusters:
+            self.spawn(Mob, (cluster[0] * settings.TILESIZE, cluster[1] * settings.TILESIZE))
 
     def run(self):
         state_map = {

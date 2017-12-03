@@ -51,6 +51,9 @@ class Map:
         self.generator = CellularAutomata()
         self.data = self.generator.generate_level(self.tilewidth, self.tileheight)
         # self.caves = self.generator.caves
+
+        self.clusters = []
+
         self.player_start = None
 
 
@@ -291,6 +294,7 @@ class CellularAutomata:
 
     @staticmethod
     def distance_formula(point1, point2):
+        # TODO: Move this somewhere for general use
         d = sqrt((point2[0] - point1[0]) ** 2 + (point2[1] - point1[1]) ** 2)
         return d
 

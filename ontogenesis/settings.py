@@ -34,9 +34,10 @@ game_configs = SimpleNamespace(
 # map settings
 BGCOLOR = colors.darkgrey
 TILESIZE = 32
-MAP_HEIGHT = 100
-MAP_WIDTH = 100
+MAP_HEIGHT = 30
+MAP_WIDTH = 50
 safe_spawn_dist = 10
+cluster_dist = 20
 
 # Layers
 layers = SimpleNamespace(
