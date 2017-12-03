@@ -1,5 +1,4 @@
 from os import path
-import random
 import sys
 import time
 
@@ -117,6 +116,7 @@ class Game:
         # pygame initialization
         pg.mixer.pre_init(44100, -16, 4, 2048)  # frequency, size, channels, buffersize
         pg.init()
+        self.sfx_channel = pg.mixer.Channel(0)
 
         # configs
         self.configs = configs

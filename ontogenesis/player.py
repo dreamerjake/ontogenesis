@@ -76,8 +76,8 @@ class Player(pg.sprite.Sprite):
             hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
             if hits:
 
-                # TODO: set a timeout on playing sounds
-                self.game.player_sound_ow.play()
+                if not self.game.sfx_channel.get_sound():
+                    self.game.sfx_channel.play(self.game.player_sound_ow)
 
                 if self.vx > 0:  # sprite was moving to the right prior to collision
                     self.x = hits[0].rect.left - self.hit_rect.width / 2
@@ -90,8 +90,8 @@ class Player(pg.sprite.Sprite):
             hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
             if hits:
 
-                # TODO: set a timeout on playing sounds
-                self.game.player_sound_ow.play()
+                if not self.game.sfx_channel.get_sound():
+                    self.game.sfx_channel.play(self.game.player_sound_ow)
 
                 if self.vy > 0:
                     self.y = hits[0].rect.top - self.hit_rect.height / 2
