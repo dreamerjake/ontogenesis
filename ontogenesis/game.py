@@ -261,8 +261,10 @@ class Game:
                 if event.key == pg.K_F12:
                     self.configs.debug = not self.configs.debug
                 if event.key == pg.K_F2:
-                    pg.mixer.music.set_volume(0)
-                    self.flash_message("MUSIC MUTED", 2)
+                    volume = pg.mixer.music.get_volume()
+                    msg = 'MUSIC MUTED' if volume else 'MUSIC UNMUTED'
+                    pg.mixer.music.set_volume(not volume)
+                    self.flash_message(msg, 2)
 
     def screen_update(self):
         """ Create the display - called on Game init and display settings change"""
