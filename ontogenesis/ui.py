@@ -20,7 +20,17 @@ class UI:
             'paused': self.draw_pause_menu,
         }
 
-        self.start_button = Button(0, 100, up_img=self.game.button_up, down_img=self.game.button_down, highlight_img=self.game.button_hover)
+        self.start_button = Button(
+            self.game, 0, 100,
+            up_img=self.game.button_up,
+            down_img=self.game.button_down,
+            highlight_img=self.game.button_hover,
+            caption='Start')
+        self.start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
+
+        # button groups
+        self.all_buttons = [self.start_button]
+        self.main_menu_buttons = [self.start_button]
 
     def draw(self):
         current_state = self.game.fsm.current_state
@@ -76,7 +86,19 @@ class UI:
         pg.draw.rect(self.screen, col, fill_rect)
         pg.draw.rect(self.screen, colors.white, outline_rect, 2)
 
+    @staticmethod
+    def hide_buttons(button_group):
+        for button in button_group:
+            button.visible = False
+
+    @staticmethod
+    def show_buttons(button_group):
+        for button in button_group:
+            button.visible = True
+
     def draw_main_menu(self):
+        self.hide_buttons(self.all_buttons)
+        self.show_buttons(self.main_menu_buttons)
         self.screen.fill(colors.black)
         self.draw_menu_title()
         self.optional_messages()
@@ -86,6 +108,8 @@ class UI:
         pg.display.flip()
 
     def draw_pause_menu(self):
+        self.hide_buttons(self.all_buttons)
+        self.show_buttons(self.main_menu_buttons)
         self.screen.fill(colors.black)
         self.draw_menu_title()
         self.optional_messages()
@@ -95,6 +119,7 @@ class UI:
         pg.display.flip()
 
     def draw_hud(self):
+        self.hide_buttons(self.all_buttons)
         health_pct = self.game.player.hp_current / self.game.player.hp_max
         self.draw_player_health(5, 25, health_pct)
         self.optional_messages()
@@ -119,11 +144,13 @@ class UI:
 
 class Button:
 
-    def __init__(self, x, y, up_img, down_img, highlight_img, caption='', font=None):
+    def __init__(self, game, x, y, up_img, down_img, highlight_img, caption='', font=None):
 
         # check for mismatched image sizes
         if up_img.get_size() != down_img.get_size() != highlight_img.get_size():
             raise Exception('Button surfaces must all be the same size')
+
+        self.game = game
 
         self.up_img = up_img
         self.down_img = down_img
@@ -134,21 +161,19 @@ class Button:
         self.rect = pg.Rect(x, y, self.width, self.height)
 
         self.caption = caption
-        self.font = font
+        self.font = pg.font.Font(font, self.game.configs.ui_button_text_size)
 
         self.visible = True
         self.down = False
         self.mouseover = False
         self.last_mousedown_over = False
 
-        # self.callbacks = {
-        #     'enter': lambda x: None,
-        #     'exit': lambda x: None,
-        #     'up': lambda x: None,
-        #     'down': lambda x: None,
-        #     'move': lambda x: None,
-        #     'click': lambda x: None  # print('clicked')
-        # }
+        self.caption_surface = self.font.render(self.caption, True, self.game.configs.ui_button_text_color)
+        self.caption_rect = self.caption_surface.get_rect()
+        self.caption_rect.center = self.width // 2, self.height // 2
+
+        for image in [self.up_img, self.down_img, self.highlight_img]:
+            image.blit(self.caption_surface, self.caption_rect)
 
         self.callbacks = defaultdict(lambda: lambda x: None)
 

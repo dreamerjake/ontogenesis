@@ -7,15 +7,6 @@ TITLE = "Ontogenesis"
 FULLSCREEN = False
 SYSTEM_DEBUG = True
 
-# configs
-game_configs = SimpleNamespace(
-    fps=60,
-    show_fps=True,
-    debug=True,
-    debug_exclude=['Wall'],
-    flash_messages_queuesize=2
-)
-
 # define some colors as (R, G, B) tuples
 colors = SimpleNamespace(
     white=(255, 255, 255),
@@ -27,6 +18,17 @@ colors = SimpleNamespace(
     yellow=(255, 255, 0),
     brown=(106, 55, 5),
     cyan=(0, 255, 255)
+)
+
+# configs
+game_configs = SimpleNamespace(
+    fps=60,
+    show_fps=True,
+    debug=True,
+    debug_exclude=['Wall'],
+    flash_messages_queuesize=2,
+    ui_button_text_color=colors.white,
+    ui_button_text_size=32
 )
 
 # map settings
