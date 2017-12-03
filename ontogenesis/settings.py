@@ -36,6 +36,7 @@ BGCOLOR = colors.darkgrey
 TILESIZE = 32
 MAP_HEIGHT = 100
 MAP_WIDTH = 100
+safe_spawn_dist = 10
 
 # Layers
 layers = SimpleNamespace(

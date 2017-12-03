@@ -41,6 +41,7 @@ class Camera:
 class Map:
     """ who needs a map? """
     # TODO: this should probably be refactored, currently it's just a container with no methods
+    # TODO: get_cave method, which returns the cave that a given (x, y) position is in
     def __init__(self, game, tilewidth, tileheight):
         self.game = game
         self.tilewidth = tilewidth
@@ -49,6 +50,7 @@ class Map:
         self.height = self.tileheight * settings.TILESIZE
         self.generator = CellularAutomata()
         self.data = self.generator.generate_level(self.tilewidth, self.tileheight)
+        # self.caves = self.generator.caves
         self.player_start = None
 
 
@@ -108,6 +110,7 @@ class CellularAutomata:
         self.connect_caves(map_width, map_height)
 
         self.clean_up_map(map_width, map_height)
+
         return self.level
 
     def random_fill_map(self, map_width, map_height):

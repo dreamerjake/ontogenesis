@@ -1,4 +1,5 @@
 from os import path
+import random
 import sys
 import time
 
@@ -163,7 +164,7 @@ class Game:
         self.generate_maptiles()
 
         self.player = self.spawn(Player, self.player_start)
-        self.spawn(Mob, (self.player_start[0] + 300, self.player_start[1]))
+        # self.spawn(Mob, (self.player_start[0] + 300, self.player_start[1]))
 
         self.camera = Camera(self.map.width, self.map.height)
 
@@ -200,6 +201,12 @@ class Game:
 
                     if self.configs.debug:
                         print("Player starting coordinates set to: {}".format(self.player_start))
+
+                else:
+                    # distance from player spawn
+                    player_dist = self.map.generator.distance_formula((x, y), self.player_start)
+                    if player_dist > settings.safe_spawn_dist and random.random() > .9:
+                        self.spawn(Mob, (x * settings.TILESIZE, y * settings.TILESIZE))
 
     def run(self):
         state_map = {
