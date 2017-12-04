@@ -310,6 +310,8 @@ class Game:
             self.draw_grid()
 
         for sprite in self.all_sprites:
+            if isinstance(sprite, Mob):
+                sprite.draw_health()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
         # show various object boundaries in debug mode

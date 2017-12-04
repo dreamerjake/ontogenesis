@@ -67,7 +67,7 @@ class Mob(pg.sprite.Sprite, Collider):
 
         # default stats
         self.speed = 80
-        self.hp_current = 80
+        self.hp_current = 100
         self.hp_max = 100
         self.hps_regen = 0
 
@@ -118,7 +118,7 @@ class Mob(pg.sprite.Sprite, Collider):
             self.kill()
 
     def draw_health(self):
-        hp_pct = self.hp_current / self.hp_max
+        hp_pct = self.hp_current / self.hp_max * 100
         if hp_pct > 60:
             col = colors.green
         elif hp_pct > 30:
