@@ -61,11 +61,13 @@ class Spritesheet:
     def __init__(self, filename):
         self.spritesheet = pg.image.load(filename).convert_alpha()
 
-    def get_image(self, x, y, width, height):
+    def get_image(self, x, y, width, height, rot=None):
         """ Gets a single image from the spritesheet"""
         image = pg.Surface((width, height), pg.SRCALPHA)
         image.blit(self.spritesheet, (0, 0), (x, y, width, height))
         image = pg.transform.scale(image, (width // 2, height // 2))
+        if rot:
+            image = pg.transform.rotate(image, rot)
         return image
 
 
@@ -154,6 +156,7 @@ class Game:
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
+        self.projectiles = pg.sprite.Group()
 
         # map stuff
         self.map = Map(self, settings.MAP_WIDTH, settings.MAP_HEIGHT)
@@ -344,6 +347,7 @@ class Game:
         player_audio_folder = path.join(audio_folder, 'player')
         mob_images_folder = path.join(images_folder, 'mob')
         ui_images_folder = path.join(images_folder, 'ui')
+        skill_images_folder = path.join(images_folder, 'skill')
 
         # fonts
         self.hud_font = path.join(fonts_folder, 'Dense-Regular.ttf')
@@ -354,6 +358,7 @@ class Game:
 
         # static images
         self.mob_zombie_image = pg.image.load(path.join(mob_images_folder, 'zombie1.png'))
+        self.bullet_img = pg.image.load(path.join(skill_images_folder, 'bullet.png'))
         self.button_up = pg.image.load(path.join(ui_images_folder, 'up.png'))
         self.button_down = pg.image.load(path.join(ui_images_folder, 'down.png'))
         self.button_hover = pg.image.load(path.join(ui_images_folder, 'hover.png'))

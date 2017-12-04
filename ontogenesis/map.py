@@ -2,6 +2,7 @@ from math import sqrt
 import random
 
 import pygame as pg
+from pygame.math import Vector2 as Vec2
 
 import settings
 from settings import colors
@@ -12,7 +13,7 @@ class Camera:
         self.camera = pg.Rect(0, 0, width, height)
         self.width = width
         self.height = height
-        self.offset = None
+        self.offset = Vec2(1, 0)
 
     def apply(self, entity, hit_rect=False):
         if hit_rect:
@@ -33,7 +34,7 @@ class Camera:
         x = max(-(self.width - settings.WIDTH), x)
         y = max(-(self.height - settings.HEIGHT), y)
 
-        self.offset = (x, y)
+        self.offset = Vec2(x, y)
 
         self.camera = pg.Rect(x, y, self.width, self.height)
 

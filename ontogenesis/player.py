@@ -1,7 +1,9 @@
 import pygame as pg
+from pygame.math import Vector2 as Vec2
 
 import settings
 from settings import layers
+from skill import Projectile
 
 
 class Player(pg.sprite.Sprite):
@@ -30,7 +32,9 @@ class Player(pg.sprite.Sprite):
         self.hit_rect = pg.Rect(0, 0, settings.TILESIZE - 5, settings.TILESIZE - 5)
         self.hit_rect.center = self.rect.center
         self.vx, self.vy = 0, 0
-        self.x, self.y = start_pos
+        # self.x, self.y = start_pos
+        self.pos = Vec2(start_pos)
+        self.rot = 0
 
         # default stats
         self.speed = 100
@@ -46,12 +50,14 @@ class Player(pg.sprite.Sprite):
         }
 
     def load_images(self):
-        self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64)]
+        self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64, rot=-90)]
 
     def process_input(self):
         self.vx, self.vy = 0, 0  # this might be a problem later on, if external forces can effect player position
         keys = pg.key.get_pressed()
         # mouse_x, mouse_y = pg.mouse.get_pos()
+
+        # movement
         if keys[pg.K_LEFT] or keys[pg.K_a]:
             self.vx = -self.speed
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
@@ -60,6 +66,13 @@ class Player(pg.sprite.Sprite):
             self.vy = -self.speed
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vy = self.speed
+
+        # skills
+        if keys[pg.K_SPACE]:
+            direction = Vec2(1, 0).rotate(-self.rot)
+            speed = 500
+            duration = 500
+            Projectile(game=self.game, pos=self.pos, speed=speed, direction=direction, duration=duration)
 
         # diagonal movement fix
         if self.vx != 0 and self.vy != 0:
@@ -80,11 +93,11 @@ class Player(pg.sprite.Sprite):
                     self.game.sfx_channel.play(self.game.player_sound_ow)
 
                 if self.vx > 0:  # sprite was moving to the right prior to collision
-                    self.x = hits[0].rect.left - self.hit_rect.width / 2
+                    self.pos.x = hits[0].rect.left - self.hit_rect.width / 2
                 if self.vx < 0:
-                    self.x = hits[0].rect.right + self.hit_rect.width / 2
+                    self.pos.x = hits[0].rect.right + self.hit_rect.width / 2
                 self.vx = 0
-                self.hit_rect.centerx = self.x
+                self.hit_rect.centerx = self.pos.x
 
         if direction == 'y':
             hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
@@ -94,30 +107,28 @@ class Player(pg.sprite.Sprite):
                     self.game.sfx_channel.play(self.game.player_sound_ow)
 
                 if self.vy > 0:
-                    self.y = hits[0].rect.top - self.hit_rect.height / 2
+                    self.pos.y = hits[0].rect.top - self.hit_rect.height / 2
                 if self.vy < 0:
-                    self.y = hits[0].rect.bottom + self.hit_rect.height / 2
+                    self.pos.y = hits[0].rect.bottom + self.hit_rect.height / 2
                 self.vy = 0
-                self.hit_rect.centery = self.y
+                self.hit_rect.centery = self.pos.y
 
-    def rotate(self):
-        # face the mouse position
-        # TODO: use the cleaner method from the Mob class
-        adj_pos = self.game.camera.apply(self).center
-        _, angle = (pg.mouse.get_pos() - pg.math.Vector2(adj_pos)).as_polar()
-        self.image = pg.transform.rotate(self.orig_image, -angle - 90)
-        self.rect = self.image.get_rect(center=self.rect.center)
+    def rotate(self, target):
+        """ face the target """
+        self.rot = (target - self.hit_rect.center).angle_to(Vec2(1, 0))
+        self.image = pg.transform.rotate(self.orig_image, self.rot)
 
     def update(self):
         if self.hps_regen != 0:
             self.hp_current = min(self.hp_current + (self.hps_regen * self.game.delta_time), self.hp_max)
         self.process_input()
-        self.rotate()
-        # self.rect.center = self.x, self.y
-        self.x += self.vx * self.game.delta_time
-        self.y += self.vy * self.game.delta_time
-        self.hit_rect.centerx = self.x
+        self.rotate(Vec2(pg.mouse.get_pos()) - self.game.camera.offset)
+
+        self.pos.x += self.vx * self.game.delta_time
+        self.pos.y += self.vy * self.game.delta_time
+
+        self.hit_rect.centerx = self.pos.x
         self.collide_with_walls('x')
-        self.hit_rect.centery = self.y
+        self.hit_rect.centery = self.pos.y
         self.collide_with_walls('y')
         self.rect.center = self.hit_rect.center
