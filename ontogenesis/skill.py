@@ -3,7 +3,7 @@ from pygame.math import Vector2 as Vec2
 
 
 class Projectile(pg.sprite.Sprite):
-    def __init__(self, game, pos, speed, direction, duration):
+    def __init__(self, game, pos, speed, direction, duration, kickback):
         self.groups = game.all_sprites, game.projectiles
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -13,6 +13,7 @@ class Projectile(pg.sprite.Sprite):
         self.rect.center = pos
         self.vel = direction * speed
         self.duration = duration
+        self.kickback = kickback
         self.spawn_time = pg.time.get_ticks()
 
     def update(self):

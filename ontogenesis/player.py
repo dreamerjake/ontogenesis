@@ -74,7 +74,12 @@ class Player(pg.sprite.Sprite):
             speed = 500
             duration = 500
             pos = self.pos + self.proj_offset.rotate(-self.rot)
-            Projectile(game=self.game, pos=pos, speed=speed, direction=direction, duration=duration)
+            kickback = 200
+            Projectile(game=self.game, pos=pos, speed=speed, direction=direction, duration=duration, kickback=kickback)
+            if kickback:
+                kickback_vector = Vec2(-kickback, 0).rotate(-self.rot)
+                self.vx += kickback_vector.x
+                self.vy += kickback_vector.y
 
         # diagonal movement fix
         if self.vx != 0 and self.vy != 0:
