@@ -18,5 +18,8 @@ class Projectile(pg.sprite.Sprite):
     def update(self):
         self.pos += self.vel * self.game.delta_time
         self.rect.center = self.pos
-        if pg.time.get_ticks() - self.spawn_time > self.duration:
+        timed_out = pg.time.get_ticks() - self.spawn_time > self.duration
+        hit_wall = pg.sprite.spritecollideany(self, self.game.walls)
+        if any([timed_out, hit_wall]):
             self.kill()
+

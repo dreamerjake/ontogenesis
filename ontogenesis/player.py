@@ -35,6 +35,7 @@ class Player(pg.sprite.Sprite):
         # self.x, self.y = start_pos
         self.pos = Vec2(start_pos)
         self.rot = 0
+        self.proj_offset = Vec2(10, 10)  # hardcoded to the placeholder graphics
 
         # default stats
         self.speed = 100
@@ -72,7 +73,8 @@ class Player(pg.sprite.Sprite):
             direction = Vec2(1, 0).rotate(-self.rot)
             speed = 500
             duration = 500
-            Projectile(game=self.game, pos=self.pos, speed=speed, direction=direction, duration=duration)
+            pos = self.pos + self.proj_offset.rotate(-self.rot)
+            Projectile(game=self.game, pos=pos, speed=speed, direction=direction, duration=duration)
 
         # diagonal movement fix
         if self.vx != 0 and self.vy != 0:
