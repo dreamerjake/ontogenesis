@@ -50,3 +50,8 @@ Action Music
 ============
 https://opengameart.org/users/3uhox
     - https://opengameart.org/content/simple-action-beat
+
+Intro Music
+===========
+http://www.matthewpablo.com/
+    - https://opengameart.org/content/soliloquy

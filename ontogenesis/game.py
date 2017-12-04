@@ -228,7 +228,7 @@ class Game:
 
         self.new()
 
-        pg.mixer.music.play(loops=-1)
+        pg.mixer.music.play(loops=-1)  # fire up the intro music
 
         while True:
             self.delta_time = self.clock.tick(self.configs.fps) / 1000
@@ -359,5 +359,7 @@ class Game:
         self.button_hover = pg.image.load(path.join(ui_images_folder, 'hover.png'))
 
         # sound effects
-        pg.mixer.music.load(path.join(music_folder, 'action.mp3'))
+        self.music_intro = path.join(music_folder, 'soliloquy.mp3')
+        self.music_action = path.join(music_folder, 'action.mp3')
+        pg.mixer.music.load(self.music_intro)
         self.player_sound_ow = pg.mixer.Sound(path.join(player_audio_folder, 'ow.wav'))
