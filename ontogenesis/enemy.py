@@ -61,7 +61,7 @@ class Mob(pg.sprite.Sprite, Collider):
         self.hit_rect.center = self.rect.center
         self.vel = Vec2(0, 0)
         self.acc = Vec2(0, 0)
-        self.pos = start_pos
+        self.pos = Vec2(start_pos)
         self.rot = 0
 
         # default stats
@@ -87,6 +87,14 @@ class Mob(pg.sprite.Sprite, Collider):
         self.rot = (target - self.hit_rect.center).angle_to(Vec2(1, 0))
         self.image = pg.transform.rotate(self.orig_image, self.rot)
 
+    def avoid(self, entity_group, radius):
+        """ spreads the mobs out and also effectively causes them to surround the target """
+        for entity in entity_group:
+            if entity != self:
+                dist = self.pos - entity.pos
+                if 0 < dist.length() < radius:
+                    self.acc += dist.normalize() * 10  # had to play with the 10x factor a bit
+
     def update(self):
         if self.hps_regen != 0:
             self.hp_current = min(self.hp_current + (self.hps_regen * self.game.delta_time), self.hp_max)
@@ -94,6 +102,8 @@ class Mob(pg.sprite.Sprite, Collider):
         self.rect = self.image.get_rect(center=self.rect.center)
         self.rect.center = self.pos
         self.acc = Vec2(self.speed, 0).rotate(-self.rot)
+        self.avoid(self.game.mobs, 100)  # hardcoded magic number radius
+        self.acc.scale_to_length(self.speed)
         self.acc += self.vel * -1
         self.vel += self.acc * self.game.delta_time
         self.pos += self.vel * self.game.delta_time + 0.5 * self.acc * self.game.delta_time ** 2

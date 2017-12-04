@@ -38,6 +38,7 @@ MAP_HEIGHT = 30
 MAP_WIDTH = 50
 safe_spawn_dist = 10
 cluster_dist = 20
+pack_size = 3
 
 # Layers
 layers = SimpleNamespace(
