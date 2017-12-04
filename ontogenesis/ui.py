@@ -20,7 +20,7 @@ class UI:
             'paused': self.draw_pause_menu,
         }
 
-        self.start_button = Button(
+        self.start_button = ImageButton(
             self.game, settings.WIDTH // 2, 100,
             up_img=self.game.button_up,
             down_img=self.game.button_down,
@@ -147,7 +147,7 @@ class UI:
         self.screen.blit(text_surface, text_rect)
 
 
-class Button:
+class ImageButton:
 
     def __init__(self, game, x, y, up_img, down_img, highlight_img, caption='', font=None):
 
