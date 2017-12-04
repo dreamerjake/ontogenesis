@@ -63,6 +63,7 @@ class Mob(pg.sprite.Sprite, Collider):
         self.acc = Vec2(0, 0)
         self.pos = Vec2(start_pos)
         self.rot = 0
+        self.avoid_radius = 100
 
         # default stats
         self.speed = 80
@@ -102,7 +103,7 @@ class Mob(pg.sprite.Sprite, Collider):
         self.rect = self.image.get_rect(center=self.rect.center)
         self.rect.center = self.pos
         self.acc = Vec2(self.speed, 0).rotate(-self.rot)
-        self.avoid(self.game.mobs, 100)  # hardcoded magic number radius
+        self.avoid(self.game.mobs, self.avoid_radius)
         self.acc.scale_to_length(self.speed)
         self.acc += self.vel * -1
         self.vel += self.acc * self.game.delta_time
