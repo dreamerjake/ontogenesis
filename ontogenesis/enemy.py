@@ -125,7 +125,7 @@ class Mob(pg.sprite.Sprite, Collider):
             col = colors.yellow
         else:
             col = colors.red
-        width = int(self.rect.width * hp_pct)
+        width = int(self.rect.width * hp_pct / 100)
         healthbar = pg.Rect(0, 0, width, 10)  # settings mob healthbar height?
         if hp_pct < 100:
             pg.draw.rect(self.image, col, healthbar)
