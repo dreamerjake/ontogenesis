@@ -287,6 +287,10 @@ class Game:
         self.all_sprites.update()
         self.camera.update(target=self.player, hit_rect=True)
 
+        hits = pg.sprite.groupcollide(self.mobs, self.projectiles, False, True)
+        for hit in hits:
+            hit.hp_current -= hits[hit][0].damage
+
     def draw_grid(self, line_width=1):
         """ draws a grid of lines to display the boundaries of empty tiles """
         for x in range(0, self.map.width, settings.TILESIZE):

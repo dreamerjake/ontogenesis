@@ -2,7 +2,7 @@ import pygame as pg
 from pygame.math import Vector2 as Vec2
 
 import settings
-from settings import layers
+from settings import layers, colors
 
 
 class Collider:
@@ -113,3 +113,20 @@ class Mob(pg.sprite.Sprite, Collider):
         self.collide(self.game.walls, 'x')
         self.hit_rect.centery = self.pos.y
         self.collide(self.game.walls, 'y')
+
+        if self.hp_current <= 0:
+            self.kill()
+
+    def draw_health(self):
+        hp_pct = self.hp_current / self.hp_max
+        if hp_pct > 60:
+            col = colors.green
+        elif hp_pct > 30:
+            col = colors.yellow
+        else:
+            col = colors.red
+        width = int(self.rect.width * hp_pct)
+        healthbar = pg.Rect(0, 0, width, 10)  # settings mob healthbar height?
+        if hp_pct < 100:
+            pg.draw.rect(self.image, col, healthbar)
+

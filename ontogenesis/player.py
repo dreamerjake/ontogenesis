@@ -70,12 +70,13 @@ class Player(pg.sprite.Sprite):
 
         # skills
         if keys[pg.K_SPACE]:
+            damage = 10
             direction = Vec2(1, 0).rotate(-self.rot)
             speed = 500
             duration = 500
             pos = self.pos + self.proj_offset.rotate(-self.rot)
             kickback = 200
-            Projectile(game=self.game, pos=pos, speed=speed, direction=direction, duration=duration, kickback=kickback)
+            Projectile(game=self.game, damage=damage, pos=pos, speed=speed, direction=direction, duration=duration, kickback=kickback)
             if kickback:
                 kickback_vector = Vec2(-kickback, 0).rotate(-self.rot)
                 self.vx += kickback_vector.x
