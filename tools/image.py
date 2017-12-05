@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from Pillow import Image, ImageChops
+from PIL import Image, ImageChops
 
 
 def crop_directory(path='.', filetype=None, suffix='_resized', bg_pixel=(0, 0), output_format='PNG'):
