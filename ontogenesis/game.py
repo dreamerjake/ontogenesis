@@ -132,7 +132,6 @@ class Game:
         self.available_resolutions = pg.display.list_modes()
         self.screensize = (settings.WIDTH, settings.HEIGHT)
         self.screen = self.screen_update()
-        pg.display.set_caption(settings.TITLE)
 
         # time
         self.clock = pg.time.Clock()
@@ -369,6 +368,7 @@ class Game:
         self.player_wobble_spritesheet = Spritesheet(path.join(player_images_folder, 'player-wobble.png'))
 
         # static images
+        self.icon = pg.image.load(path.join(images_folder, 'letter_j_icon_small.png'))
         self.mob_zombie_image = pg.image.load(path.join(mob_images_folder, 'zombie1.png'))
         self.bullet_img = pg.image.load(path.join(skill_images_folder, 'bullet.png'))
         self.button_up = pg.image.load(path.join(ui_images_folder, 'up.png'))
@@ -378,5 +378,8 @@ class Game:
         # sound effects
         self.music_intro = path.join(music_folder, 'soliloquy.mp3')
         self.music_action = path.join(music_folder, 'action.mp3')
-        pg.mixer.music.load(self.music_intro)
         self.player_sound_ow = pg.mixer.Sound(path.join(player_audio_folder, 'ow.wav'))
+
+        pg.display.set_caption(settings.TITLE)
+        pg.display.set_icon(self.icon)
+        pg.mixer.music.load(self.music_intro)
