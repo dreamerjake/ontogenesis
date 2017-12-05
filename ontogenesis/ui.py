@@ -326,7 +326,6 @@ class TextScrollwindow(pg.sprite.Sprite):
         self.button_up = self.image.subsurface(pg.Rect(self.width - 30, 0, 30, 50))
 
     def process_input(self, event):
-        print(Vec2(self.button_up.get_abs_offset()))
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
             relative_pos = Vec2(event.pos) - Vec2(self.button_up.get_abs_offset()) - Vec2(self.rect.topleft)
             if self.button_up.get_rect().collidepoint(relative_pos):
