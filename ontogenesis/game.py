@@ -144,6 +144,7 @@ class Game:
         # assets
         self.hud_font = None
         self.message_flash_font = None
+        self.settings_font = None
         self.player_move_spritesheet = None
         self.load_assets()
 
@@ -167,7 +168,6 @@ class Game:
         self.generate_maptiles()
 
         self.player = self.spawn(Player, self.player_start)
-        # self.spawn(Mob, (self.player_start[0] + 300, self.player_start[1]))
 
         self.camera = Camera(self.map.width, self.map.height)
 
@@ -362,6 +362,7 @@ class Game:
         # fonts
         self.hud_font = path.join(fonts_folder, 'Dense-Regular.ttf')
         self.message_flash_font = path.join(fonts_folder, 'Angerpoise-Lampshade.ttf')
+        self.settings_font = path.join(fonts_folder, 'Joystix-Monospace.ttf')
 
         # spritesheets
         self.player_move_spritesheet = Spritesheet(path.join(player_images_folder, 'player-move.png'))
@@ -380,6 +381,7 @@ class Game:
         self.music_action = path.join(music_folder, 'action.mp3')
         self.player_sound_ow = pg.mixer.Sound(path.join(player_audio_folder, 'ow.wav'))
 
+        # startup values for display/mixer
         pg.display.set_caption(settings.TITLE)
         pg.display.set_icon(self.icon)
         pg.mixer.music.load(self.music_intro)
