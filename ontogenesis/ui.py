@@ -1,10 +1,12 @@
 from collections import defaultdict
+from itertools import chain
 
 import pygame as pg
-from pygame.locals import MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN
+from pygame.locals import MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN, SRCALPHA
 
+from map import Wall
 import settings
-from settings import colors
+from settings import colors, layers
 
 
 class UI:
@@ -20,6 +22,8 @@ class UI:
             'paused': self.draw_pause_menu,
         }
 
+        # elements
+        self.minimap = Minimap(self.game)
         self.start_button = ImageButton(
             self.game, settings.WIDTH // 2, 100,
             up_img=self.game.button_up,
@@ -145,6 +149,44 @@ class UI:
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect(**{align: (x, y)})
         self.screen.blit(text_surface, text_rect)
+
+
+class Minimap(pg.sprite.Sprite):
+    def __init__(self, game):
+        self._layer = layers.ui
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        # self.rect = pg.Rect((settings.minimap_width, settings.minimap_height))
+        self.image = pg.Surface((settings.minimap_width, settings.minimap_height), SRCALPHA)
+        self.image.fill(colors.white)
+        self.rect = self.image.get_rect()
+        self.rect.topright = (settings.WIDTH - 50, 100)
+
+        self.scalex = self.game.screensize[0] / self.rect.width
+        self.scaley = self.game.screensize[1] / self.rect.height
+
+    def update(self):
+        # clear to a low-alpha rectangle
+        self.image.fill((0, 0, 0, 80))
+
+        size = self.rect.width / 30  # magic number for now
+
+        # draw non-player things
+        for sprite in chain(self.game.walls, self.game.mobs):
+            pos = self.game.camera.apply(sprite)
+            color = colors.brown if isinstance(sprite, Wall) else colors.red
+            self.image.fill(color, [pos[0] / self.scalex, pos[1] / self.scaley, size, size])
+
+        # draw player
+        # TODO: icon for player location?
+        player_pos = self.game.camera.apply(self.game.player)
+        self.image.fill(colors.green, [
+            player_pos[0] / self.scalex,
+            player_pos[1] / self.scaley,
+            size,
+            size
+        ])
 
 
 class ImageButton:

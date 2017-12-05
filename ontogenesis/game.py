@@ -8,7 +8,7 @@ from pygame.locals import FULLSCREEN
 from map import Map, Camera, Wall
 from player import Player
 from enemy import Mob
-from ui import UI
+from ui import UI, Minimap
 import settings
 from settings import colors
 from settings import game_configs as configs
@@ -147,16 +147,16 @@ class Game:
         self.player_move_spritesheet = None
         self.load_assets()
 
-        # components
-        self.ui = UI(self)
-        self.player = None
-        self.camera = None
-
         # sprite groups
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.projectiles = pg.sprite.Group()
+
+        # components
+        self.ui = UI(self)
+        self.player = None
+        self.camera = None
 
         # map stuff
         self.map = Map(self, settings.MAP_WIDTH, settings.MAP_HEIGHT)
@@ -312,7 +312,11 @@ class Game:
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob):
                 sprite.draw_health()
-            self.screen.blit(sprite.image, self.camera.apply(sprite))
+            if not isinstance(sprite, Minimap):
+                # TODO: generalize this to all UI elements (add a static flag?)
+                self.screen.blit(sprite.image, self.camera.apply(sprite))
+            else:
+                self.screen.blit(sprite.image, sprite.rect)
 
         # show various object boundaries in debug mode
         if self.configs.debug:

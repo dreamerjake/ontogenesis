@@ -39,6 +39,8 @@ MAP_WIDTH = 50
 safe_spawn_dist = 10
 cluster_dist = 20
 pack_size = 3
+minimap_width = 150
+minimap_height = 150
 
 # Layers
 layers = SimpleNamespace(
@@ -46,6 +48,7 @@ layers = SimpleNamespace(
     player=2,
     # bullet=3,
     mob=2,
+    ui=3
     # effects=4,
     # items=1,
 )
