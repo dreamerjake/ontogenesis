@@ -114,6 +114,10 @@ class Mob(pg.sprite.Sprite, Collider):
         self.hit_rect.centery = self.pos.y
         self.collide(self.game.walls, 'y')
 
+        if self.rect.collidepoint(pg.mouse.get_pos() - self.game.camera.offset):
+            # self.image = self.get_outline
+            self.image.blit(self.get_outline(), self.image.get_rect())
+
         if self.hp_current <= 0:
             self.kill()
 
@@ -129,3 +133,21 @@ class Mob(pg.sprite.Sprite, Collider):
         healthbar = pg.Rect(0, 0, width, 10)  # settings mob healthbar height?
         if hp_pct < 100:
             pg.draw.rect(self.image, col, healthbar)
+
+    def get_outline(self, color=colors.red, threshold=127):
+        """Returns an outlined image of the same size.  The image argument must
+        either be a convert surface with a set colorkey, or a convert_alpha
+        surface. The color argument is the color which the outline will be drawn.
+        In surfaces with alpha, only pixels with an alpha higher than threshold will
+        be drawn.  Colorkeyed surfaces will ignore threshold.
+        https://github.com/Mekire/pygame-image-outline/blob/master/example.py"""
+        # TODO: maybe find a better home for this? (actor superclass?)
+        mask = pg.mask.from_surface(self.image, threshold)
+        # mask = mask.scale(tuple(int(x * 1.1) for x in mask.get_size()))
+        outline_image = pg.Surface(self.image.get_size()).convert_alpha()
+        outline_image.fill((0, 0, 0, 0))
+        # outline_image.blit(self.image, outline_image.get_rect())
+        for point in mask.outline():
+            outline_image.set_at(point, color)
+        return outline_image
+
