@@ -159,7 +159,7 @@ class Minimap(pg.sprite.Sprite):
         self.game = game
         # self.rect = pg.Rect((settings.minimap_width, settings.minimap_height))
         self.image = pg.Surface((settings.minimap_width, settings.minimap_height), SRCALPHA)
-        self.image.fill(colors.white)
+        self.image.fill((0, 0, 0, 80))
         self.rect = self.image.get_rect()
         self.rect.topright = (settings.WIDTH - 50, 100)
 

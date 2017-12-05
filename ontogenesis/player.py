@@ -1,3 +1,5 @@
+from itertools import cycle
+
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
@@ -21,9 +23,12 @@ class Player(pg.sprite.Sprite):
 
         # assets
         self.standing_frames = None
+        self.moving_frames = None
         self.load_images()
 
         # graphics
+        self.last_update = pg.time.get_ticks()
+        self.frame_delay = 200
         self.image = self.standing_frames[0]
         self.orig_image = self.image
 
@@ -52,6 +57,16 @@ class Player(pg.sprite.Sprite):
 
     def load_images(self):
         self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64, rot=-90)]
+        self.moving_frames = cycle([
+            self.game.player_wobble_spritesheet.get_image(0, 0, 64, 64, rot=-90),
+            self.game.player_wobble_spritesheet.get_image(64, 0, 64, 64, rot=-90),
+            self.game.player_wobble_spritesheet.get_image(128, 0, 64, 64, rot=-90),
+            self.game.player_wobble_spritesheet.get_image(192, 0, 64, 64, rot=-90),
+            self.game.player_wobble_spritesheet.get_image(256, 0, 64, 64, rot=-90),
+            self.game.player_wobble_spritesheet.get_image(320, 0, 64, 64, rot=-90),
+            self.game.player_wobble_spritesheet.get_image(384, 0, 64, 64, rot=-90),
+            self.game.player_wobble_spritesheet.get_image(448, 0, 64, 64, rot=-90)
+        ])
 
     def process_input(self):
         self.vx, self.vy = 0, 0  # this might be a problem later on, if external forces can effect player position
@@ -125,11 +140,18 @@ class Player(pg.sprite.Sprite):
         """ face the target """
         self.rot = (target - self.hit_rect.center).angle_to(Vec2(1, 0))
         self.image = pg.transform.rotate(self.orig_image, self.rot)
+        self.rect = self.image.get_rect()
 
     def update(self):
         if self.hps_regen != 0:
             self.hp_current = min(self.hp_current + (self.hps_regen * self.game.delta_time), self.hp_max)
         self.process_input()
+
+        now = pg.time.get_ticks()
+        if now - self.last_update > self.frame_delay:
+            self.orig_image = next(self.moving_frames)
+            self.last_update = now
+
         self.rotate(Vec2(pg.mouse.get_pos()) - self.game.camera.offset)
 
         self.pos.x += self.vx * self.game.delta_time

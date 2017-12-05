@@ -61,11 +61,12 @@ class Spritesheet:
     def __init__(self, filename):
         self.spritesheet = pg.image.load(filename).convert_alpha()
 
-    def get_image(self, x, y, width, height, rot=None):
+    def get_image(self, x, y, width, height, rot=None, scale_to=(64, 64)):
         """ Gets a single image from the spritesheet"""
         image = pg.Surface((width, height), pg.SRCALPHA)
         image.blit(self.spritesheet, (0, 0), (x, y, width, height))
-        image = pg.transform.scale(image, (width // 2, height // 2))
+        # image = pg.transform.scale(image, (width // 2, height // 2))
+        # image = pg.transform.scale(image, scale_to)
         if rot:
             image = pg.transform.rotate(image, rot)
         return image
@@ -365,6 +366,7 @@ class Game:
 
         # spritesheets
         self.player_move_spritesheet = Spritesheet(path.join(player_images_folder, 'player-move.png'))
+        self.player_wobble_spritesheet = Spritesheet(path.join(player_images_folder, 'player-wobble.png'))
 
         # static images
         self.mob_zombie_image = pg.image.load(path.join(mob_images_folder, 'zombie1.png'))
