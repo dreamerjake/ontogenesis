@@ -2,6 +2,10 @@ import pygame as pg
 from pygame.math import Vector2 as Vec2
 
 
+class Skill:
+    pass
+
+
 class Projectile(pg.sprite.Sprite):
     def __init__(self, game, damage, pos, speed, direction, duration, kickback):
         self.groups = game.all_sprites, game.projectiles
