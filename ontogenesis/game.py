@@ -150,7 +150,8 @@ class Game:
 
         # sprite groups
         self.all_sprites = pg.sprite.LayeredUpdates()
-        self.ui_elements = pg.sprite.Group()
+        # self.ui_elements = pg.sprite.Group()
+        self.hud = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.projectiles = pg.sprite.Group()

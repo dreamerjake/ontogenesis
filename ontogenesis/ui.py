@@ -126,8 +126,10 @@ class UI:
             self.debug_messages()
         self.draw_flashed_messages()
 
-        self.game.ui_elements.update()
-        self.game.ui_elements.draw(self.game.screen)
+        # self.game.ui_elements.update()
+        # self.game.ui_elements.draw(self.game.screen)
+        self.keybinds_window.update()
+        self.keybinds_window.draw(self.game.screen)
 
         pg.display.flip()
 
@@ -159,7 +161,7 @@ class UI:
 class Minimap(pg.sprite.Sprite):
     def __init__(self, game):
         self._layer = layers.ui
-        self.groups = game.all_sprites
+        self.groups = game.all_sprites, game.hud
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         # self.rect = pg.Rect((settings.minimap_width, settings.minimap_height))
@@ -292,9 +294,9 @@ class ImageButton:
 class TextScrollwindow(pg.sprite.Sprite):
     def __init__(self, game, width, height, content, font_path, font_size):
         # pygame sprite stuff
-        self._layer = layers.ui
-        self.groups = game.ui_elements
-        pg.sprite.Sprite.__init__(self, self.groups)
+        # self._layer = layers.ui
+        # self.groups = game.ui_elements
+        pg.sprite.Sprite.__init__(self)  # , self.groups)
 
         # object references
         self.game = game
@@ -313,6 +315,9 @@ class TextScrollwindow(pg.sprite.Sprite):
         self.image.fill(self.bg_color)
         self.rect = self.image.get_rect()
 
+        for method in dir(self):
+            if not method.startswith('__'): print(method)
+
     def process_input(self):
         pass
 
@@ -324,3 +329,6 @@ class TextScrollwindow(pg.sprite.Sprite):
         max_height = max([item.get_height() for item in render_list])
         for i, item in enumerate(render_list):
             self.image.blit(item, (5, i * max_height))
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
