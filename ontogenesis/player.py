@@ -36,11 +36,12 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=start_pos)
         self.hit_rect = pg.Rect(0, 0, settings.TILESIZE - 5, settings.TILESIZE - 5)
         self.hit_rect.center = self.rect.center
+        self.vel = Vec2(0, 0)
         self.vx, self.vy = 0, 0
         # self.x, self.y = start_pos
         self.pos = Vec2(start_pos)
         self.rot = 0
-        self.proj_offset = Vec2(10, 10)  # hardcoded to the placeholder graphics
+        self.proj_offset = Vec2(25, 15)  # hardcoded to the placeholder graphics
 
         # default stats
         self.speed = 100
@@ -69,19 +70,29 @@ class Player(pg.sprite.Sprite):
         ])
 
     def process_input(self):
-        self.vx, self.vy = 0, 0  # this might be a problem later on, if external forces can effect player position
+        # self.vx, self.vy = 0, 0  # this might be a problem later on, if external forces can effect player position
+        self.vel = Vec2(0, 0)
         keys = pg.key.get_pressed()
-        # mouse_x, mouse_y = pg.mouse.get_pos()
 
-        # movement
+        # 4-d movement
+        # if keys[pg.K_LEFT] or keys[pg.K_a]:
+        #     self.vx = -self.speed
+        # if keys[pg.K_RIGHT] or keys[pg.K_d]:
+        #     self.vx = self.speed
+        # if keys[pg.K_UP] or keys[pg.K_w]:
+        #     self.vy = -self.speed
+        # if keys[pg.K_DOWN] or keys[pg.K_s]:
+        #     self.vy = self.speed
+
+        # rotational movement
         if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.vx = -self.speed
+            self.vel = Vec2(self.speed, 0).rotate(-self.rot - 90)
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.vx = self.speed
+            self.vel = Vec2(self.speed, 0).rotate(-self.rot + 90)
         if keys[pg.K_UP] or keys[pg.K_w]:
-            self.vy = -self.speed
+            self.vel = Vec2(self.speed, 0).rotate(-self.rot)
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.vy = self.speed
+            self.vel = Vec2(-self.speed, 0).rotate(-self.rot)  # no backwards speed penalty
 
         # skills
         if keys[pg.K_SPACE]:
@@ -154,8 +165,10 @@ class Player(pg.sprite.Sprite):
 
         self.rotate(Vec2(pg.mouse.get_pos()) - self.game.camera.offset)
 
-        self.pos.x += self.vx * self.game.delta_time
-        self.pos.y += self.vy * self.game.delta_time
+        self.pos += self.vel * self.game.delta_time
+
+        # self.pos.x += self.vx * self.game.delta_time
+        # self.pos.y += self.vy * self.game.delta_time
 
         self.hit_rect.centerx = self.pos.x
         self.collide_with_walls('x')
