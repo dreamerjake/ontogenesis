@@ -9,6 +9,9 @@ Michael Coates
 Albert Sweigart
     - https://inventwithpython.com/
     - https://github.com/asweigart
+Joe Reynolds
+    - https://joereynoldsaudio.com/programming/articles/pygame-practices
+    - https://github.com/joereynolds
 
 
 Code Snippets
