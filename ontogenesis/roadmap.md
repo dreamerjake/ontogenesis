@@ -41,6 +41,7 @@
         
     * Enemy
         * ~~Class Definition~~
+        * ~~mouseover highlighting~~
         
     * Map
         * World Map
@@ -90,7 +91,7 @@
     * Settings Screen
     * Help Screen
         * Keybinds Display
-    * Minimap
+    * ~~Minimap~~
 
 * ####SYSTEM
     * Display
@@ -102,9 +103,14 @@
         * Keyboard Input
     
 ### Notes
-tweenting library to keep in mind https://github.com/asweigart/pytweening
+tweenting library to keep in mind
+    https://github.com/asweigart/pytweening
 fix for warning "libpng warning: iCCP: known incorrect sRGB profile"
     mogrify *.png
+alternative outlining method
+    https://stackoverflow.com/questions/9319767/image-outline-using-python-pil
+volume settings math
+    https://www.reddit.com/r/gamedev/comments/7hht15/developers_fix_your_volume_sliders/
 
 ### Idea Scratchpad
 Worldmap has a series of nodes representing map points
