@@ -1,11 +1,19 @@
 from types import SimpleNamespace
 
+import pygame as pg
+
 # game settings
 HEIGHT = 768
 WIDTH = 1024
 TITLE = "Ontogenesis"
 FULLSCREEN = False
 SYSTEM_DEBUG = True
+
+# keybinds
+keybinds = {
+    pg.K_ESCAPE: 'test_keyfunction',
+    pg.K_SPACE: 'test_keyfunction'
+}
 
 # define some colors as (R, G, B) tuples
 colors = SimpleNamespace(

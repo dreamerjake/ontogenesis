@@ -7,7 +7,7 @@ from pygame.math import Vector2 as Vec2
 
 from map import Wall
 import settings
-from settings import colors, layers
+from settings import colors, layers, keybinds
 
 
 class UI:
@@ -32,7 +32,12 @@ class UI:
             highlight_img=self.game.button_hover,
             caption='Start')
         self.start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
-        self.keybinds_window = TextScrollwindow(self.game, settings.WIDTH // 2, settings.HEIGHT, ['item1', 'item2'], self.game.settings_font, 28)
+        self.keybinds_window = TextScrollwindow(
+            self.game,
+            settings.WIDTH // 2, settings.HEIGHT,
+            (0, 100),
+            ['{} : {}'.format(v, pg.key.name(k)) for k, v in keybinds.items()],
+            self.game.settings_font, 28)
 
         # button groups
         self.all_buttons = [self.start_button]
@@ -293,7 +298,7 @@ class ImageButton:
 
 
 class TextScrollwindow(pg.sprite.Sprite):
-    def __init__(self, game, width, height, content, font_path, font_size):
+    def __init__(self, game, width, height, pos, content, font_path, font_size):
         # pygame sprite stuff
         # self._layer = layers.ui
         # self.groups = game.ui_elements
@@ -304,6 +309,7 @@ class TextScrollwindow(pg.sprite.Sprite):
 
         self.content = content
         self.index = 0
+        self.items_per_screen = 1
 
         self.visible = True
         self.font = pg.font.Font(font_path, font_size)
@@ -315,26 +321,31 @@ class TextScrollwindow(pg.sprite.Sprite):
         self.image = pg.Surface((width, height))
         self.image.fill(self.bg_color)
         self.rect = self.image.get_rect()
+        self.rect.topleft = pos
 
         self.button_up = self.image.subsurface(pg.Rect(self.width - 30, 0, 30, 50))
 
     def process_input(self, event):
+        print(Vec2(self.button_up.get_abs_offset()))
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-            if self.button_up.get_rect().collidepoint(Vec2(event.pos) - Vec2(self.button_up.get_abs_offset())):
+            relative_pos = Vec2(event.pos) - Vec2(self.button_up.get_abs_offset()) - Vec2(self.rect.topleft)
+            if self.button_up.get_rect().collidepoint(relative_pos):
                 print('button up clicked')
-                if self.index < len(self.content):  # - self.options_per_page (items_per_screen?)
+                if self.index < len(self.content) - self.items_per_screen:  # - self.options_per_page (items_per_screen?)
                     self.index += 1
 
     def update(self):
         self.image.fill(self.bg_color)
-        self.button_up.fill(colors.darkgrey)
 
         # update content
         render_list = [self.font.render(item, 1, self.text_color) for item in self.content][self.index:]
         if render_list:
             max_height = max([item.get_height() for item in render_list])
+            self.items_per_screen = self.height // max_height
             for i, item in enumerate(render_list):
                 self.image.blit(item, (5, i * max_height))
+
+        self.button_up.fill(colors.darkgrey)
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
