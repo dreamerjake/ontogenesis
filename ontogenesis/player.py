@@ -58,14 +58,14 @@ class Player(pg.sprite.Sprite):
     def load_images(self):
         self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64, rot=-90)]
         self.moving_frames = cycle([
-            self.game.player_wobble_spritesheet.get_image(0, 0, 64, 64, rot=-90),
-            self.game.player_wobble_spritesheet.get_image(64, 0, 64, 64, rot=-90),
-            self.game.player_wobble_spritesheet.get_image(128, 0, 64, 64, rot=-90),
-            self.game.player_wobble_spritesheet.get_image(192, 0, 64, 64, rot=-90),
-            self.game.player_wobble_spritesheet.get_image(256, 0, 64, 64, rot=-90),
-            self.game.player_wobble_spritesheet.get_image(320, 0, 64, 64, rot=-90),
-            self.game.player_wobble_spritesheet.get_image(384, 0, 64, 64, rot=-90),
-            self.game.player_wobble_spritesheet.get_image(448, 0, 64, 64, rot=-90)
+            self.game.player_wobble_spritesheet.get_image(0, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+            self.game.player_wobble_spritesheet.get_image(64, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+            self.game.player_wobble_spritesheet.get_image(128, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+            self.game.player_wobble_spritesheet.get_image(192, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+            self.game.player_wobble_spritesheet.get_image(256, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+            self.game.player_wobble_spritesheet.get_image(320, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+            self.game.player_wobble_spritesheet.get_image(384, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+            self.game.player_wobble_spritesheet.get_image(448, 0, 64, 64, rot=-90, scale_to=(48, 48))
         ])
 
     def process_input(self):
