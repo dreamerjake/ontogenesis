@@ -314,11 +314,10 @@ class Game:
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob):
                 sprite.draw_health()
-            if not isinstance(sprite, Minimap):
-                # TODO: generalize this to all UI elements (add a static flag?)
-                self.screen.blit(sprite.image, self.camera.apply(sprite))
-            else:
-                self.screen.blit(sprite.image, sprite.rect)
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
+
+        self.hud.update()
+        self.hud.draw(self.screen)
 
         # show various object boundaries in debug mode
         if self.configs.debug:

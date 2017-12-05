@@ -161,7 +161,7 @@ class UI:
 class Minimap(pg.sprite.Sprite):
     def __init__(self, game):
         self._layer = layers.ui
-        self.groups = game.all_sprites, game.hud
+        self.groups = game.hud
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         # self.rect = pg.Rect((settings.minimap_width, settings.minimap_height))
