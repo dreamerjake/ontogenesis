@@ -3,6 +3,7 @@ from itertools import chain
 
 import pygame as pg
 from pygame.locals import MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN, SRCALPHA
+from pygame.math import Vector2 as Vec2
 
 from map import Wall
 import settings
@@ -315,20 +316,25 @@ class TextScrollwindow(pg.sprite.Sprite):
         self.image.fill(self.bg_color)
         self.rect = self.image.get_rect()
 
-        for method in dir(self):
-            if not method.startswith('__'): print(method)
+        self.button_up = self.image.subsurface(pg.Rect(self.width - 30, 0, 30, 50))
 
-    def process_input(self):
-        pass
+    def process_input(self, event):
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            if self.button_up.get_rect().collidepoint(Vec2(event.pos) - Vec2(self.button_up.get_abs_offset())):
+                print('button up clicked')
+                if self.index < len(self.content):  # - self.options_per_page (items_per_screen?)
+                    self.index += 1
 
     def update(self):
         self.image.fill(self.bg_color)
+        self.button_up.fill(colors.darkgrey)
 
         # update content
         render_list = [self.font.render(item, 1, self.text_color) for item in self.content][self.index:]
-        max_height = max([item.get_height() for item in render_list])
-        for i, item in enumerate(render_list):
-            self.image.blit(item, (5, i * max_height))
+        if render_list:
+            max_height = max([item.get_height() for item in render_list])
+            for i, item in enumerate(render_list):
+                self.image.blit(item, (5, i * max_height))
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)

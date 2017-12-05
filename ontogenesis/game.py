@@ -254,6 +254,7 @@ class Game:
         """ Event processing for the game object - handles system controls"""
         for event in pg.event.get():
             self.ui.start_button.handle_event(event)
+            self.ui.keybinds_window.process_input(event)
             if event.type == pg.QUIT:
                 self.fsm('quit')
             if event.type == pg.KEYDOWN:
@@ -340,7 +341,7 @@ class Game:
         pg.display.flip()
 
     def flash_message(self, message, ttl):
-        # TODO: debug message
+        # TODO: add message to debug output
         self.message_flash_queue.put(message, ttl)
 
     @timeit
