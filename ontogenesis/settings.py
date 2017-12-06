@@ -13,6 +13,7 @@ SYSTEM_DEBUG = True
 keybinds = {
     pg.K_ESCAPE: 'test_keyfunction',
     pg.K_SPACE: 'test_keyfunction'
+    # 'forwards': [pg.K_UP, pg.K_w]
 }
 
 # define some colors as (R, G, B) tuples
