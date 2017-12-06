@@ -1,19 +1,19 @@
 ##ROADMAP:
 * ####ENGINE
     * Skill System
-        * Class Definition
+        * ~~Class Definition~~
             * Skill Type Subclasses
             * Skill Type List (Passive, Projectile, etc.)
             * Skill Tag System (for synergy effects)
         * Skill Mod Class (Skill attribute mods, Triggered Effects)
 
     * Equipment System
-        * Function to adjust player stats based on equipment (call on equip/de-equip)
-        * Function to validate an equipment change
+        * ~~Function to adjust player stats based on equipment (call on equip/de-equip)~~
+        * ~~Function to validate an equipment change~~
         * Equipment
-            * Class Definition
-            * Attributes
-                * Slot
+            * ~~Class Definition~~
+            * ~~Attributes~~
+                * ~~Slot~~
                 
     * Currency System
         * Concept: Food as the universal currency - constantly depleting and accepted in all trading
@@ -32,7 +32,7 @@
         * Attributes
             * World Map Location
             * Currency
-        * Animations
+        * ~~Animations~~
         * State Tracking
         
     * NPC
@@ -42,8 +42,8 @@
     * Enemy
         * ~~Class Definition~~
         * ~~mouseover highlighting~~
-        * Collisions
-            * Take damage on collision (until mobs are able to use skills/attacks)
+        * ~~Collisions~~
+            * ~~Take damage on collision (until mobs are able to use skills/attacks)~~
         
     * Map
         * World Map
@@ -64,6 +64,7 @@
         * Skills
         * Equipment
         * Enemies
+        * Worldmap
     
     * Settings
         * Settings as SimpleNamespace?? (tuple keys??? e.g. game.settings[a, b, c])
@@ -80,6 +81,7 @@
         * Slider?
         * Text Input?
         * Grid System?
+        * Scrolling Window
     * ~~Message Flashing (e.g. 'MUSIC MUTED')~~
     * Character Screen
     * Inventory Screen (merge into Character Screen???)
