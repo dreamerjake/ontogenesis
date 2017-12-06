@@ -22,6 +22,8 @@ Dungeon Generation Implementation
     - adapted from https://github.com/AtTheMatinee
 Button Class
     - adapted from https://inventwithpython.com/blog/2012/10/30/designing-a-button-ui-module-for-pygame/
+Mixin Templating
+    - adapted from talk by Jeff Fischer https://www.youtube.com/watch?v=v_uKI2NOLEM
 
 
 Player Sprites

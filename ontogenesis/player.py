@@ -9,6 +9,11 @@ from settings import layers
 from skill import Projectile, run_skill
 
 
+class Equippable:
+    """ Mixin that allows """
+    pass
+
+
 class Player(pg.sprite.Sprite, Collider):
 
     debugname = "Player"
