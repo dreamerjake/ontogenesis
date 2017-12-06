@@ -6,6 +6,7 @@ import pygame as pg
 from pygame.locals import FULLSCREEN
 from pygame.math import Vector2 as Vec2
 
+from helpers import calc_dist
 from map import Map, Camera, Wall
 from player import Player
 from enemy import Mob, Collider
@@ -241,11 +242,13 @@ class Game:
 
                 else:
                     # distance from player spawn
-                    player_dist = self.map.generator.distance_formula((x, y), self.player_start)
-                    cluster_space = any([self.map.generator.distance_formula((x, y), cluster) < settings.cluster_dist for cluster in self.map.clusters])
+                    player_dist = calc_dist((x * settings.TILESIZE, y * settings.TILESIZE), self.player_start)
+                    cluster_space = not any([calc_dist((x, y), cluster) < settings.cluster_dist for cluster in self.map.clusters])
                     if player_dist > settings.safe_spawn_dist and cluster_space:  # random.random() > .9:
                         # self.spawn(Mob, (x * settings.TILESIZE, y * settings.TILESIZE))
                         self.map.clusters.append((x, y))
+                        print(player_dist)
+                        print((x, y), self.player_start)
 
         # print(self.map.clusters)
         for cluster in self.map.clusters:
@@ -263,15 +266,6 @@ class Game:
             self.events()
             method = getattr(self, self.fsm.current_state)
             self.fsm(method())
-
-        # self.new()
-
-        #
-
-        # while True:
-        #     self.delta_time = self.clock.tick(self.configs.fps) / 1000
-        #     self.events()
-        #     state_map[self.fsm.current_state]()
 
     def quit(self):
         if settings.SYSTEM_DEBUG:
