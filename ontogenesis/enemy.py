@@ -97,27 +97,40 @@ class Mob(pg.sprite.Sprite, Collider):
                     self.acc += dist.normalize() * 10  # had to play with the 10x factor a bit
 
     def update(self):
+        # health regen/degen
         if self.hps_regen != 0:
             self.hp_current = min(self.hp_current + (self.hps_regen * self.game.delta_time), self.hp_max)
+
+        # face the player
         self.rotate(Vec2(self.game.player.hit_rect.center))
+        self.acc = Vec2(self.speed, 0).rotate(-self.rot)
+
+        # update image
+        # TODO: give these guys some animation
         self.rect = self.image.get_rect(center=self.rect.center)
         self.rect.center = self.pos
-        self.acc = Vec2(self.speed, 0).rotate(-self.rot)
+
+        # ajdust angle tp spread out from other mobs
         self.avoid(self.game.mobs, self.avoid_radius)
+
+        # run forwards
         self.acc.scale_to_length(self.speed)
         self.acc += self.vel * -1
         self.vel += self.acc * self.game.delta_time
         self.pos += self.vel * self.game.delta_time + 0.5 * self.acc * self.game.delta_time ** 2
 
+        # wall collision
         self.hit_rect.centerx = self.pos.x
         self.collide(self.game.walls, 'x')
         self.hit_rect.centery = self.pos.y
         self.collide(self.game.walls, 'y')
 
+        # mouseover highlighting
         if self.rect.collidepoint(pg.mouse.get_pos() - self.game.camera.offset):
             # self.image = self.get_outline
             self.image.blit(self.get_outline(), self.image.get_rect())
 
+        # death conditions check
         if self.hp_current <= 0:
             self.kill()
 

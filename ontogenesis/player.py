@@ -3,12 +3,13 @@ from itertools import cycle
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
+from enemy import Collider
 import settings
 from settings import layers
-from skill import Projectile
+from skill import Projectile, run_skill
 
 
-class Player(pg.sprite.Sprite):
+class Player(pg.sprite.Sprite, Collider):
 
     debugname = "Player"
 
@@ -37,7 +38,7 @@ class Player(pg.sprite.Sprite):
         self.hit_rect = pg.Rect(0, 0, settings.TILESIZE - 5, settings.TILESIZE - 5)
         self.hit_rect.center = self.rect.center
         self.vel = Vec2(0, 0)
-        self.vx, self.vy = 0, 0
+        # self.vx, self.vy = 0, 0
         # self.x, self.y = start_pos
         self.pos = Vec2(start_pos)
         self.rot = 0
@@ -54,6 +55,7 @@ class Player(pg.sprite.Sprite):
         self.equipped = {
             'armor': None,
             'weapon': None,
+            'passives': [run_skill]
         }
 
     def load_images(self):
@@ -105,47 +107,49 @@ class Player(pg.sprite.Sprite):
             Projectile(game=self.game, damage=damage, pos=pos, speed=speed, direction=direction, duration=duration, kickback=kickback)
             if kickback:
                 kickback_vector = Vec2(-kickback, 0).rotate(-self.rot)
-                self.vx += kickback_vector.x
-                self.vy += kickback_vector.y
+                self.vel += kickback_vector
+                # kickback for 4-d movement
+                # self.vx += kickback_vector.x
+                # self.vy += kickback_vector.y
 
-        # diagonal movement fix
-        if self.vx != 0 and self.vy != 0:
-            self.vx *= 0.7071
-            self.vy *= 0.7071
+        # diagonal movement fix for 4-d movement
+        # if self.vx != 0 and self.vy != 0:
+        #     self.vx *= 0.7071
+        #     self.vy *= 0.7071
 
-    @staticmethod
-    def collide_hit_rect(one, two):
-        return one.hit_rect.colliderect(two.rect)
-
-    def collide_with_walls(self, direction):
-
-        if direction == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
-            if hits:
-
-                if not self.game.sfx_channel.get_sound():
-                    self.game.sfx_channel.play(self.game.player_sound_ow)
-
-                if self.vx > 0:  # sprite was moving to the right prior to collision
-                    self.pos.x = hits[0].rect.left - self.hit_rect.width / 2
-                if self.vx < 0:
-                    self.pos.x = hits[0].rect.right + self.hit_rect.width / 2
-                self.vx = 0
-                self.hit_rect.centerx = self.pos.x
-
-        if direction == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
-            if hits:
-
-                if not self.game.sfx_channel.get_sound():
-                    self.game.sfx_channel.play(self.game.player_sound_ow)
-
-                if self.vy > 0:
-                    self.pos.y = hits[0].rect.top - self.hit_rect.height / 2
-                if self.vy < 0:
-                    self.pos.y = hits[0].rect.bottom + self.hit_rect.height / 2
-                self.vy = 0
-                self.hit_rect.centery = self.pos.y
+    # @staticmethod
+    # def collide_hit_rect(one, two):
+    #     return one.hit_rect.colliderect(two.rect)
+    #
+    # def collide_with_walls(self, direction):
+    #
+    #     if direction == 'x':
+    #         hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
+    #         if hits:
+    #
+    #             if not self.game.sfx_channel.get_sound():
+    #                 self.game.sfx_channel.play(self.game.player_sound_ow)
+    #
+    #             if self.vx > 0:  # sprite was moving to the right prior to collision
+    #                 self.pos.x = hits[0].rect.left - self.hit_rect.width / 2
+    #             if self.vx < 0:
+    #                 self.pos.x = hits[0].rect.right + self.hit_rect.width / 2
+    #             self.vx = 0
+    #             self.hit_rect.centerx = self.pos.x
+    #
+    #     if direction == 'y':
+    #         hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
+    #         if hits:
+    #
+    #             if not self.game.sfx_channel.get_sound():
+    #                 self.game.sfx_channel.play(self.game.player_sound_ow)
+    #
+    #             if self.vy > 0:
+    #                 self.pos.y = hits[0].rect.top - self.hit_rect.height / 2
+    #             if self.vy < 0:
+    #                 self.pos.y = hits[0].rect.bottom + self.hit_rect.height / 2
+    #             self.vy = 0
+    #             self.hit_rect.centery = self.pos.y
 
     def rotate(self, target):
         """ face the target """
@@ -154,24 +158,37 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def update(self):
+        # health regen/degen
         if self.hps_regen != 0:
             self.hp_current = min(self.hp_current + (self.hps_regen * self.game.delta_time), self.hp_max)
+
+        # handle controls
         self.process_input()
 
+        # animate
         now = pg.time.get_ticks()
         if now - self.last_update > self.frame_delay:
             self.orig_image = next(self.moving_frames)
             self.last_update = now
 
+        # face the mouse
         self.rotate(Vec2(pg.mouse.get_pos()) - self.game.camera.offset)
 
+        # move
         self.pos += self.vel * self.game.delta_time
 
+        # # 4-d movement system wall collisons
         # self.pos.x += self.vx * self.game.delta_time
         # self.pos.y += self.vy * self.game.delta_time
+        # self.hit_rect.centerx = self.pos.x
+        # self.collide_with_walls('x')
+        # self.hit_rect.centery = self.pos.y
+        # self.collide_with_walls('y')
+        # self.rect.center = self.hit_rect.center
 
+        # collide with walls
         self.hit_rect.centerx = self.pos.x
-        self.collide_with_walls('x')
+        self.collide(self.game.walls, 'x')
         self.hit_rect.centery = self.pos.y
-        self.collide_with_walls('y')
+        self.collide(self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
