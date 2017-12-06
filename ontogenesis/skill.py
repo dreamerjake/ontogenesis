@@ -3,6 +3,7 @@ from pygame.math import Vector2 as Vec2
 
 
 class Skill:
+    # base class for the skill mixin system
     pass
 
 
@@ -29,3 +30,9 @@ class Projectile(pg.sprite.Sprite):
         if any([timed_out, hit_wall]):
             self.kill()
 
+
+run_skill = Skill()
+run_skill.name = 'Run'
+run_skill.passive = True
+run_skill.bonuses = {'speed': 100}
+run_skill.xp_current = 0
