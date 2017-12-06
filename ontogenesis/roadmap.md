@@ -42,6 +42,8 @@
     * Enemy
         * ~~Class Definition~~
         * ~~mouseover highlighting~~
+        * Collisions
+            * Take damage on collision (until mobs are able to use skills/attacks)
         
     * Map
         * World Map
