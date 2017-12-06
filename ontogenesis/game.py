@@ -297,6 +297,9 @@ class Game:
                     msg = 'MUSIC MUTED' if volume else 'MUSIC UNMUTED'
                     pg.mixer.music.set_volume(not volume)
                     self.flash_message(msg, 2)
+                if event.key == pg.K_9:
+                    print(self.player.sum_bonuses())
+
 
     def screen_update(self):
         """ Create the display - called on Game init and display settings change"""

@@ -36,3 +36,11 @@ run_skill.name = 'Run'
 run_skill.passive = True
 run_skill.bonuses = {'speed': 100}
 run_skill.xp_current = 0
+run_skill.xp_growth_rate = .1
+
+toughness_skill = Skill()
+toughness_skill.name = 'Toughness'
+toughness_skill.passive = True
+toughness_skill.bonuses = {'hp_max': 100}
+toughness_skill.xp_current = 0
+toughness_skill.xp_growth_rate = .1

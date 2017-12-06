@@ -1,3 +1,4 @@
+from collections import defaultdict
 from itertools import cycle
 
 import pygame as pg
@@ -7,21 +8,53 @@ from enemy import Collider
 from helpers import require_attributes
 import settings
 from settings import layers
-from skill import Projectile, run_skill
+from skill import Projectile, run_skill, toughness_skill
 
 
 class Equippable:
-    """ Mixin that allows """
+    """ Mixin that allows for wearing items and passive skills """
     def __init__(self):
         super().__init__()
         require_attributes(self, ['equipped'])
 
-    def update_stats(self):
-        for slot in self.equipped:
-            if isinstance(slot, list):  # see if the slot can hold multiple things
-                pass
-            else:
-                pass
+    def add_bonuses(self, equippable):
+        for bonus in equippable.bonuses:
+            setattr(self, bonus, getattr(self, bonus) + equippable.bonuses[bonus])
+
+    def remove_bonuses(self, equippable):
+        for bonus in equippable:
+            setattr(self, bonus, getattr(self, bonus) - equippable.bonuses[bonus])
+
+    def sum_bonuses(self):
+        bonuses = defaultdict(float)
+        for slot, equip in self.equipped.items():
+            if equip:
+                if isinstance(equip, list):  # see if the slot can hold multiple things
+                    for item in equip:
+                        for bonus in item.bonuses:
+                            bonuses[bonus] += item.bonuses[bonus]
+                else:
+                    for bonus in equip:
+                        bonuses[bonus] += equip.bonuses[bonus]
+        return bonuses
+
+    def equip(self, slot, equippable):
+        # TODO: add a matching unequip method if it becomes necessary
+        current = self.equipped[slot]
+
+        # append the item if the slot can hold multiple items
+        if isinstance(current, list):
+            current.append(equippable)
+            self.add_bonuses(equippable)
+        # swap with current if the slot only holds 1 item
+        elif self.equipped[slot]:
+            self.equipped[slot] = equippable
+            self.add_bonuses(equippable)
+            self.remove_bonuses(current)
+        # just add the item if the slot is empty
+        else:
+            self.equipped[slot] = equippable
+            self.add_bonuses(equippable)
 
 
 class Player(pg.sprite.Sprite, Collider, Equippable):
@@ -58,22 +91,30 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.pos = Vec2(start_pos)
         self.rot = 0
         self.proj_offset = Vec2(25, 15)  # hardcoded to the placeholder graphics
+
+        # state
         self.last_shot = pg.time.get_ticks()
-        self.fire_delay = 200
+        self.focus_skill = None
 
         # default stats
         self.speed = 100
         self.hp_current = 80
         self.hp_max = 100
         self.hps_regen = 1  # hp per second
+        self.fire_delay = 200
 
         # item management
         self.inventory = []
         self.equipped = {
             'armor': None,
             'weapon': None,
-            'passives': [run_skill]
+            'passives': []
         }
+
+        for skill in [run_skill, toughness_skill]:
+            print(self.sum_bonuses())
+            self.equip('passives', skill)
+            print(self.sum_bonuses())
 
     def load_images(self):
         self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64, rot=-90)]
