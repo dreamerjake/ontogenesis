@@ -4,11 +4,12 @@ import time
 
 import pygame as pg
 from pygame.locals import FULLSCREEN
+from pygame.math import Vector2 as Vec2
 
 from map import Map, Camera, Wall
 from player import Player
-from enemy import Mob
-from ui import UI, Minimap
+from enemy import Mob, Collider
+from ui import UI
 import settings
 from settings import colors
 from settings import game_configs as configs
@@ -82,35 +83,24 @@ class StateMachine:
         table: A dict (current, event) -> target
     """
 
-    def __init__(self, initial, table, owner):
+    def __init__(self, initial, table):
         self.current_state = initial
         self.state_table = table
-        self.owner = owner
 
     def __call__(self, event):
         """Trigger one state transition."""
-        next_state = self.state_table.get((self.current_state, event), self.current_state)
+        # self.current_state = self.state_table[self.current_state, event]
+        next_state = self.state_table[self.current_state, event]
         changed = self.current_state != next_state
-        if configs.debug:
-            debug_msg = "{} | State change event: {} - current state: {} - next state: {} (Changed={})"
-            print(debug_msg.format(self.owner.name, event, self.current_state, next_state, changed))
+        if configs.debug and changed:
+            debug_msg = "State change event: {} - current state: {} - next state: {} (Changed={})"
+            print(debug_msg.format(event, self.current_state, next_state, changed))
         if changed:
             self.current_state = next_state
 
 
 class Game:
     """ The master Game object"""
-
-    state_table = {
-        ('main_menu', 'new_game'): 'playing',
-        ('main_menu', 'quit'): 'quit',
-
-        ('playing', 'quit'): 'quit',
-        ('playing', 'pause'): 'paused',
-
-        ('paused', 'pause'): 'playing',
-        ('paused', 'quit'): 'quit',
-    }
 
     @timeit
     def __init__(self, name):
@@ -124,14 +114,12 @@ class Game:
         # configs
         self.configs = configs
 
-        # state machine
-        self.fsm = StateMachine(initial='main_menu', table=self.state_table, owner=self)
-
         # display
         self.fullscreen = settings.FULLSCREEN
         self.available_resolutions = pg.display.list_modes()
         self.screensize = (settings.WIDTH, settings.HEIGHT)
         self.screen = self.screen_update()
+        self.current_music = None
 
         # time
         self.clock = pg.time.Clock()
@@ -165,7 +153,50 @@ class Game:
         self.map = Map(self, settings.MAP_WIDTH, settings.MAP_HEIGHT)
         self.player_start = self.map.player_start
 
+        # state machine
+        self.state_table = {
+            ('main_menu', 'stay'): 'main_menu',
+            ('main_menu', 'new_game'): 'playing',
+            ('playing', 'stay'): 'playing',
+            ('playing', 'paused'): 'paused',
+            ('playing', 'die'): 'main_menu',
+            ('paused', 'paused'): 'playing',
+            ('paused', 'stay'): 'paused',
+        }
+        self.fsm = StateMachine(initial='main_menu', table=self.state_table)
+
+    def main_menu(self):
+        self.ui.draw_main_menu()
+
+        return 'stay'
+
+    def playing(self):
+        if self.current_music != self.music_action:
+            pg.mixer.music.load(self.music_action)
+            pg.mixer.music.play(loops=-1)
+            self.current_music = self.music_action
+
+        self.update()
+        self.draw()
+
+        return 'stay'
+
+    def paused(self):
+        self.ui.draw_pause_menu()
+
+        return 'stay'
+
     def new(self):
+
+        for sprite in self.all_sprites:
+            sprite.kill()
+
+        print('Starting New Game')
+
+        # fire up the intro music
+        self.current_music = self.music_intro
+        pg.mixer.music.load(self.current_music)
+        pg.mixer.music.play(loops=-1)
 
         self.generate_maptiles()
 
@@ -211,7 +242,7 @@ class Game:
                 else:
                     # distance from player spawn
                     player_dist = self.map.generator.distance_formula((x, y), self.player_start)
-                    cluster_space = not any([self.map.generator.distance_formula((x, y), cluster) < settings.cluster_dist for cluster in self.map.clusters])
+                    cluster_space = any([self.map.generator.distance_formula((x, y), cluster) < settings.cluster_dist for cluster in self.map.clusters])
                     if player_dist > settings.safe_spawn_dist and cluster_space:  # random.random() > .9:
                         # self.spawn(Mob, (x * settings.TILESIZE, y * settings.TILESIZE))
                         self.map.clusters.append((x, y))
@@ -224,25 +255,23 @@ class Game:
                 self.spawn(Mob, (x, y))
 
     def run(self):
-        state_map = {
-            'main_menu': self.ui.draw,
-            'playing': self.play,
-            'paused': self.ui.draw,
-            'quit': self.quit
-        }
 
         self.new()
-
-        pg.mixer.music.play(loops=-1)  # fire up the intro music
 
         while True:
             self.delta_time = self.clock.tick(self.configs.fps) / 1000
             self.events()
-            state_map[self.fsm.current_state]()
+            method = getattr(self, self.fsm.current_state)
+            self.fsm(method())
 
-    def play(self):
-        self.update()
-        self.draw()
+        # self.new()
+
+        #
+
+        # while True:
+        #     self.delta_time = self.clock.tick(self.configs.fps) / 1000
+        #     self.events()
+        #     state_map[self.fsm.current_state]()
 
     def quit(self):
         if settings.SYSTEM_DEBUG:
@@ -253,18 +282,19 @@ class Game:
     def events(self):
         """ Event processing for the game object - handles system controls"""
         for event in pg.event.get():
+            # print(event)
             self.ui.start_button.handle_event(event)
             self.ui.keybinds_window.process_input(event)
             if event.type == pg.QUIT:
-                self.fsm('quit')
+                self.quit()
             if event.type == pg.KEYDOWN:
                 # TODO: mapping structure for keydown binds
                 if event.key == pg.K_ESCAPE:
-                    self.fsm('quit')
+                    self.quit()
                 if event.key == pg.K_p:
-                    self.fsm('pause')
-                if event.key == pg.K_RETURN:
-                    self.fsm('new_game')
+                    self.fsm('paused')
+                # if event.key == pg.K_RETURN:
+                #     self.fsm(self.new())
                 if event.key == pg.K_F10:
                     self.fullscreen = not self.fullscreen
                     self.screen_update()
@@ -290,9 +320,18 @@ class Game:
         self.all_sprites.update()
         self.camera.update(target=self.player, hit_rect=True)
 
+        # projectiles hit mobs
         hits = pg.sprite.groupcollide(self.mobs, self.projectiles, False, True)
         for hit in hits:
             hit.hp_current -= hits[hit][0].damage
+
+        # mobs hit player
+        hits = pg.sprite.spritecollide(self.player, self.mobs, False, Collider.collide_hit_rect)
+        for hit in hits:
+            self.player.hp_current -= hit.collision_damage
+        if hits:
+            # if :
+            self.player.pos += Vec2(hits[0].collision_knockback, 0).rotate(-hits[0].rot)
 
     def draw_grid(self, line_width=1):
         """ draws a grid of lines to display the boundaries of empty tiles """
@@ -336,7 +375,7 @@ class Game:
             # circle around detected mouse position
             pg.draw.circle(self.screen, colors.white, pg.mouse.get_pos(), 10, 1)
 
-        self.ui.draw()
+        self.ui.draw_hud()
 
         pg.display.flip()
 
@@ -386,4 +425,3 @@ class Game:
         # startup values for display/mixer
         pg.display.set_caption(settings.TITLE)
         pg.display.set_icon(self.icon)
-        pg.mixer.music.load(self.music_intro)

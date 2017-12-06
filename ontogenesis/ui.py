@@ -43,9 +43,9 @@ class UI:
         self.all_buttons = [self.start_button]
         self.main_menu_buttons = [self.start_button]
 
-    def draw(self):
-        current_state = self.game.fsm.current_state
-        self.state_map[current_state]()
+    # def draw(self):
+    #     current_state = self.game.fsm.current_state
+    #     self.state_map[current_state]()
 
     def draw_menu_title(self):
         title = self.game.fsm.current_state
@@ -140,6 +140,7 @@ class UI:
         pg.display.flip()
 
     def draw_hud(self):
+        # print("Drawing HUD")
         self.hide_buttons(self.all_buttons)
         health_pct = self.game.player.hp_current / self.game.player.hp_max
         self.draw_player_health(5, 25, health_pct)

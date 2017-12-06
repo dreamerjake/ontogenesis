@@ -16,9 +16,9 @@ class Collider:
         if direction == 'x':
             hits = pg.sprite.spritecollide(self, group, False, self.collide_hit_rect)
             if hits:
-                if self.vel.x > 0:  # sprite was moving to the right prior to collision
+                if hits[0].rect.centerx > self.hit_rect.centerx:  # sprite was moving to the right prior to collision
                     self.pos.x = hits[0].rect.left - self.hit_rect.width / 2
-                if self.vel.x < 0:
+                if hits[0].rect.centerx < self.hit_rect.centerx:
                     self.pos.x = hits[0].rect.right + self.hit_rect.width / 2
                 self.vel.x = 0
                 self.hit_rect.centerx = self.pos.x
@@ -26,9 +26,9 @@ class Collider:
         if direction == 'y':
             hits = pg.sprite.spritecollide(self, group, False, self.collide_hit_rect)
             if hits:
-                if self.vel.y > 0:
+                if hits[0].rect.centery > self.hit_rect.centery:
                     self.pos.y = hits[0].rect.top - self.hit_rect.height / 2
-                if self.vel.y < 0:
+                if hits[0].rect.centery < self.hit_rect.centery:
                     self.pos.y = hits[0].rect.bottom + self.hit_rect.height / 2
                 self.vel.y = 0
                 self.hit_rect.centery = self.pos.y
@@ -70,6 +70,8 @@ class Mob(pg.sprite.Sprite, Collider):
         self.hp_current = 100
         self.hp_max = 100
         self.hps_regen = 0
+        self.collision_damage = 10
+        self.collision_knockback = 20
 
         # item management
         self.inventory = []

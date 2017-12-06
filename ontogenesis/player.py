@@ -115,7 +115,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
         # skills
         if keys[pg.K_SPACE] or pg.mouse.get_pressed()[0]:
-            if pg.time.get_ticks() - self.last_shot > self.fire_delay:
+            if pg.time.get_ticks() - self.last_shot > self.fire_delay:  # TODO: can_fire function
                 damage = 10
                 direction = Vec2(1, 0).rotate(-self.rot)
                 speed = 500
@@ -176,6 +176,11 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.image = pg.transform.rotate(self.orig_image, self.rot)
         self.rect = self.image.get_rect()
 
+    def die(self):
+        print('Player Died')
+        self.game.new()
+        self.game.fsm('die')
+
     def update(self):
         # health regen/degen
         if self.hps_regen != 0:
@@ -211,3 +216,6 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.hit_rect.centery = self.pos.y
         self.collide(self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
+
+        if self.hp_current <= 0:
+            self.die()
