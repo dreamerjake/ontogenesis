@@ -4,6 +4,7 @@ import pygame as pg
 from pygame.math import Vector2 as Vec2
 
 from enemy import Collider
+from helpers import require_attributes
 import settings
 from settings import layers
 from skill import Projectile, run_skill
@@ -11,10 +12,19 @@ from skill import Projectile, run_skill
 
 class Equippable:
     """ Mixin that allows """
-    pass
+    def __init__(self):
+        super().__init__()
+        require_attributes(self, ['equipped'])
+
+    def update_stats(self):
+        for slot in self.equipped:
+            if isinstance(slot, list):  # see if the slot can hold multiple things
+                pass
+            else:
+                pass
 
 
-class Player(pg.sprite.Sprite, Collider):
+class Player(pg.sprite.Sprite, Collider, Equippable):
 
     debugname = "Player"
 
@@ -48,6 +58,8 @@ class Player(pg.sprite.Sprite, Collider):
         self.pos = Vec2(start_pos)
         self.rot = 0
         self.proj_offset = Vec2(25, 15)  # hardcoded to the placeholder graphics
+        self.last_shot = pg.time.get_ticks()
+        self.fire_delay = 200
 
         # default stats
         self.speed = 100
@@ -102,17 +114,19 @@ class Player(pg.sprite.Sprite, Collider):
             self.vel = Vec2(-self.speed, 0).rotate(-self.rot)  # no backwards speed penalty
 
         # skills
-        if keys[pg.K_SPACE]:
-            damage = 10
-            direction = Vec2(1, 0).rotate(-self.rot)
-            speed = 500
-            duration = 500
-            pos = self.pos + self.proj_offset.rotate(-self.rot)
-            kickback = 200
-            Projectile(game=self.game, damage=damage, pos=pos, speed=speed, direction=direction, duration=duration, kickback=kickback)
-            if kickback:
-                kickback_vector = Vec2(-kickback, 0).rotate(-self.rot)
-                self.vel += kickback_vector
+        if keys[pg.K_SPACE] or pg.mouse.get_pressed()[0]:
+            if pg.time.get_ticks() - self.last_shot > self.fire_delay:
+                damage = 10
+                direction = Vec2(1, 0).rotate(-self.rot)
+                speed = 500
+                duration = 500
+                pos = self.pos + self.proj_offset.rotate(-self.rot)
+                kickback = 200
+                Projectile(game=self.game, damage=damage, pos=pos, speed=speed, direction=direction, duration=duration, kickback=kickback)
+                if kickback:
+                    kickback_vector = Vec2(-kickback, 0).rotate(-self.rot)
+                    self.vel += kickback_vector
+                self.last_shot = pg.time.get_ticks()
                 # kickback for 4-d movement
                 # self.vx += kickback_vector.x
                 # self.vy += kickback_vector.y
