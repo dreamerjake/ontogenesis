@@ -243,18 +243,16 @@ class Game:
                 else:
                     # distance from player spawn
                     player_dist = calc_dist((x * settings.TILESIZE, y * settings.TILESIZE), self.player_start)
+                    # distance from other clusters
                     cluster_space = not any([calc_dist((x, y), cluster) < settings.cluster_dist for cluster in self.map.clusters])
                     if player_dist > settings.safe_spawn_dist and cluster_space:  # random.random() > .9:
                         # self.spawn(Mob, (x * settings.TILESIZE, y * settings.TILESIZE))
                         self.map.clusters.append((x, y))
-                        print(player_dist)
-                        print((x, y), self.player_start)
 
-        # print(self.map.clusters)
         for cluster in self.map.clusters:
-            for _ in range(settings.pack_size):
-                x = (cluster[0] * settings.TILESIZE) + (settings.TILESIZE // 2)
-                y = (cluster[1] * settings.TILESIZE) + (settings.TILESIZE // 2)
+            for i in range(settings.pack_size):
+                x = (cluster[0] * settings.TILESIZE + i) + (settings.TILESIZE // 2)
+                y = (cluster[1] * settings.TILESIZE + i) + (settings.TILESIZE // 2)
                 self.spawn(Mob, (x, y))
 
     def run(self):

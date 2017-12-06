@@ -1,6 +1,9 @@
+from random import randint
+
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
+from helpers import calc_dist
 import settings
 from settings import layers, colors
 
@@ -72,6 +75,7 @@ class Mob(pg.sprite.Sprite, Collider):
         self.hps_regen = 0
         self.collision_damage = 10
         self.collision_knockback = 20
+        self.vision_distance = 300
 
         # item management
         self.inventory = []
@@ -103,8 +107,13 @@ class Mob(pg.sprite.Sprite, Collider):
         if self.hps_regen != 0:
             self.hp_current = min(self.hp_current + (self.hps_regen * self.game.delta_time), self.hp_max)
 
-        # face the player
-        self.rotate(Vec2(self.game.player.hit_rect.center))
+        # face the player if he's close enough to be seen
+        player_dist = calc_dist(self.pos, self.game.player.pos)
+        if player_dist <= self.vision_distance:
+            self.rotate(Vec2(self.game.player.hit_rect.center))
+        else:
+            self.rot = randint(0, 360)
+            self.image = pg.transform.rotate(self.orig_image, self.rot)
         self.acc = Vec2(self.speed, 0).rotate(-self.rot)
 
         # update image
@@ -116,10 +125,16 @@ class Mob(pg.sprite.Sprite, Collider):
         self.avoid(self.game.mobs, self.avoid_radius)
 
         # run forwards
-        self.acc.scale_to_length(self.speed)
-        self.acc += self.vel * -1
-        self.vel += self.acc * self.game.delta_time
-        self.pos += self.vel * self.game.delta_time + 0.5 * self.acc * self.game.delta_time ** 2
+        if player_dist <= self.vision_distance:
+            self.acc.scale_to_length(self.speed)
+            self.acc += self.vel * -1
+            self.vel += self.acc * self.game.delta_time
+            self.pos += self.vel * self.game.delta_time + 0.5 * self.acc * self.game.delta_time ** 2
+        else:
+            self.acc.scale_to_length(self.speed * .3)
+            self.acc += self.vel * -1
+            self.vel += self.acc * self.game.delta_time
+            self.pos += self.vel * self.game.delta_time + 0.5 * self.acc * self.game.delta_time ** 2
 
         # wall collision
         self.hit_rect.centerx = self.pos.x
