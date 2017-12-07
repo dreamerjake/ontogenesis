@@ -175,12 +175,16 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # dash
         if keys[pg.K_LCTRL]:
             self.speed_mul = 4.0
+            self.game.delay_event(1000, self.update_speed)
             # self.move_state = 'dash'
 
         # diagonal movement fix for 4-d movement
         # if self.vx != 0 and self.vy != 0:
         #     self.vx *= 0.7071
         #     self.vy *= 0.7071
+
+    def update_speed(self):
+        self.speed_mul = 1.0
 
     def rotate(self, target):
         """ face the target """

@@ -125,6 +125,7 @@ class Game:
         # time
         self.clock = pg.time.Clock()
         self.delta_time = None
+        self.delayed_events = []
 
         # messages, debug, and logging
         self.suppressed_debug_messages = 0
@@ -218,6 +219,15 @@ class Game:
 
         return entity(self, start_pos)
 
+    def delay_event(self, delay, event):
+        self.delayed_events.append((pg.time.get_ticks() + delay, event))
+
+    def trigger_delayed_events(self):
+        for trigger_time, event in self.delayed_events:
+            if trigger_time <= pg.time.get_ticks():
+                event()
+        self.delayed_events = [tup for tup in self.delayed_events if tup[0] > pg.time.get_ticks()]
+
     @timeit
     def generate_maptiles(self):
         """
@@ -300,7 +310,6 @@ class Game:
                 if event.key == pg.K_9:
                     print(self.player.sum_bonuses())
 
-
     def screen_update(self):
         """ Create the display - called on Game init and display settings change"""
         if self.fullscreen:
@@ -314,6 +323,8 @@ class Game:
         """ update logic for main game loop """
         self.all_sprites.update()
         self.camera.update(target=self.player, hit_rect=True)
+
+        self.trigger_delayed_events()
 
         # projectiles hit mobs
         hits = pg.sprite.groupcollide(self.mobs, self.projectiles, False, True)
