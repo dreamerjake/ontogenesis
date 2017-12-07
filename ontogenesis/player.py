@@ -175,7 +175,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # dash
         if keys[pg.K_LCTRL]:
             self.speed_mul = 4.0
-            self.game.delay_event(1000, self.update_speed)
+            self.game.delay_event(100, self.update_speed)
             # self.move_state = 'dash'
 
         # diagonal movement fix for 4-d movement

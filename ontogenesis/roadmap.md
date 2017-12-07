@@ -117,6 +117,8 @@ alternative outlining method
     https://stackoverflow.com/questions/9319767/image-outline-using-python-pil
 volume settings math
     https://www.reddit.com/r/gamedev/comments/7hht15/developers_fix_your_volume_sliders/
+isometric example
+    http://flarerpg.org/
 
 ### Idea Scratchpad
 Worldmap has a series of nodes representing map points

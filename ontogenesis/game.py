@@ -383,6 +383,10 @@ class Game:
 
         self.ui.draw_hud()
 
+        # messing around with isometry
+        # new_screen = pg.transform.rotate(self.screen, 45)
+        # self.screen.blit(new_screen, (0, 0))
+
         pg.display.flip()
 
     def flash_message(self, message, ttl):
