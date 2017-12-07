@@ -14,6 +14,7 @@
             * ~~Class Definition~~
             * ~~Attributes~~
                 * ~~Slot~~
+        * Equipment Sets? (procedurally generated?)
                 
     * Currency System
         * Concept: Food as the universal currency - constantly depleting and accepted in all trading
@@ -53,6 +54,7 @@
         
     * Combat
         * Floating Damage Numbers
+        * Melee attacks
         
     * AI
         
