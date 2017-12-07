@@ -12,6 +12,9 @@ Albert Sweigart
 Joe Reynolds
     - https://joereynoldsaudio.com/programming/articles/pygame-practices
     - https://github.com/joereynolds
+Benjamin Anderson (Heartbeast)
+    - http://www.heartbeast.co/
+    - https://www.youtube.com/channel/UCrHQNOyU1q6BFEfkNq2CYMA
 
 
 Code Snippets
