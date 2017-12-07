@@ -127,3 +127,4 @@ Track the hometown over runs, for permanence
     * Play until you run out of population???
     * Each run's quests based on the current stats(needs) of the town
     * Finding the hometown is the objective of the story mode?
+Dynamic mob generation based on the game's fps
