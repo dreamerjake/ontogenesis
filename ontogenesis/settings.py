@@ -31,6 +31,7 @@ colors = SimpleNamespace(
 
 # configs
 game_configs = SimpleNamespace(
+    control_scheme='4d',
     fps=60,
     show_fps=True,
     debug=False,

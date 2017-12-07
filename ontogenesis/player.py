@@ -95,6 +95,8 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # state
         self.last_shot = pg.time.get_ticks()
         self.focus_skill = None
+        # self.move_state = 'normal'
+        self.speed_mul = 1.0
 
         # default stats
         self.speed = 100
@@ -111,6 +113,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             'passives': []
         }
 
+        # TODO: remove this
         for skill in [run_skill, toughness_skill]:
             print(self.sum_bonuses())
             self.equip('passives', skill)
@@ -130,29 +133,29 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         ])
 
     def process_input(self):
-        # self.vx, self.vy = 0, 0  # this might be a problem later on, if external forces can effect player position
-        self.vel = Vec2(0, 0)
+        self.vel = Vec2(0, 0)  # this might be a problem later on, if external forces can effect player position
         keys = pg.key.get_pressed()
 
-        # 4-d movement
-        # if keys[pg.K_LEFT] or keys[pg.K_a]:
-        #     self.vx = -self.speed
-        # if keys[pg.K_RIGHT] or keys[pg.K_d]:
-        #     self.vx = self.speed
-        # if keys[pg.K_UP] or keys[pg.K_w]:
-        #     self.vy = -self.speed
-        # if keys[pg.K_DOWN] or keys[pg.K_s]:
-        #     self.vy = self.speed
-
         # rotational movement
-        if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.vel = Vec2(self.speed, 0).rotate(-self.rot - 90)
-        if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.vel = Vec2(self.speed, 0).rotate(-self.rot + 90)
-        if keys[pg.K_UP] or keys[pg.K_w]:
-            self.vel = Vec2(self.speed, 0).rotate(-self.rot)
-        if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.vel = Vec2(-self.speed, 0).rotate(-self.rot)  # no backwards speed penalty
+        if self.game.configs.control_scheme == 'rotational':
+            if keys[pg.K_LEFT] or keys[pg.K_a]:
+                self.vel = Vec2(self.speed, 0).rotate(-self.rot - 90)
+            if keys[pg.K_RIGHT] or keys[pg.K_d]:
+                self.vel = Vec2(self.speed, 0).rotate(-self.rot + 90)
+            if keys[pg.K_UP] or keys[pg.K_w]:
+                self.vel = Vec2(self.speed, 0).rotate(-self.rot)
+            if keys[pg.K_DOWN] or keys[pg.K_s]:
+                self.vel = Vec2(-self.speed, 0).rotate(-self.rot)  # no backwards speed penalty
+
+        if self.game.configs.control_scheme == '4d':
+            if keys[pg.K_LEFT] or keys[pg.K_a]:
+                self.vel += Vec2(self.speed, 0).rotate(180)
+            if keys[pg.K_RIGHT] or keys[pg.K_d]:
+                self.vel += Vec2(self.speed, 0).rotate(0)
+            if keys[pg.K_UP] or keys[pg.K_w]:
+                self.vel += Vec2(self.speed, 0).rotate(270)
+            if keys[pg.K_DOWN] or keys[pg.K_s]:
+                self.vel += Vec2(-self.speed, 0).rotate(270)  # no backwards speed penalty
 
         # skills
         if keys[pg.K_SPACE] or pg.mouse.get_pressed()[0]:
@@ -168,48 +171,16 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
                     kickback_vector = Vec2(-kickback, 0).rotate(-self.rot)
                     self.vel += kickback_vector
                 self.last_shot = pg.time.get_ticks()
-                # kickback for 4-d movement
-                # self.vx += kickback_vector.x
-                # self.vy += kickback_vector.y
+
+        # dash
+        if keys[pg.K_LCTRL]:
+            self.speed_mul = 4.0
+            # self.move_state = 'dash'
 
         # diagonal movement fix for 4-d movement
         # if self.vx != 0 and self.vy != 0:
         #     self.vx *= 0.7071
         #     self.vy *= 0.7071
-
-    # @staticmethod
-    # def collide_hit_rect(one, two):
-    #     return one.hit_rect.colliderect(two.rect)
-    #
-    # def collide_with_walls(self, direction):
-    #
-    #     if direction == 'x':
-    #         hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
-    #         if hits:
-    #
-    #             if not self.game.sfx_channel.get_sound():
-    #                 self.game.sfx_channel.play(self.game.player_sound_ow)
-    #
-    #             if self.vx > 0:  # sprite was moving to the right prior to collision
-    #                 self.pos.x = hits[0].rect.left - self.hit_rect.width / 2
-    #             if self.vx < 0:
-    #                 self.pos.x = hits[0].rect.right + self.hit_rect.width / 2
-    #             self.vx = 0
-    #             self.hit_rect.centerx = self.pos.x
-    #
-    #     if direction == 'y':
-    #         hits = pg.sprite.spritecollide(self, self.game.walls, False, self.collide_hit_rect)
-    #         if hits:
-    #
-    #             if not self.game.sfx_channel.get_sound():
-    #                 self.game.sfx_channel.play(self.game.player_sound_ow)
-    #
-    #             if self.vy > 0:
-    #                 self.pos.y = hits[0].rect.top - self.hit_rect.height / 2
-    #             if self.vy < 0:
-    #                 self.pos.y = hits[0].rect.bottom + self.hit_rect.height / 2
-    #             self.vy = 0
-    #             self.hit_rect.centery = self.pos.y
 
     def rotate(self, target):
         """ face the target """
@@ -240,16 +211,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.rotate(Vec2(pg.mouse.get_pos()) - self.game.camera.offset)
 
         # move
-        self.pos += self.vel * self.game.delta_time
-
-        # # 4-d movement system wall collisons
-        # self.pos.x += self.vx * self.game.delta_time
-        # self.pos.y += self.vy * self.game.delta_time
-        # self.hit_rect.centerx = self.pos.x
-        # self.collide_with_walls('x')
-        # self.hit_rect.centery = self.pos.y
-        # self.collide_with_walls('y')
-        # self.rect.center = self.hit_rect.center
+        self.pos += self.vel * (self.game.delta_time * self.speed_mul)
 
         # collide with walls
         self.hit_rect.centerx = self.pos.x
@@ -258,5 +220,6 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.collide(self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
 
+        # death condition checks
         if self.hp_current <= 0:
             self.die()
