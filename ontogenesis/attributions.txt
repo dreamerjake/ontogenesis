@@ -57,6 +57,7 @@ Typodermic Fonts Inc
 Joystix Font
 ============
 Raymond Larabie
+    - http://typodermicfonts.com/
 
 Action Music
 ============
