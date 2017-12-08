@@ -4,10 +4,12 @@ __pycache__/
 venv/
 test/
 build/
+dist/
 
 # filetypes
 *.pyc
 *.ogg
+*.spec
 
 # misc files
 all.anims
