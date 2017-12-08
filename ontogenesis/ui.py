@@ -139,6 +139,19 @@ class UI:
 
         pg.display.flip()
 
+    def draw_game_over(self):
+        self.hide_buttons(self.all_buttons)
+        self.screen.fill(colors.black)
+
+        self.draw_text('YOU DIED.', self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2, align='center')
+
+        self.draw_menu_title()
+        self.optional_messages()
+        if self.game.configs.debug:
+            self.debug_messages()
+        self.draw_flashed_messages()
+        pg.display.flip()
+
     def draw_hud(self):
         # print("Drawing HUD")
         self.hide_buttons(self.all_buttons)

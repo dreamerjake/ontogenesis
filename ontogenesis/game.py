@@ -91,7 +91,7 @@ class StateMachine:
     def __call__(self, event):
         """Trigger one state transition."""
         # self.current_state = self.state_table[self.current_state, event]
-        next_state = self.state_table[self.current_state, event]
+        next_state = self.state_table.get((self.current_state, event), self.current_state)
         changed = self.current_state != next_state
         if configs.debug and changed:
             debug_msg = "State change event: {} - current state: {} - next state: {} (Changed={})"
@@ -158,14 +158,23 @@ class Game:
         # state machine
         self.state_table = {
             ('main_menu', 'stay'): 'main_menu',
+            # ('main_menu', 'next'): 'playing',
             ('main_menu', 'new_game'): 'playing',
             ('playing', 'stay'): 'playing',
             ('playing', 'paused'): 'paused',
-            ('playing', 'die'): 'main_menu',
+            ('playing', 'die'): 'game_over',
             ('paused', 'paused'): 'playing',
             ('paused', 'stay'): 'paused',
+            ('game_over', 'stay'): 'game_over',
+            ('game_over', 'next'): 'main_menu',
         }
         self.fsm = StateMachine(initial='main_menu', table=self.state_table)
+
+    def game_over(self):
+        # TODO: autotransition after x seconds
+        self.ui.draw_game_over()
+
+        return 'stay'
 
     def main_menu(self):
         self.ui.draw_main_menu()
@@ -309,6 +318,8 @@ class Game:
                     self.flash_message(msg, 2)
                 if event.key == pg.K_9:
                     print(self.player.sum_bonuses())
+                if event.key == pg.K_RETURN:
+                    self.fsm('next')
 
     def screen_update(self):
         """ Create the display - called on Game init and display settings change"""
@@ -384,7 +395,8 @@ class Game:
         self.ui.draw_hud()
 
         # messing around with isometry
-        # new_screen = pg.transform.rotate(self.screen, 45)
+        # new_screen = pg.transform.rotate(self.screen, -45)
+        # new_screen = pg.transform.scale(new_screen, (new_screen.get_width(), new_screen.get_height() // 2))
         # self.screen.blit(new_screen, (0, 0))
 
         pg.display.flip()
