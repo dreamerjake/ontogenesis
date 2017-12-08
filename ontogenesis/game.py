@@ -159,24 +159,32 @@ class Game:
 
         # state machine
         self.state_table = {
-            ('main_menu', 'stay'): 'main_menu',
+            # ('main_menu', 'stay'): 'main_menu',
             ('main_menu', 'new_game'): 'playing',
-            ('playing', 'stay'): 'playing',
+            # ('playing', 'stay'): 'playing',
             ('playing', 'paused'): 'paused',
             ('playing', 'die'): 'game_over',
-            ('playing', 'view_skills'): 'skills',
+            ('playing', 'view_skills'): 'skills_menu',
             ('paused', 'paused'): 'playing',
-            ('paused', 'stay'): 'paused',
-            ('paused', 'view_skills'): 'skills',
-            ('game_over', 'stay'): 'game_over',
+            # ('paused', 'stay'): 'paused',
+            ('paused', 'view_skills'): 'skills_menu',
+            # ('game_over', 'stay'): 'game_over',
             ('game_over', 'next'): 'main_menu',
-            ('skills', 'stay'): 'skills',
-            ('skills', 'next'): 'playing',
-            ('skills', 'paused'): 'paused',
+            # ('skills_menu', 'stay'): 'skills_menu',
+            ('skills_menu', 'next'): 'playing',
+            ('skills_menu', 'paused'): 'paused',
+            ('skills_menu', 'info'): 'skill_detail',
+            ('skill_detail', 'view_skills'): 'skills_menu',
+            ('skill_detail', 'back'): 'skills_menu',  # universal back button?
         }
         self.fsm = StateMachine(initial='main_menu', table=self.state_table)
 
-    def skills(self):
+    def skill_detail(self):
+        self.ui.draw_info_skill()
+
+        return 'stay'
+
+    def skills_menu(self):
         self.ui.draw_skills_menu()
 
         return 'stay'
@@ -333,6 +341,8 @@ class Game:
                     self.fsm('next')
                 if event.key == pg.K_k:
                     self.fsm('view_skills')
+                if event.key == pg.K_F1:
+                    self.fsm('info')
 
     def screen_update(self):
         """ Create the display - called on Game init and display settings change"""

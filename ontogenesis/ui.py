@@ -25,14 +25,23 @@ class UI:
             'paused': self.draw_pause_menu,
         }
 
-        # elements
+        # hud
         self.minimap = Minimap(self.game)
+
+        # buttons
         self.start_button = ImageButton(
             self.game, settings.WIDTH // 2, 100,
             up_img=self.game.button_up,
             down_img=self.game.button_down,
             highlight_img=self.game.button_hover,
             caption='Start')
+
+        # button groups
+        self.all_buttons = [self.start_button]
+        self.main_menu_buttons = [self.start_button]
+
+        # windows
+        # TODO: fix scroll button bugs
         self.start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
         self.keybinds_window = TextScrollwindow(
             self.game,
@@ -41,9 +50,22 @@ class UI:
             ['{} : {}'.format(v, pg.key.name(k)) for k, v in keybinds.items()],
             self.game.settings_font, 28)
 
-        # button groups
-        self.all_buttons = [self.start_button]
-        self.main_menu_buttons = [self.start_button]
+        spacer = 10
+        self.passives_window = TextScrollwindow(
+            self.game,
+            settings.WIDTH // 2 - spacer * 2, settings.HEIGHT,
+            (0 + spacer, 100),
+            [],
+            self.game.settings_font, 28)
+
+        self.actives_window = TextScrollwindow(
+            self.game,
+            settings.WIDTH // 2 - spacer * 2, settings.HEIGHT,
+            (settings.WIDTH // 2 + spacer, 100),
+            ['Shoot', 'Fireball', 'Dash'],
+            self.game.settings_font, 28)
+
+
 
     # def draw(self):
     #     current_state = self.game.fsm.current_state
@@ -141,12 +163,31 @@ class UI:
 
         pg.display.flip()
 
+    def draw_info_skill(self):
+        self.hide_buttons(self.all_buttons)
+        self.screen.fill(colors.black)
+
+        self.draw_text('SKILL DETAIL', self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2, align='center')
+        self.draw_menu_title()
+        self.optional_messages()
+        if self.game.configs.debug:
+            self.debug_messages()
+        self.draw_flashed_messages()
+        pg.display.flip()
+
     def draw_skills_menu(self):
         self.hide_buttons(self.all_buttons)
         self.screen.fill(colors.black)
 
-        self.draw_text('SKILLS', self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2, align='center')
+        # self.draw_text('SKILLS', self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2, align='center')
         self.draw_menu_title()
+
+        self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
+        self.passives_window.draw(self.game.screen)
+
+        self.actives_window.update()
+        self.actives_window.draw(self.game.screen)
+
         self.optional_messages()
         if self.game.configs.debug:
             self.debug_messages()
@@ -341,7 +382,7 @@ class TextScrollwindow(pg.sprite.Sprite):
 
         self.visible = True
         self.font = pg.font.Font(font_path, font_size)
-        self.bg_color = colors.black
+        self.bg_color = colors.lightgrey
         self.text_color = colors.white
 
         self.width = width
@@ -361,7 +402,10 @@ class TextScrollwindow(pg.sprite.Sprite):
                 if self.index < len(self.content) - self.items_per_screen:  # - self.options_per_page (items_per_screen?)
                     self.index += 1
 
-    def update(self):
+    def update(self, new_content=None):
+        if new_content:
+            self.content = new_content
+
         self.image.fill(self.bg_color)
 
         # update content
