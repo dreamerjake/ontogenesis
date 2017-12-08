@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from types import SimpleNamespace
 
 import pygame as pg
@@ -34,7 +36,7 @@ game_configs = SimpleNamespace(
     control_scheme='4d',
     fps=60,
     show_fps=True,
-    debug=False,
+    debug=True,
     debug_exclude=['Wall'],
     flash_messages_queuesize=2,
     ui_button_text_color=colors.white,

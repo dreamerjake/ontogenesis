@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from os import path
 import sys
 import time
@@ -409,7 +411,12 @@ class Game:
         # TODO: structure for mapping asset variables to filenames
 
         # folders
-        game_folder = path.dirname(__file__)
+        if getattr(sys, 'frozen', False):
+            game_folder = path.dirname(sys.executable)
+        else:
+            game_folder = path.dirname(path.realpath(__file__))
+        # game_folder = path.curdir(__file__)
+        print(game_folder)
         assets_folder = path.join(game_folder, 'assets')
         fonts_folder = path.join(assets_folder, 'fonts')
         audio_folder = path.join(assets_folder, 'audio')
@@ -446,3 +453,12 @@ class Game:
         # startup values for display/mixer
         pg.display.set_caption(settings.TITLE)
         pg.display.set_icon(self.icon)
+
+
+def main():
+    g = Game(name="Dev Game")
+    g.run()
+
+
+if __name__ == '__main__':
+    main()
