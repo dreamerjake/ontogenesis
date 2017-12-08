@@ -458,7 +458,6 @@ class TextScrollwindow(pg.sprite.Sprite):
             x, y = self.rect.topleft
             i = (mousey - y) // item_height
             self.highlight_index = i
-            print(i, self.items_per_screen)
 
     def process_input(self, event):
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
@@ -479,7 +478,6 @@ class TextScrollwindow(pg.sprite.Sprite):
         render_list = [self.font.render(item, 1, self.text_color) for item in self.content][self.index:]
         if render_list:
             max_height = max([item.get_height() for item in render_list])
-            # print(max_height)
             self.items_per_screen = self.height // max_height
 
             for i, item in enumerate(render_list):
@@ -489,8 +487,6 @@ class TextScrollwindow(pg.sprite.Sprite):
                     tmp.fill(colors.yellow)
                     tmp.blit(item, (0, 0))
                     tmp.blit(self.font.render(self.content[self.index + i], 1, self.highlight_text_color), (0, 0))
-                    # item.fill(colors.yellow)
-                    # item.set_colorkey(colors.black)
                     self.image.blit(tmp, (0, i * max_height))
                 else:
                     self.image.blit(item, (5, i * max_height))
