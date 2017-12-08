@@ -158,7 +158,6 @@ class Game:
         # state machine
         self.state_table = {
             ('main_menu', 'stay'): 'main_menu',
-            # ('main_menu', 'next'): 'playing',
             ('main_menu', 'new_game'): 'playing',
             ('playing', 'stay'): 'playing',
             ('playing', 'paused'): 'paused',

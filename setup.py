@@ -4,8 +4,6 @@ import os
 
 from cx_Freeze import setup, Executable
 
-# C:\ProgramData\Anaconda3\python setup.py build
-
 distutils_path = os.path.join(os.path.dirname(opcode.__file__), 'distutils')
 python_install_path = os.path.join(distutils_path, '..', '..')
 
