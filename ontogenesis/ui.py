@@ -45,7 +45,7 @@ class UI:
         self.start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
         self.keybinds_window = TextScrollwindow(
             self.game,
-            settings.WIDTH // 2, settings.HEIGHT,
+            settings.WIDTH // 2, settings.HEIGHT - 100,
             (0, 100),
             ['{} : {}'.format(v, pg.key.name(k)) for k, v in keybinds.items()],
             self.game.settings_font, 28)
@@ -53,14 +53,14 @@ class UI:
         spacer = 10
         self.passives_window = TextScrollwindow(
             self.game,
-            settings.WIDTH // 2 - spacer * 2, settings.HEIGHT,
+            settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
             (0 + spacer, 100),
             [],
             self.game.settings_font, 28)
 
         self.actives_window = TextScrollwindow(
             self.game,
-            settings.WIDTH // 2 - spacer * 2, settings.HEIGHT,
+            settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
             (settings.WIDTH // 2 + spacer, 100),
             ['Shoot', 'Fireball', 'Dash'],
             self.game.settings_font, 28)
@@ -179,7 +179,6 @@ class UI:
         self.hide_buttons(self.all_buttons)
         self.screen.fill(colors.black)
 
-        # self.draw_text('SKILLS', self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2, align='center')
         self.draw_menu_title()
 
         self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
@@ -378,12 +377,15 @@ class TextScrollwindow(pg.sprite.Sprite):
 
         self.content = content
         self.index = 0
+        self.highlight_index = None
         self.items_per_screen = 1
 
         self.visible = True
         self.font = pg.font.Font(font_path, font_size)
         self.bg_color = colors.lightgrey
         self.text_color = colors.white
+        self.highlight_color = colors.yellow
+        self.highlight_text_color = colors.black
 
         self.width = width
         self.height = height
@@ -393,6 +395,13 @@ class TextScrollwindow(pg.sprite.Sprite):
         self.rect.topleft = pos
 
         self.button_up = self.image.subsurface(pg.Rect(self.width - 30, 0, 30, 50))
+
+    def highlight(self):
+        mousex, mousey = pg.mouse.get_pos()
+        item_height = self.height // self.items_per_screen
+        x, y = self.rect.topleft
+        i = (mousey - y) // item_height
+        self.highlight_index = i
 
     def process_input(self, event):
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
@@ -413,8 +422,21 @@ class TextScrollwindow(pg.sprite.Sprite):
         if render_list:
             max_height = max([item.get_height() for item in render_list])
             self.items_per_screen = self.height // max_height
+
+            self.highlight()
+
             for i, item in enumerate(render_list):
-                self.image.blit(item, (5, i * max_height))
+                if self.index + i == self.highlight_index:
+                    tmp = pg.Surface((self.width - 30, item.get_height()))  # magic number button width
+                    tmp.convert_alpha()
+                    tmp.fill(colors.yellow)
+                    tmp.blit(item, (0, 0))
+                    tmp.blit(self.font.render(self.content[self.index + i], 1, self.highlight_text_color), (0, 0))
+                    # item.fill(colors.yellow)
+                    # item.set_colorkey(colors.black)
+                    self.image.blit(tmp, (0, i * max_height))
+                else:
+                    self.image.blit(item, (5, i * max_height))
 
         self.button_up.fill(colors.darkgrey)
 
