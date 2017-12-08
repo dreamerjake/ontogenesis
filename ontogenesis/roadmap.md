@@ -6,6 +6,8 @@
             * Skill Type List (Passive, Projectile, etc.)
             * Skill Tag System (for synergy effects)
         * Skill Mod Class (Skill attribute mods, Triggered Effects)
+        * Ideas
+            * Scouting
 
     * Equipment System
         * ~~Function to adjust player stats based on equipment (call on equip/de-equip)~~
@@ -45,6 +47,9 @@
         * ~~mouseover highlighting~~
         * ~~Collisions~~
             * ~~Take damage on collision (until mobs are able to use skills/attacks)~~
+        * Mob skills
+        * Mob stats should scale with difficulty
+        * Mob density should scale with difficulty
         
     * Map
         * World Map
