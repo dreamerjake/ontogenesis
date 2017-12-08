@@ -65,7 +65,54 @@ class UI:
             ['Shoot', 'Fireball', 'Dash'],
             self.game.settings_font, 28)
 
+        # button groups
+        self.all_windows = [self.keybinds_window, self.passives_window, self.actives_window]
+        self.skill_menu_windows = [self.passives_window, self.actives_window]
 
+    def new(self):
+        # hud
+        self.minimap = Minimap(self.game)
+
+        # buttons
+        self.start_button = ImageButton(
+            self.game, settings.WIDTH // 2, 100,
+            up_img=self.game.button_up,
+            down_img=self.game.button_down,
+            highlight_img=self.game.button_hover,
+            caption='Start')
+
+        # button groups
+        self.all_buttons = [self.start_button]
+        self.main_menu_buttons = [self.start_button]
+
+        # windows
+        # TODO: fix scroll button bugs
+        self.start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
+        self.keybinds_window = TextScrollwindow(
+            self.game,
+            settings.WIDTH // 2, settings.HEIGHT - 100,
+            (0, 100),
+            ['{} : {}'.format(v, pg.key.name(k)) for k, v in keybinds.items()],
+            self.game.settings_font, 28)
+
+        spacer = 10
+        self.passives_window = TextScrollwindow(
+            self.game,
+            settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
+            (0 + spacer, 100),
+            [],
+            self.game.settings_font, 28)
+
+        self.actives_window = TextScrollwindow(
+            self.game,
+            settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
+            (settings.WIDTH // 2 + spacer, 100),
+            ['Shoot', 'Fireball', 'Dash'],
+            self.game.settings_font, 28)
+
+        # button groups
+        self.all_windows = [self.keybinds_window, self.passives_window, self.actives_window]
+        self.skill_menu_windows = [self.passives_window, self.actives_window]
 
     # def draw(self):
     #     current_state = self.game.fsm.current_state
@@ -126,18 +173,19 @@ class UI:
         pg.draw.rect(self.screen, colors.white, outline_rect, 2)
 
     @staticmethod
-    def hide_buttons(button_group):
-        for button in button_group:
-            button.visible = False
+    def hide_group(group):
+        for member in group:
+            member.visible = False
 
     @staticmethod
-    def show_buttons(button_group):
-        for button in button_group:
-            button.visible = True
+    def show_group(group):
+        for member in group:
+            member.visible = True
 
     def draw_main_menu(self):
-        self.hide_buttons(self.all_buttons)
-        self.show_buttons(self.main_menu_buttons)
+        self.hide_group(self.all_buttons)
+        self.hide_group(self.all_windows)
+        self.show_group(self.main_menu_buttons)
         self.screen.fill(colors.black)
         self.draw_menu_title()
         self.optional_messages()
@@ -147,7 +195,8 @@ class UI:
         pg.display.flip()
 
     def draw_pause_menu(self):
-        self.hide_buttons(self.all_buttons)
+        self.hide_group(self.all_windows)
+        self.hide_group(self.all_buttons)
         # self.show_buttons(self.main_menu_buttons)
         self.screen.fill(colors.black)
         self.draw_menu_title()
@@ -164,7 +213,8 @@ class UI:
         pg.display.flip()
 
     def draw_info_skill(self):
-        self.hide_buttons(self.all_buttons)
+        self.hide_group(self.all_windows)
+        self.hide_group(self.all_buttons)
         self.screen.fill(colors.black)
 
         self.draw_text('SKILL DETAIL', self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2, align='center')
@@ -176,7 +226,11 @@ class UI:
         pg.display.flip()
 
     def draw_skills_menu(self):
-        self.hide_buttons(self.all_buttons)
+        self.hide_group(self.all_windows)
+        self.hide_group(self.all_buttons)
+
+        self.show_group(self.skill_menu_windows)
+
         self.screen.fill(colors.black)
 
         self.draw_menu_title()
@@ -194,7 +248,7 @@ class UI:
         pg.display.flip()
 
     def draw_game_over(self):
-        self.hide_buttons(self.all_buttons)
+        self.hide_group(self.all_buttons)
         self.screen.fill(colors.black)
 
         self.draw_text('YOU DIED.', self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2, align='center')
@@ -208,7 +262,7 @@ class UI:
 
     def draw_hud(self):
         # print("Drawing HUD")
-        self.hide_buttons(self.all_buttons)
+        self.hide_group(self.all_buttons)
         health_pct = self.game.player.hp_current / self.game.player.hp_max
         self.draw_player_health(5, 25, health_pct)
         self.draw_mobcount()
@@ -398,13 +452,17 @@ class TextScrollwindow(pg.sprite.Sprite):
 
     def highlight(self):
         mousex, mousey = pg.mouse.get_pos()
-        item_height = self.height // self.items_per_screen
-        x, y = self.rect.topleft
-        i = (mousey - y) // item_height
-        self.highlight_index = i
+        collision = self.rect.collidepoint((mousex, mousey))
+        if collision:
+            item_height = self.height // self.items_per_screen
+            x, y = self.rect.topleft
+            i = (mousey - y) // item_height
+            self.highlight_index = i
+            print(i, self.items_per_screen)
 
     def process_input(self, event):
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            self.highlight()
             relative_pos = Vec2(event.pos) - Vec2(self.button_up.get_abs_offset()) - Vec2(self.rect.topleft)
             if self.button_up.get_rect().collidepoint(relative_pos):
                 print('button up clicked')
@@ -421,9 +479,8 @@ class TextScrollwindow(pg.sprite.Sprite):
         render_list = [self.font.render(item, 1, self.text_color) for item in self.content][self.index:]
         if render_list:
             max_height = max([item.get_height() for item in render_list])
+            # print(max_height)
             self.items_per_screen = self.height // max_height
-
-            self.highlight()
 
             for i, item in enumerate(render_list):
                 if self.index + i == self.highlight_index:

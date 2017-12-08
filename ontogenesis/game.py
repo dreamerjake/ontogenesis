@@ -223,6 +223,8 @@ class Game:
 
         print('Starting New Game')
 
+        self.ui.new()
+
         # fire up the intro music
         self.current_music = self.music_intro
         pg.mixer.music.load(self.current_music)
@@ -314,7 +316,11 @@ class Game:
         for event in pg.event.get():
             # print(event)
             self.ui.start_button.handle_event(event)
-            self.ui.keybinds_window.process_input(event)
+
+            for window in self.ui.all_windows:
+                if window.visible:
+                    window.process_input(event)
+
             if event.type == pg.QUIT:
                 self.quit()
             if event.type == pg.KEYDOWN:
