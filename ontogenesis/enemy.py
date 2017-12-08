@@ -78,6 +78,7 @@ class Mob(pg.sprite.Sprite, Collider):
         self.collision_damage = 10
         self.collision_knockback = 20
         self.vision_distance = 300
+        self.xp_value = 10
 
         # item management
         self.inventory = []
