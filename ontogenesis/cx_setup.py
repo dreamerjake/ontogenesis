@@ -1,5 +1,15 @@
 # -*- coding: utf-8 -*-
-# python cx_setup.py build
+"""
+Built using dev branch 'v5.x' of cx_Freeze
+
+git clone https://github.com/anthony-tuininga/cx_Freeze.git
+git checkout v5.x
+C:\\ProgramData\\Anaconda3\\python -m pip install .
+
+in current dir:
+python cx_setup.py build
+
+"""
 
 import opcode
 import os
