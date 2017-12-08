@@ -164,12 +164,22 @@ class Game:
             ('playing', 'stay'): 'playing',
             ('playing', 'paused'): 'paused',
             ('playing', 'die'): 'game_over',
+            ('playing', 'view_skills'): 'skills',
             ('paused', 'paused'): 'playing',
             ('paused', 'stay'): 'paused',
+            ('paused', 'view_skills'): 'skills',
             ('game_over', 'stay'): 'game_over',
             ('game_over', 'next'): 'main_menu',
+            ('skills', 'stay'): 'skills',
+            ('skills', 'next'): 'playing',
+            ('skills', 'paused'): 'paused',
         }
         self.fsm = StateMachine(initial='main_menu', table=self.state_table)
+
+    def skills(self):
+        self.ui.draw_skills_menu()
+
+        return 'stay'
 
     def game_over(self):
         # TODO: autotransition after x seconds
@@ -321,6 +331,8 @@ class Game:
                     print(self.player.sum_bonuses())
                 if event.key == pg.K_RETURN:
                     self.fsm('next')
+                if event.key == pg.K_k:
+                    self.fsm('view_skills')
 
     def screen_update(self):
         """ Create the display - called on Game init and display settings change"""
