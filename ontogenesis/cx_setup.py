@@ -9,6 +9,31 @@ C:\\ProgramData\\Anaconda3\\python -m pip install .
 in current dir:
 python cx_setup.py build
 
+IExpress  *** RUN AS ADMINISTRATOR ***
+========
+- Create new SED file
+?? OPTION 1
+- Package title: ontogenesis_setup
+- No prompt
+- Do not display a license
+- Packaged files:
+    - *.DLL
+Install Program to Launch:
+    - Install Program: ontogenesis.exe
+    - Post Install Command: <None>
+- Show window: Default
+- Finished message: "Finished"
+- Package Name and Options:
+    - C:\Users\Jake\PycharmProjects\ontogenesis\ontogenesis\dist
+        - "ontogenesis.exe"
+    - Hide File Extracting Progress Animation from User: No
+    - Store files using Long File Name inside Package: Yes
+- Configure restart: Only restart if needed
+    - Do not prompt user before restarting: No
+- Save SED file
+    - C:\Users\Jake\PycharmProjects\ontogenesis\ontogenesis\build
+        - "game.sed"
+- Create package: Next
 """
 
 import opcode
