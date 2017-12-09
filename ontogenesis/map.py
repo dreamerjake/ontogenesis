@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
+from itertools import product, combinations
 from math import sqrt
 import random
 
+import networkx as nx
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
+from helpers import calc_dist
 import settings
 from settings import colors
 
@@ -39,6 +42,61 @@ class Camera:
         self.offset = Vec2(x, y)
 
         self.camera = pg.Rect(x, y, self.width, self.height)
+
+
+class WorldMap:
+    def __init__(self, width=20, height=10, min_dist=4, path_base_chance=.1, path_length_bonus=.3):
+        # self.mob_types
+        # self.image
+        self.width = width  # cells
+        self.height = height  # cells
+        self.min_dist = min_dist  # cells
+        self.path_base_chance = path_base_chance
+        self.path_length_bonus = path_length_bonus
+        # self.scalex
+        # self.scaley
+        self.graph = self.generate()
+
+    def calc_prune_chance(self, edge):
+        return self.path_base_chance + (self.path_length_bonus * self.min_dist / edge[2]['weight'])
+
+    def generate(self):
+        graph = nx.Graph()
+        node_coords = []
+        tile_coords = [tile for tile in product(range(self.width), range(self.height))]
+        random.shuffle(tile_coords)
+        for location in tile_coords:
+            for node in node_coords:
+                if calc_dist(location, node) < self.min_dist:
+                    break
+            else:
+                node_coords.append(location)
+        # scale node coordinates to map image locations
+        # node_coords = [(int(node[0] * self.scalex), int(node[1] * self.scaley)) for node in node_coords]
+        nodes = {pos: {'name': pos, 'position': pos} for node_name, pos in enumerate(node_coords)}
+        # labels = {node: next(self.mob_types) for node in nodes}
+
+        # node_positions = {k: k for k, v in nodes.items()}
+
+        edges = [(edge[0], edge[1], {'weight': calc_dist(edge[0], edge[1])}) for edge in combinations(node_coords, 2)]
+
+        prune_targets = [edge for edge in edges if self.calc_prune_chance(edge) < random.random()]
+
+        graph.add_nodes_from(nodes.keys())
+        graph.add_edges_from(edges)
+
+        # prune the prune targets in random order *unless they are the only remaining path to the node*
+        random.shuffle(prune_targets)
+        for target in prune_targets:
+            if len(graph[target[0]]) > 1 and len(graph[target[1]]) > 1:
+                graph.remove_edge(*target[:2])
+
+        # recurse if we end up with a unconnected graph
+        # TODO: check if the largest subgraph is "large enough" and maybe use it
+        if not nx.is_connected(graph):
+            self.generate()
+
+        return graph
 
 
 class Map:
