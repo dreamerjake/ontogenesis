@@ -258,7 +258,7 @@ class UI:
             #  pg.draw.line(self.screen, colors.cyan, start_pos, end_pos, 4)  # line width
             if self.game.worldmap.graph.node[edge[0]]['discovered'] and self.game.worldmap.graph.node[edge[1]]['discovered']:
                 pg.draw.line(self.screen, colors.blue, start_pos, end_pos, 4)  # line blend
-            if edge[0] in current_reachable and edge[1] in current_reachable:
+            if edge[0] in current_reachable and edge[1] in current_reachable and (edge[0] == self.game.worldmap.current_node or edge[1] == self.game.worldmap.current_node):
                 pg.draw.line(self.screen, colors.red, start_pos, end_pos, 4)  # line blend
 
         # draw nodes
