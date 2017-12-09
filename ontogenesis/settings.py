@@ -28,7 +28,8 @@ colors = SimpleNamespace(
     red=(255, 0, 0),
     yellow=(255, 255, 0),
     brown=(106, 55, 5),
-    cyan=(0, 255, 255)
+    cyan=(0, 255, 255),
+    blue=(0, 0, 255)
 )
 
 # configs
