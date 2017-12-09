@@ -125,6 +125,7 @@ volume settings math
     https://www.reddit.com/r/gamedev/comments/7hht15/developers_fix_your_volume_sliders/
 isometric example
     http://flarerpg.org/
+    https://www.youtube.com/watch?v=KvSjJ-kdGio
     
 pyinstaller -c -d -F --add-data="assets;assets" game.py
 
