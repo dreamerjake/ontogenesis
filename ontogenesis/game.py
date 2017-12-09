@@ -280,14 +280,20 @@ class Game:
     def travel(self):
         # TODO: splash screen if travel loading becomes significant
         if self.worldmap.destination_node:
+            # update worldmap nodes
             self.worldmap.current_node = self.worldmap.destination_node
             self.worldmap.destination_node = None
             self.worldmap.visit_node(self.worldmap.current_node)
             self.worldmap.discover_node(self.worldmap.current_node, neighbors=True)
+
+            # generate new current map
             self.clear_map()
             self.current_map = self.worldmap.graph.node[self.worldmap.current_node]['map']
             self.generate_maptiles()
             self.player.pos = self.current_map.player_start
+
+            # clear out all the map-specific delayed effects
+            self.delayed_events = [event for event in self.delayed_events if not event[2]]
 
         else:
             # TODO: send the state to a 'choose destination' screen
@@ -306,11 +312,11 @@ class Game:
 
         return entity(self, start_pos)
 
-    def delay_event(self, delay, event):
-        self.delayed_events.append((pg.time.get_ticks() + delay, event))
+    def delay_event(self, delay, event, map_specific):
+        self.delayed_events.append((pg.time.get_ticks() + delay, event, map_specific))
 
     def trigger_delayed_events(self):
-        for trigger_time, event in self.delayed_events:
+        for trigger_time, event, map_specific in self.delayed_events:
             if trigger_time <= pg.time.get_ticks():
                 event()
         self.delayed_events = [tup for tup in self.delayed_events if tup[0] > pg.time.get_ticks()]
