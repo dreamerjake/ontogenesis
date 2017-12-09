@@ -543,7 +543,7 @@ class Game:
 
         # static images
         self.icon = pg.image.load(path.join(images_folder, 'letter_j_icon_small.png'))
-        self.worldmap_background = pg.image.load(path.join(map_images_folder, 'worldmap.jpg')).convert()
+        self.worldmap_background = pg.image.load(path.join(map_images_folder, 'newmap.png')).convert_alpha()
         self.mob_zombie_image = pg.image.load(path.join(mob_images_folder, 'zombie1.png'))
         self.bullet_img = pg.image.load(path.join(skill_images_folder, 'bullet.png'))
         self.button_up = pg.image.load(path.join(ui_images_folder, 'up.png'))
