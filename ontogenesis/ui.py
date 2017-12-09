@@ -173,19 +173,21 @@ class UI:
         pg.draw.rect(self.screen, colors.white, outline_rect, 2)
 
     @staticmethod
-    def hide_group(group):
-        for member in group:
-            member.visible = False
+    def hide_group(*groups):
+        for group in groups:
+            for member in group:
+                member.visible = False
 
     @staticmethod
-    def show_group(group):
-        for member in group:
-            member.visible = True
+    def show_group(*groups):
+        for group in groups:
+            for member in group:
+                member.visible = True
 
     def draw_main_menu(self):
-        self.hide_group(self.all_buttons)
-        self.hide_group(self.all_windows)
+        self.hide_group(self.all_buttons, self.all_windows)
         self.show_group(self.main_menu_buttons)
+
         self.screen.fill(colors.black)
         self.draw_menu_title()
         self.optional_messages()
@@ -195,9 +197,8 @@ class UI:
         pg.display.flip()
 
     def draw_pause_menu(self):
-        self.hide_group(self.all_windows)
-        self.hide_group(self.all_buttons)
-        # self.show_buttons(self.main_menu_buttons)
+        self.hide_group(self.all_buttons, self.all_windows)
+
         self.screen.fill(colors.black)
         self.draw_menu_title()
         self.optional_messages()
@@ -205,18 +206,15 @@ class UI:
             self.debug_messages()
         self.draw_flashed_messages()
 
-        # self.game.ui_elements.update()
-        # self.game.ui_elements.draw(self.game.screen)
         self.keybinds_window.update()
         self.keybinds_window.draw(self.game.screen)
 
         pg.display.flip()
 
     def draw_info_skill(self):
-        self.hide_group(self.all_windows)
-        self.hide_group(self.all_buttons)
-        self.screen.fill(colors.black)
+        self.hide_group(self.all_buttons, self.all_windows)
 
+        self.screen.fill(colors.black)
         self.draw_text('SKILL DETAIL', self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2, align='center')
         self.draw_menu_title()
         self.optional_messages()
@@ -226,13 +224,10 @@ class UI:
         pg.display.flip()
 
     def draw_skills_menu(self):
-        self.hide_group(self.all_windows)
-        self.hide_group(self.all_buttons)
-
+        self.hide_group(self.all_buttons, self.all_windows)
         self.show_group(self.skill_menu_windows)
 
         self.screen.fill(colors.black)
-
         self.draw_menu_title()
 
         self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
@@ -247,12 +242,23 @@ class UI:
         self.draw_flashed_messages()
         pg.display.flip()
 
-    def draw_game_over(self):
+    def draw_map_menu(self):
+        self.hide_group(self.all_windows)
         self.hide_group(self.all_buttons)
+
         self.screen.fill(colors.black)
+        self.draw_menu_title()
+        self.optional_messages()
+        if self.game.configs.debug:
+            self.debug_messages()
+        self.draw_flashed_messages()
+        pg.display.flip()
 
+    def draw_game_over(self):
+        self.hide_group(self.all_buttons, self.all_windows)
+
+        self.screen.fill(colors.black)
         self.draw_text('YOU DIED.', self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2, align='center')
-
         self.draw_menu_title()
         self.optional_messages()
         if self.game.configs.debug:
@@ -261,8 +267,7 @@ class UI:
         pg.display.flip()
 
     def draw_hud(self):
-        # print("Drawing HUD")
-        self.hide_group(self.all_buttons)
+        self.hide_group(self.all_buttons, self.all_windows)
         health_pct = self.game.player.hp_current / self.game.player.hp_max
         self.draw_player_health(5, 25, health_pct)
         self.draw_mobcount()
@@ -273,9 +278,11 @@ class UI:
 
     def debug_messages(self):
         self.draw_debug_warning()
+        # game fsm state
         self.draw_state()
 
     def optional_messages(self):
+        # fps
         if self.game.configs.show_fps:
             self.draw_fps()
 

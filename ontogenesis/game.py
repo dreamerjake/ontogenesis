@@ -171,18 +171,27 @@ class Game:
             ('skill_detail', 'view_skills'): 'skills_menu',
             ('skill_detail', 'back'): 'skills_menu',  # universal back button?
 
+            ('map_menu', 'paused'): 'paused',
+            ('map_menu', 'view_skills'): 'skills_menu',
+
             # gameplay
             ('playing', 'paused'): 'paused',
             ('playing', 'die'): 'game_over',
             ('playing', 'view_skills'): 'skills_menu',
+            ('playing', 'view_map'): 'worldmap',
 
             ('paused', 'paused'): 'playing',
             ('paused', 'view_skills'): 'skills_menu',
+            ('paused', 'view_map'): 'map_menu',
 
             # splashes
             ('game_over', 'next'): 'main_menu',
         }
         self.fsm = StateMachine(game=self, initial='main_menu', table=self.state_table)
+
+    def map_menu(self):
+        self.ui.draw_map_menu()
+        return 'stay'
 
     def skill_detail(self):
         self.ui.draw_info_skill()
