@@ -250,6 +250,8 @@ class Game:
 
         # get fresh game elements
         self.worldmap = WorldMap(self)
+        self.ui.all_windows.append(self.worldmap)
+        self.ui.map_menu_windows = [self.worldmap]
         # for node in self.worldmap.graph.nodes():
         # atts = nx.get_node_attributes(self.worldmap.graph, 'map')
         # print(atts)
@@ -353,6 +355,9 @@ class Game:
             for window in self.ui.all_windows:
                 if window.visible:
                     window.process_input(event)
+
+            if self.worldmap.visible:
+                self.worldmap.process_input(event)
 
             if event.type == pg.QUIT:
                 self.quit()

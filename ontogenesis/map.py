@@ -51,6 +51,7 @@ class WorldMap:
         self.game = game
         self.mob_types = cycle(['zombies'])
         self.image = None
+        self.visible = False
 
         self.width = width  # cells
         self.height = height  # cells
@@ -77,8 +78,11 @@ class WorldMap:
         #     pg.draw.line(self.image, colors.red, (0, y), (self.image.get_width(), y), line_width)
 
         self.current_node = random.choice([*self.graph.nodes()])  # random starting location for now
+        self.destination_node = None
         # print(self.current_node)
         # nodesAt5 = filter(lambda (n, d): d['at'] == 5, P.nodes(data=True))
+
+        self.rect = self.image.get_rect()
 
     def calc_prune_chance(self, edge):
         return self.path_base_chance + (self.path_length_bonus * self.min_dist / edge[2]['weight'])
@@ -170,6 +174,18 @@ class WorldMap:
         #     self.graph = graph
         #     print(graph)
         # return graph
+
+    def get_closest_node(self, pos):
+        # node_coords = [(int(node[0] * self.scalex), int(node[1] * self.scaley)) for node in node_coords]
+        distances = {node: calc_dist(pos, (int(node[0] * self.scalex) + 100, int(node[1] * self.scaley) + 100)) for node in self.graph.nodes()}
+        # print(distances)
+        return min(distances, key=distances.get)
+
+    def process_input(self, event):
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            relative_pos = Vec2(event.pos)  # - Vec2(self.button_up.get_abs_offset()) - Vec2(self.rect.topleft)
+            closest_node = self.get_closest_node(relative_pos)
+            self.destination_node = closest_node
 
 
 class Map:

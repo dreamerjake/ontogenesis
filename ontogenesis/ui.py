@@ -68,6 +68,7 @@ class UI:
         # button groups
         self.all_windows = [self.keybinds_window, self.passives_window, self.actives_window]
         self.skill_menu_windows = [self.passives_window, self.actives_window]
+        self.map_menu_windows = []
 
     def new(self):
         # hud
@@ -243,17 +244,25 @@ class UI:
         pg.display.flip()
 
     def draw_map_menu(self):
-        self.hide_group(self.all_windows)
-        self.hide_group(self.all_buttons)
+        self.hide_group(self.all_buttons, self.all_windows)
+        self.show_group(self.map_menu_windows)
 
         self.screen.fill(colors.black)
         self.screen.blit(self.game.worldmap.image, (100, 100))
+
+        # draw nodes, then mark current and destination nodes
         for node in self.game.worldmap.graph.nodes():
             # node_pos = (int(self.game.worldmap.current_node[0] * self.game.worldmap.scalex + 100), int(self.game.worldmap.current_node[1] * self.game.worldmap.scaley + 100))
             node_pos = int(node[0] * self.game.worldmap.scalex) + 100 + int(self.game.worldmap.scalex / 2), int(node[1] * self.game.worldmap.scaley) + 100 + int(self.game.worldmap.scaley / 2)
             pg.draw.circle(self.screen, colors.yellow, node_pos, 10, 5)
         current_node_pos = int(self.game.worldmap.current_node[0] * self.game.worldmap.scalex) + 100 + int(self.game.worldmap.scalex / 2), int(self.game.worldmap.current_node[1] * self.game.worldmap.scaley) + 100 + int(self.game.worldmap.scaley / 2)
         pg.draw.circle(self.screen, colors.red, current_node_pos, 20, 10)
+        if self.game.worldmap.destination_node:
+            destination_node_pos = int(self.game.worldmap.destination_node[0] * self.game.worldmap.scalex) + 100 + int(
+                self.game.worldmap.scalex / 2), int(
+                self.game.worldmap.destination_node[1] * self.game.worldmap.scaley) + 100 + int(
+                self.game.worldmap.scaley / 2)
+            pg.draw.circle(self.screen, colors.green, destination_node_pos, 20, 10)
         self.draw_menu_title()
         self.optional_messages()
         if self.game.configs.debug:
