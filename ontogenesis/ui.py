@@ -251,12 +251,14 @@ class UI:
         self.screen.blit(self.game.worldmap.image, (100, 100))
 
         # draw nodes
-        for node, discovered in self.game.worldmap.graph.nodes(data='discovered'):
+        for node, data in self.game.worldmap.graph.nodes(data=True):
             # print(node)
             # node_pos = (int(self.game.worldmap.current_node[0] * self.game.worldmap.scalex + 100), int(self.game.worldmap.current_node[1] * self.game.worldmap.scaley + 100))
             # node_pos = int(node[0] * self.game.worldmap.scalex) + 100 + int(self.game.worldmap.scalex / 2), int(node[1] * self.game.worldmap.scaley) + 100 + int(self.game.worldmap.scaley / 2)
-            if discovered:
-                node_pos = self.game.worldmap.get_node_pos(node)
+            node_pos = self.game.worldmap.get_node_pos(node)
+            if data['visited']:
+                pg.draw.circle(self.screen, colors.blue, node_pos, 10, 5)
+            elif data['discovered']:
                 pg.draw.circle(self.screen, colors.yellow, node_pos, 10, 5)
 
         # draw edges

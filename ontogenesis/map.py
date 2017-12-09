@@ -81,6 +81,7 @@ class WorldMap:
 
         self.current_node = random.choice([*self.graph.nodes()])  # random starting location for now
         self.discover_node(self.current_node, neighbors=True)
+        self.visit_node(self.current_node)
         self.destination_node = None
         # print(self.current_node)
         # nodesAt5 = filter(lambda (n, d): d['at'] == 5, P.nodes(data=True))
@@ -102,6 +103,8 @@ class WorldMap:
             for neighbor in self.graph.neighbors(node):
                 self.graph.node[neighbor]['discovered'] = True
 
+    def visit_node(self, node):
+        self.graph.node[node]['visited'] = True
 
     def generate_graph(self):
         print('Generating new WorldMap')
@@ -117,7 +120,7 @@ class WorldMap:
                 node_coords.append(location)
         # scale node coordinates to map image locations
         # node_coords = [(int(node[0] * self.scalex), int(node[1] * self.scaley)) for node in node_coords]
-        nodes = {pos: {'name': pos, 'position': pos, 'discovered': False} for node_name, pos in enumerate(node_coords)}
+        nodes = {pos: {'name': pos, 'position': pos, 'discovered': False, 'visited': False} for node_name, pos in enumerate(node_coords)}
         # labels = {node: next(self.mob_types) for node in nodes}
         #
         # node_positions = {k: k for k, v in nodes.items()}
