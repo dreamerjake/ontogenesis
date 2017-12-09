@@ -53,6 +53,7 @@ class WorldMap:
         self.image = None
         self.visible = False
 
+        self.border = 100
         self.width = width  # cells
         self.height = height  # cells
         self.min_dist = min_dist  # cells
@@ -61,7 +62,8 @@ class WorldMap:
 
         self.graph = None
         # print('graph before gen: {}'.format(self.graph))
-        self.generate()
+        self.generate_graph()
+        self.generate_image()
         # print('graph after gen: {}'.format(self.graph))
 
         self.scalex = self.image.get_width() / self.width
@@ -87,7 +89,13 @@ class WorldMap:
     def calc_prune_chance(self, edge):
         return self.path_base_chance + (self.path_length_bonus * self.min_dist / edge[2]['weight'])
 
-    def generate(self):
+    def generate_image(self):
+        bg = self.game.worldmap_background.copy()
+        bg = pg.transform.scale(bg, (settings.WIDTH - self.border * 2, settings.HEIGHT - self.border * 2))
+        bg.set_colorkey(bg.get_at((0, 0)))
+        self.image = bg
+
+    def generate_graph(self):
         print('Generating new WorldMap')
         graph = nx.Graph()
         node_coords = []
@@ -121,13 +129,19 @@ class WorldMap:
 
         # recurse if we end up with a unconnected graph
         # TODO: check if the largest subgraph is "large enough" and maybe use it
-
+        if not nx.is_connected(graph):
+            print("NOT CONNECTED - generating new worldmap graph")
+            self.generate_graph()
+        else:
+            print("CONNECTED - setting worldmap graph")
+            self.graph = graph
+            # print(graph)
+        # return graph
         # print('TEST')
         # print(graph.nodes())
-        self.graph = graph
+        # self.graph = graph
 
         # aspect_ratio = settings.WIDTH / settings.HEIGHT
-        border = 100
 
         # fig = plt.figure(figsize=(10 * aspect_ratio, 10))
         #
@@ -155,12 +169,12 @@ class WorldMap:
         # image = pg.transform.scale(image, (settings.WIDTH - border * 2, settings.HEIGHT - border * 2))
         # image.set_colorkey(image.get_at((0, 0)))
 
-        bg = self.game.worldmap_background.copy()
-        bg = pg.transform.scale(bg, (settings.WIDTH - border * 2, settings.HEIGHT - border * 2))
-        bg.set_colorkey(bg.get_at((0, 0)))
-        # bg.blit(image, (0, 0))
-
-        self.image = bg
+        # bg = self.game.worldmap_background.copy()
+        # bg = pg.transform.scale(bg, (settings.WIDTH - self.border * 2, settings.HEIGHT - self.border * 2))
+        # bg.set_colorkey(bg.get_at((0, 0)))
+        # # bg.blit(image, (0, 0))
+        #
+        # self.image = bg
 
         # for y in range(0, self.current_map.height, settings.TILESIZE):
         #     start_pos = (0, y + self.camera.offset[1])
