@@ -178,6 +178,7 @@ class WorldMap:
     def get_closest_node(self, pos):
         # node_coords = [(int(node[0] * self.scalex), int(node[1] * self.scaley)) for node in node_coords]
         distances = {node: calc_dist(pos, (int(node[0] * self.scalex) + 100, int(node[1] * self.scaley) + 100)) for node in self.graph.nodes()}
+        del distances[self.current_node]
         # print(distances)
         return min(distances, key=distances.get)
 
