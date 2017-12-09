@@ -56,6 +56,11 @@
             * Class Definition
         * Walls
             * Destructible walls?
+        * Multiple Victory Conditions
+            * Kill Everything?
+            * Find the exit?
+            * Waypoints / Other Fast Travel for previously beaten maps (maybe if the kill everything condition was met?)
+            * Guide (in exchange for currency?)
         
     * Combat
         * Floating Damage Numbers
@@ -104,6 +109,7 @@
     * Help Screen
         * Keybinds Display
     * ~~Minimap~~
+        * Fog of War / Explored
 
 * ####SYSTEM
     * Display
