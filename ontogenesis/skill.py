@@ -8,8 +8,11 @@ class Skill:
     # base class for the skill mixin system
     display_attrs = ['name', 'passive', 'xp_current']  # handle 'bonuses' separately
 
+    def __init__(self):
+        self.bonuses = {}
+
     @property
-    def display_attrs(self):
+    def display(self):
         display = {attr: getattr(self, attr) for attr in self.display_attrs if hasattr(self, attr)}
         return display
 
@@ -51,4 +54,3 @@ toughness_skill.passive = True
 toughness_skill.bonuses = {'hp_max': 10}
 toughness_skill.xp_current = 0
 toughness_skill.xp_growth_rate = .1
-print(toughness_skill.display_attrs)
