@@ -6,7 +6,12 @@ from pygame.math import Vector2 as Vec2
 
 class Skill:
     # base class for the skill mixin system
-    pass
+    display_attrs = ['name', 'passive', 'xp_current']  # handle 'bonuses' separately
+
+    @property
+    def display_attrs(self):
+        display = {attr: getattr(self, attr) for attr in self.display_attrs if hasattr(self, attr)}
+        return display
 
 
 class Projectile(pg.sprite.Sprite):
@@ -36,13 +41,14 @@ class Projectile(pg.sprite.Sprite):
 run_skill = Skill()
 run_skill.name = 'Run'
 run_skill.passive = True
-run_skill.bonuses = {'speed': 100}
+run_skill.bonuses = {'speed': 10}
 run_skill.xp_current = 0
 run_skill.xp_growth_rate = .1
 
 toughness_skill = Skill()
 toughness_skill.name = 'Toughness'
 toughness_skill.passive = True
-toughness_skill.bonuses = {'hp_max': 100}
+toughness_skill.bonuses = {'hp_max': 10}
 toughness_skill.xp_current = 0
 toughness_skill.xp_growth_rate = .1
+print(toughness_skill.display_attrs)
