@@ -91,7 +91,7 @@ class WorldMap:
         print('Generating new WorldMap')
         graph = nx.Graph()
         node_coords = []
-        tile_coords = [tile for tile in product(range(self.width), range(self.height))]
+        tile_coords = [tile for tile in product(range(1, self.width - 1), range(1, self.height - 1))]
         random.shuffle(tile_coords)
         for location in tile_coords:
             for node in node_coords:
