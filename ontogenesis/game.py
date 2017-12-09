@@ -483,10 +483,6 @@ class Game:
         pg.display.set_icon(self.icon)
 
 
-def main():
-    g = Game(name="Dev Game")
-    g.run()
-
-
 if __name__ == '__main__':
-    main()
+    game = Game(name="Dev Game")
+    game.run()
