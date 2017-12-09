@@ -178,7 +178,7 @@ class Game:
             ('playing', 'paused'): 'paused',
             ('playing', 'die'): 'game_over',
             ('playing', 'view_skills'): 'skills_menu',
-            ('playing', 'view_map'): 'worldmap',
+            ('playing', 'view_map'): 'map_menu',
 
             ('paused', 'paused'): 'playing',
             ('paused', 'view_skills'): 'skills_menu',
@@ -338,7 +338,6 @@ class Game:
             # if self.fsm.current_state not in ['game_over']:
             self.fsm(method())
 
-
     def quit(self):
         if settings.SYSTEM_DEBUG:
             print('Suppressed Debug Messages: {}'.format(self.suppressed_debug_messages))
@@ -383,6 +382,8 @@ class Game:
                     self.fsm('view_skills')
                 if event.key == pg.K_F1:
                     self.fsm('info')
+                if event.key == pg.K_m:
+                    self.fsm('view_map')
 
     def screen_update(self):
         """ Create the display - called on Game init and display settings change"""
