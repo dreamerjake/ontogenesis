@@ -55,12 +55,20 @@ class WorldMap:
         self.path_length_bonus = path_length_bonus
         # self.scalex
         # self.scaley
-        self.graph = self.generate()
+        self.graph = None
+        # print('graph before gen: {}'.format(self.graph))
+        self.generate()
+        # print('graph after gen: {}'.format(self.graph))
+
+        self.current_node = random.choice([*self.graph.nodes()])  # random starting location for now
+        # print(self.current_node)
+        # nodesAt5 = filter(lambda (n, d): d['at'] == 5, P.nodes(data=True))
 
     def calc_prune_chance(self, edge):
         return self.path_base_chance + (self.path_length_bonus * self.min_dist / edge[2]['weight'])
 
     def generate(self):
+        print('Generating new WorldMap')
         graph = nx.Graph()
         node_coords = []
         tile_coords = [tile for tile in product(range(self.width), range(self.height))]
@@ -93,10 +101,17 @@ class WorldMap:
 
         # recurse if we end up with a unconnected graph
         # TODO: check if the largest subgraph is "large enough" and maybe use it
-        if not nx.is_connected(graph):
-            self.generate()
 
-        return graph
+        # print('TEST')
+        # print(graph.nodes())
+        self.graph = graph
+        # if not nx.is_connected(graph):
+        #     print("generating new worldmap graph")
+        #     self.generate()
+        # else:
+        #     self.graph = graph
+        #     print(graph)
+            # return graph
 
 
 class Map:

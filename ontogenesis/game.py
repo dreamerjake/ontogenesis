@@ -4,18 +4,18 @@ from os import path
 import sys
 import time
 
+import networkx as nx
 import pygame as pg
 from pygame.locals import FULLSCREEN
 from pygame.math import Vector2 as Vec2
 
 from helpers import calc_dist
-from map import Map, Camera, Wall
+from map import Map, WorldMap, Camera, Wall
 from player import Player
 from enemy import Mob, Collider
 from ui import UI
 import settings
-from settings import colors
-from settings import game_configs as configs
+from settings import colors, game_configs
 
 
 class MessageQueue:
@@ -86,16 +86,17 @@ class StateMachine:
         table: A dict (current, event) -> target
     """
 
-    def __init__(self, initial, table):
+    def __init__(self, game, initial, table):
         self.current_state = initial
         self.state_table = table
+        self.game = game
 
     def __call__(self, event):
         """Trigger one state transition."""
         # self.current_state = self.state_table[self.current_state, event]
         next_state = self.state_table.get((self.current_state, event), self.current_state)
         changed = self.current_state != next_state
-        if configs.debug and changed:
+        if self.game.configs.debug and changed:
             debug_msg = "State change event: {} - current state: {} - next state: {} (Changed={})"
             print(debug_msg.format(event, self.current_state, next_state, changed))
         if changed:
@@ -115,7 +116,7 @@ class Game:
         self.sfx_channel = pg.mixer.Channel(0)
 
         # configs
-        self.configs = configs
+        self.configs = game_configs
 
         # display
         self.fullscreen = settings.FULLSCREEN
@@ -150,34 +151,38 @@ class Game:
 
         # components
         self.ui = UI(self)
+        self.worldmap = None
         self.player = None
         self.camera = None
 
         # map stuff
-        self.map = Map(self, settings.MAP_WIDTH, settings.MAP_HEIGHT)
-        self.player_start = self.map.player_start
+        self.current_map = None
+        # self.player_start = self.map.player_start
 
         # state machine
         self.state_table = {
-            # ('main_menu', 'stay'): 'main_menu',
+            # menus
             ('main_menu', 'new_game'): 'playing',
-            # ('playing', 'stay'): 'playing',
-            ('playing', 'paused'): 'paused',
-            ('playing', 'die'): 'game_over',
-            ('playing', 'view_skills'): 'skills_menu',
-            ('paused', 'paused'): 'playing',
-            # ('paused', 'stay'): 'paused',
-            ('paused', 'view_skills'): 'skills_menu',
-            # ('game_over', 'stay'): 'game_over',
-            ('game_over', 'next'): 'main_menu',
-            # ('skills_menu', 'stay'): 'skills_menu',
+
             ('skills_menu', 'next'): 'playing',
             ('skills_menu', 'paused'): 'paused',
             ('skills_menu', 'info'): 'skill_detail',
+
             ('skill_detail', 'view_skills'): 'skills_menu',
             ('skill_detail', 'back'): 'skills_menu',  # universal back button?
+
+            # gameplay
+            ('playing', 'paused'): 'paused',
+            ('playing', 'die'): 'game_over',
+            ('playing', 'view_skills'): 'skills_menu',
+
+            ('paused', 'paused'): 'playing',
+            ('paused', 'view_skills'): 'skills_menu',
+
+            # splashes
+            ('game_over', 'next'): 'main_menu',
         }
-        self.fsm = StateMachine(initial='main_menu', table=self.state_table)
+        self.fsm = StateMachine(game=self, initial='main_menu', table=self.state_table)
 
     def skill_detail(self):
         self.ui.draw_info_skill()
@@ -216,13 +221,15 @@ class Game:
 
         return 'stay'
 
+    @timeit
     def new(self):
-
+        # clean up old sprites
         for sprite in self.all_sprites:
             sprite.kill()
 
         print('Starting New Game')
 
+        # get a clean ui instance
         self.ui.new()
 
         # fire up the intro music
@@ -230,11 +237,27 @@ class Game:
         pg.mixer.music.load(self.current_music)
         pg.mixer.music.play(loops=-1)
 
+        # self.generate_maptiles()
+
+        # get fresh game elements
+        self.worldmap = WorldMap()
+        # for node in self.worldmap.graph.nodes():
+        atts = nx.get_node_attributes(self.worldmap.graph, 'map')
+        # print(atts)
+        atts = {node: {'map': Map(self, settings.MAP_WIDTH, settings.MAP_HEIGHT)} for node in self.worldmap.graph.nodes()}
+        # atts['map'] = Map(self, settings.MAP_WIDTH, settings.MAP_HEIGHT)
+        # print(atts)
+        nx.set_node_attributes(self.worldmap.graph, atts)
+        # print(atts)
+        # print(nx.get_node_attributes(self.worldmap.graph, 'map'))
+        # print(nx.get_node_attributes(self.worldmap.graph, 'map')[self.worldmap.current_node])
+        self.current_map = nx.get_node_attributes(self.worldmap.graph, 'map')[self.worldmap.current_node]
+        # self.player_start = self.current_map.player_start
+
         self.generate_maptiles()
 
-        self.player = self.spawn(Player, self.player_start)
-
-        self.camera = Camera(self.map.width, self.map.height)
+        self.player = self.spawn(Player, self.current_map.player_start)
+        self.camera = Camera(self.current_map.width, self.current_map.height)
 
     def spawn(self, entity, start_pos):
         """
@@ -266,30 +289,30 @@ class Game:
             - this is kind of an efficiency hack since we're looping through the data anyways,
               but might need to be replaced later to separate functionality or as part of procedural gen
         """
-        for x in range(self.map.tilewidth):
-            for y in range(self.map.tileheight):
+        for x in range(self.current_map.tilewidth):
+            for y in range(self.current_map.tileheight):
 
-                if self.map.data[x][y] == 1:
+                if self.current_map.data[x][y] == 1:
                     self.spawn(Wall, (x * settings.TILESIZE, y * settings.TILESIZE))
 
-                elif self.player_start is None:
+                elif self.current_map.player_start is None:
                     tile_center_x = x * settings.TILESIZE + settings.TILESIZE / 2
                     tile_center_y = y * settings.TILESIZE + settings.TILESIZE / 2
-                    self.player_start = (int(tile_center_x), int(tile_center_y))
+                    self.current_map.player_start = (int(tile_center_x), int(tile_center_y))
 
                     if self.configs.debug:
-                        print("Player starting coordinates set to: {}".format(self.player_start))
+                        print("Player starting coordinates set to: {}".format(self.current_map.player_start))
 
                 else:
                     # distance from player spawn
-                    player_dist = calc_dist((x * settings.TILESIZE, y * settings.TILESIZE), self.player_start)
+                    player_dist = calc_dist((x * settings.TILESIZE, y * settings.TILESIZE), self.current_map.player_start)
                     # distance from other clusters
-                    cluster_space = not any([calc_dist((x, y), cluster) < settings.cluster_dist for cluster in self.map.clusters])
+                    cluster_space = not any([calc_dist((x, y), cluster) < settings.cluster_dist for cluster in self.current_map.clusters])
                     if player_dist > settings.safe_spawn_dist and cluster_space:  # random.random() > .9:
                         # self.spawn(Mob, (x * settings.TILESIZE, y * settings.TILESIZE))
-                        self.map.clusters.append((x, y))
+                        self.current_map.clusters.append((x, y))
 
-        for cluster in self.map.clusters:
+        for cluster in self.current_map.clusters:
             for i in range(settings.pack_size):
                 x = (cluster[0] * settings.TILESIZE + i) + (settings.TILESIZE // 2)
                 y = (cluster[1] * settings.TILESIZE + i) + (settings.TILESIZE // 2)
@@ -303,7 +326,9 @@ class Game:
             self.delta_time = self.clock.tick(self.configs.fps) / 1000
             self.events()
             method = getattr(self, self.fsm.current_state)
+            # if self.fsm.current_state not in ['game_over']:
             self.fsm(method())
+
 
     def quit(self):
         if settings.SYSTEM_DEBUG:
@@ -381,12 +406,12 @@ class Game:
 
     def draw_grid(self, line_width=1):
         """ draws a grid of lines to display the boundaries of empty tiles """
-        for x in range(0, self.map.width, settings.TILESIZE):
+        for x in range(0, self.current_map.width, settings.TILESIZE):
             start_pos = (x + self.camera.offset[0], 0)
             end_pos = (x + self.camera.offset[0], settings.HEIGHT)
             pg.draw.line(self.screen, colors.lightgrey, start_pos, end_pos, line_width)
 
-        for y in range(0, self.map.height, settings.TILESIZE):
+        for y in range(0, self.current_map.height, settings.TILESIZE):
             start_pos = (0, y + self.camera.offset[1])
             end_pos = (settings.WIDTH, y + self.camera.offset[1])
             pg.draw.line(self.screen, colors.lightgrey, start_pos, end_pos, line_width)
@@ -484,5 +509,4 @@ class Game:
 
 
 if __name__ == '__main__':
-    game = Game(name="Dev Game")
-    game.run()
+    Game(name="Dev Game").run()
