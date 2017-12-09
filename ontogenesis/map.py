@@ -94,7 +94,7 @@ class WorldMap:
     def generate_image(self):
         bg = self.game.worldmap_background.copy()
         bg = pg.transform.scale(bg, (settings.WIDTH - self.border * 2, settings.HEIGHT - self.border * 2))
-        bg.set_colorkey(bg.get_at((0, 0)))
+        # bg.set_colorkey(bg.get_at((0, 0)))
         self.image = bg
 
     def discover_node(self, node, neighbors=False):
