@@ -33,7 +33,7 @@
     
     * Player
         * Attributes
-            * World Map Location
+            * ~~World Map Location~~
             * Currency
         * ~~Animations~~
         * State Tracking
@@ -50,14 +50,15 @@
         * Mob skills
         * Mob stats should scale with difficulty
         * Mob density should scale with difficulty
+        * Edible tag
 
     * Map
-        * World Map
-            * Class Definition
+        * ~~World Map~~
+            * ~~Class Definition~~
         * Walls
             * Destructible walls?
         * Multiple Victory Conditions
-            * Kill Everything?
+            * ~~Kill Everything~~
             * Find the exit?
             * Waypoints / Other Fast Travel for previously beaten maps (maybe if the kill everything condition was met?)
             * Guide (in exchange for currency?)
@@ -93,13 +94,13 @@
         * Slider?
         * Text Input?
         * Grid System?
-        * Scrolling Window
+        * ~~Scrolling Window~~
         * Back Buttons
     * ~~Message Flashing (e.g. 'MUSIC MUTED')~~
     * Character Screen
     * Inventory Screen (merge into Character Screen???)
-    * Map Screen
-    * Skills Screen
+    * ~~Map Screen~~
+    * ~~Skills Screen~~
     * HUD
         * Active Skill
         * ~~Player Health~~
@@ -146,3 +147,27 @@ Track the hometown over runs, for permanence
     * Each run's quests based on the current stats(needs) of the town
     * Finding the hometown is the objective of the story mode?
 Dynamic mob generation based on the game's fps
+
+### Mob AI Scratchpad
+Predatory
+    * Looks for food
+Bloodthirsty
+Carnivorous
+    * Eats things it kills (Gets stronger / Gains Health)
+Hostile
+    * Threatens / Tries to Intimidate (snaps/growls)
+Covert
+    * Hides
+
+### Sample Mob
+'Giant Lizard'
+Big   # hit box multiplier?
+Fast  # speed
+Spits Acid # skills
+Burrow # skills
+
+high collision damage
+high knockback # hits you with his tail
+low vision
+high xp
+inventory: lizard meat, various lizard parts
