@@ -80,6 +80,7 @@ class WorldMap:
         #     pg.draw.line(self.image, colors.red, (0, y), (self.image.get_width(), y), line_width)
 
         self.current_node = random.choice([*self.graph.nodes()])  # random starting location for now
+        self.discover_node(self.current_node, neighbors=True)
         self.destination_node = None
         # print(self.current_node)
         # nodesAt5 = filter(lambda (n, d): d['at'] == 5, P.nodes(data=True))
@@ -95,6 +96,13 @@ class WorldMap:
         bg.set_colorkey(bg.get_at((0, 0)))
         self.image = bg
 
+    def discover_node(self, node, neighbors=False):
+        self.graph.node[node]['discovered'] = True
+        if neighbors:
+            for neighbor in self.graph.neighbors(node):
+                self.graph.node[neighbor]['discovered'] = True
+
+
     def generate_graph(self):
         print('Generating new WorldMap')
         graph = nx.Graph()
@@ -109,16 +117,16 @@ class WorldMap:
                 node_coords.append(location)
         # scale node coordinates to map image locations
         # node_coords = [(int(node[0] * self.scalex), int(node[1] * self.scaley)) for node in node_coords]
-        nodes = {pos: {'name': pos, 'position': pos} for node_name, pos in enumerate(node_coords)}
-        labels = {node: next(self.mob_types) for node in nodes}
-
-        node_positions = {k: k for k, v in nodes.items()}
+        nodes = {pos: {'name': pos, 'position': pos, 'discovered': False} for node_name, pos in enumerate(node_coords)}
+        # labels = {node: next(self.mob_types) for node in nodes}
+        #
+        # node_positions = {k: k for k, v in nodes.items()}
 
         edges = [(edge[0], edge[1], {'weight': calc_dist(edge[0], edge[1])}) for edge in combinations(node_coords, 2)]
 
         prune_targets = [edge for edge in edges if self.calc_prune_chance(edge) < random.random()]
 
-        graph.add_nodes_from(nodes.keys())
+        graph.add_nodes_from(nodes.items())
         graph.add_edges_from(edges)
 
         # prune the prune targets in random order *unless they are the only remaining path to the node*

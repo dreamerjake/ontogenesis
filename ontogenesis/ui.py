@@ -251,18 +251,21 @@ class UI:
         self.screen.blit(self.game.worldmap.image, (100, 100))
 
         # draw nodes
-        for node in self.game.worldmap.graph.nodes():
+        for node, discovered in self.game.worldmap.graph.nodes(data='discovered'):
+            # print(node)
             # node_pos = (int(self.game.worldmap.current_node[0] * self.game.worldmap.scalex + 100), int(self.game.worldmap.current_node[1] * self.game.worldmap.scaley + 100))
             # node_pos = int(node[0] * self.game.worldmap.scalex) + 100 + int(self.game.worldmap.scalex / 2), int(node[1] * self.game.worldmap.scaley) + 100 + int(self.game.worldmap.scaley / 2)
-            node_pos = self.game.worldmap.get_node_pos(node)
-            pg.draw.circle(self.screen, colors.yellow, node_pos, 10, 5)
+            if discovered:
+                node_pos = self.game.worldmap.get_node_pos(node)
+                pg.draw.circle(self.screen, colors.yellow, node_pos, 10, 5)
 
         # draw edges
         for edge in self.game.worldmap.graph.edges():
             start_pos = self.game.worldmap.get_node_pos(edge[0])
             end_pos = self.game.worldmap.get_node_pos(edge[1])
             #  pg.draw.line(self.screen, colors.cyan, start_pos, end_pos, 4)  # line width
-            pg.draw.aaline(self.screen, colors.cyan, start_pos, end_pos, 4)  # line blend
+            if self.game.worldmap.graph.node[edge[0]]['discovered'] and self.game.worldmap.graph.node[edge[1]]['discovered']:
+                pg.draw.aaline(self.screen, colors.cyan, start_pos, end_pos, 4)  # line blend
 
         # current and destination nodes
         current_node_pos = int(self.game.worldmap.current_node[0] * self.game.worldmap.scalex) + 100 + int(self.game.worldmap.scalex / 2), int(self.game.worldmap.current_node[1] * self.game.worldmap.scaley) + 100 + int(self.game.worldmap.scaley / 2)
