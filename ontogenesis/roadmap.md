@@ -41,7 +41,7 @@
     * NPC
         * Class Definition
         * Skill Training
-        
+
     * Enemy
         * ~~Class Definition~~
         * ~~mouseover highlighting~~
@@ -50,7 +50,7 @@
         * Mob skills
         * Mob stats should scale with difficulty
         * Mob density should scale with difficulty
-        
+
     * Map
         * World Map
             * Class Definition
@@ -76,7 +76,7 @@
         * Skills
         * Equipment
         * Enemies
-        * Worldmap
+        * ~~Worldmap~~
     
     * Settings
         * Settings as SimpleNamespace?? (tuple keys??? e.g. game.settings[a, b, c])
