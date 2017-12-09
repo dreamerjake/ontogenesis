@@ -402,9 +402,6 @@ class Game:
                 sprite.draw_health()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
-        self.hud.update()
-        self.hud.draw(self.screen)
-
         # show various object boundaries in debug mode
         if self.configs.debug:
             # player.rect as white box
@@ -418,15 +415,18 @@ class Game:
                 pg.draw.rect(self.screen, colors.white, self.camera.apply(mob), 2)
                 pg.draw.rect(self.screen, colors.green, self.camera.apply(mob, hit_rect=True), 2)
 
-            # circle around detected mouse position
+            # white circle around detected mouse position
             pg.draw.circle(self.screen, colors.white, pg.mouse.get_pos(), 10, 1)
-
-        self.ui.draw_hud()
 
         # messing around with isometry
         # new_screen = pg.transform.rotate(self.screen, -45)
         # new_screen = pg.transform.scale(new_screen, (new_screen.get_width(), new_screen.get_height() // 2))
         # self.screen.blit(new_screen, (0, 0))
+
+        # TODO: merge these
+        self.hud.update()
+        self.hud.draw(self.screen)
+        self.ui.draw_hud()
 
         pg.display.flip()
 
