@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from itertools import product, combinations
+from io import BytesIO
+from itertools import product, combinations, cycle
 from math import sqrt
 import random
 
+import matplotlib.pyplot as plt
 import networkx as nx
 import pygame as pg
 from pygame.math import Vector2 as Vec2
@@ -45,20 +47,34 @@ class Camera:
 
 
 class WorldMap:
-    def __init__(self, width=20, height=10, min_dist=4, path_base_chance=.1, path_length_bonus=.3):
-        # self.mob_types
-        # self.image
+    def __init__(self, game, width=20, height=10, min_dist=4, path_base_chance=.1, path_length_bonus=.3):
+        self.game = game
+        self.mob_types = cycle(['zombies'])
+        self.image = None
+
         self.width = width  # cells
         self.height = height  # cells
         self.min_dist = min_dist  # cells
         self.path_base_chance = path_base_chance
         self.path_length_bonus = path_length_bonus
-        # self.scalex
-        # self.scaley
+
         self.graph = None
         # print('graph before gen: {}'.format(self.graph))
         self.generate()
         # print('graph after gen: {}'.format(self.graph))
+
+        self.scalex = self.image.get_width() / self.width
+        self.scaley = self.image.get_height() / self.height
+
+        # draw worldmap grid
+        # line_width = 2
+        # for x in range(0, self.width * int(self.scalex), int(self.scalex)):
+        #     # print((x, 0), (x, self.image.get_height()))
+        #     pg.draw.line(self.image, colors.red, (x, 0), (x, self.image.get_height()), line_width)
+        #
+        # for y in range(0, self.height * int(self.scaley), int(self.scaley)):
+        #     # print((x, 0), (x, self.image.get_height()))
+        #     pg.draw.line(self.image, colors.red, (0, y), (self.image.get_width(), y), line_width)
 
         self.current_node = random.choice([*self.graph.nodes()])  # random starting location for now
         # print(self.current_node)
@@ -82,9 +98,9 @@ class WorldMap:
         # scale node coordinates to map image locations
         # node_coords = [(int(node[0] * self.scalex), int(node[1] * self.scaley)) for node in node_coords]
         nodes = {pos: {'name': pos, 'position': pos} for node_name, pos in enumerate(node_coords)}
-        # labels = {node: next(self.mob_types) for node in nodes}
+        labels = {node: next(self.mob_types) for node in nodes}
 
-        # node_positions = {k: k for k, v in nodes.items()}
+        node_positions = {k: k for k, v in nodes.items()}
 
         edges = [(edge[0], edge[1], {'weight': calc_dist(edge[0], edge[1])}) for edge in combinations(node_coords, 2)]
 
@@ -105,13 +121,55 @@ class WorldMap:
         # print('TEST')
         # print(graph.nodes())
         self.graph = graph
+
+        # aspect_ratio = settings.WIDTH / settings.HEIGHT
+        border = 100
+
+        # fig = plt.figure(figsize=(10 * aspect_ratio, 10))
+        #
+        # nx.draw_networkx(graph, node_positions, node_size=1600, node_color='r', font_size=12, with_labels=False,
+        #                  width=4)
+        # nx.draw_networkx_labels(graph, node_positions, labels, font_size=16, font_color='white')
+        #
+        # print(plt.gca().get_ylim())
+        # plt.gca().set_ylim(0, self.height)
+        # print(plt.gca().get_ylim())
+        #
+        # plt.gca().set_xlim(0, self.width)
+        #
+        # plt.gca().invert_yaxis()
+        #
+        # plt.axis('off')
+        #
+        # buf = BytesIO()
+        # fig.savefig(buf, format='png', bbox_inches='tight')
+        # buf.seek(0)
+        #
+        # # image = pg.Surface((width, height), pg.SRCALPHA)
+        # image = pg.image.load(buf).convert()  # .convert_alpha()
+        # # image = pg.transform.flip(image, False, True)
+        # image = pg.transform.scale(image, (settings.WIDTH - border * 2, settings.HEIGHT - border * 2))
+        # image.set_colorkey(image.get_at((0, 0)))
+
+        bg = self.game.worldmap_background.copy()
+        bg = pg.transform.scale(bg, (settings.WIDTH - border * 2, settings.HEIGHT - border * 2))
+        bg.set_colorkey(bg.get_at((0, 0)))
+        # bg.blit(image, (0, 0))
+
+        self.image = bg
+
+        # for y in range(0, self.current_map.height, settings.TILESIZE):
+        #     start_pos = (0, y + self.camera.offset[1])
+        #     end_pos = (settings.WIDTH, y + self.camera.offset[1])
+        #     pg.draw.line(self.screen, colors.lightgrey, start_pos, end_pos, line_width)
+
         # if not nx.is_connected(graph):
         #     print("generating new worldmap graph")
         #     self.generate()
         # else:
         #     self.graph = graph
         #     print(graph)
-            # return graph
+        # return graph
 
 
 class Map:

@@ -249,9 +249,9 @@ class Game:
         # self.generate_maptiles()
 
         # get fresh game elements
-        self.worldmap = WorldMap()
+        self.worldmap = WorldMap(self)
         # for node in self.worldmap.graph.nodes():
-        atts = nx.get_node_attributes(self.worldmap.graph, 'map')
+        # atts = nx.get_node_attributes(self.worldmap.graph, 'map')
         # print(atts)
         atts = {node: {'map': Map(self, settings.MAP_WIDTH, settings.MAP_HEIGHT)} for node in self.worldmap.graph.nodes()}
         # atts['map'] = Map(self, settings.MAP_WIDTH, settings.MAP_HEIGHT)
@@ -490,6 +490,7 @@ class Game:
         mob_images_folder = path.join(images_folder, 'mob')
         ui_images_folder = path.join(images_folder, 'ui')
         skill_images_folder = path.join(images_folder, 'skill')
+        map_images_folder = path.join(images_folder, 'map')
 
         # fonts
         self.hud_font = path.join(fonts_folder, 'Dense-Regular.ttf')
@@ -502,6 +503,7 @@ class Game:
 
         # static images
         self.icon = pg.image.load(path.join(images_folder, 'letter_j_icon_small.png'))
+        self.worldmap_background = pg.image.load(path.join(map_images_folder, 'worldmap.jpg')).convert()
         self.mob_zombie_image = pg.image.load(path.join(mob_images_folder, 'zombie1.png'))
         self.bullet_img = pg.image.load(path.join(skill_images_folder, 'bullet.png'))
         self.button_up = pg.image.load(path.join(ui_images_folder, 'up.png'))
