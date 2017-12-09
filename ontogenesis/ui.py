@@ -362,8 +362,7 @@ class Minimap(pg.sprite.Sprite):
             player_pos[0] / self.scalex,
             player_pos[1] / self.scaley,
             size,
-            size
-        ])
+            size])
 
 
 class ImageButton:
