@@ -18,7 +18,7 @@ class Skill:
 
 
 class Projectile(pg.sprite.Sprite):
-    def __init__(self, game, damage, pos, speed, direction, duration, kickback):
+    def __init__(self, game, damage, pos, vel, duration, kickback):
         self.groups = game.all_sprites, game.projectiles
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -26,7 +26,7 @@ class Projectile(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.pos = Vec2(pos)
         self.rect.center = pos
-        self.vel = direction * speed
+        self.vel = vel
         self.duration = duration
         self.kickback = kickback
         self.damage = damage
