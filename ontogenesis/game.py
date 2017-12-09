@@ -173,6 +173,7 @@ class Game:
 
             ('map_menu', 'paused'): 'paused',
             ('map_menu', 'view_skills'): 'skills_menu',
+            ('map_menu', 'view_map'): 'playing',
 
             # gameplay
             ('playing', 'paused'): 'paused',
@@ -230,6 +231,12 @@ class Game:
 
         return 'stay'
 
+    def clear_map(self):
+        # clean up old sprites, except the current player
+        for sprite in self.all_sprites:
+            if sprite != self.player:
+                sprite.kill()
+
     @timeit
     def new(self):
         # clean up old sprites
@@ -269,6 +276,22 @@ class Game:
 
         self.player = self.spawn(Player, self.current_map.player_start)
         self.camera = Camera(self.current_map.width, self.current_map.height)
+
+    def travel(self):
+        # TODO: splash screen if travel loading becomes significant
+        if self.worldmap.destination_node:
+            self.worldmap.current_node = self.worldmap.destination_node
+            self.worldmap.destination_node = None
+            self.worldmap.visit_node(self.worldmap.current_node)
+            self.worldmap.discover_node(self.worldmap.current_node, neighbors=True)
+            self.clear_map()
+            self.current_map = self.worldmap.graph.node[self.worldmap.current_node]['map']
+            self.generate_maptiles()
+            self.player.pos = self.current_map.player_start
+
+        else:
+            # TODO: send the state to a 'choose destination' screen
+            print('NO DESTINATION SET')
 
     def spawn(self, entity, start_pos):
         """
@@ -389,6 +412,8 @@ class Game:
                     self.fsm('info')
                 if event.key == pg.K_m:
                     self.fsm('view_map')
+                if event.key == pg.K_F9:
+                    self.travel()
 
     def screen_update(self):
         """ Create the display - called on Game init and display settings change"""
@@ -418,6 +443,10 @@ class Game:
         if hits:
             # if :
             self.player.pos += Vec2(hits[0].collision_knockback, 0).rotate(-hits[0].rot)
+
+        if len(self.mobs) == 0:
+            print('All mobs defeated')
+            self.travel()
 
     def draw_grid(self, line_width=1):
         """ draws a grid of lines to display the boundaries of empty tiles """

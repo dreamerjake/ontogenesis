@@ -250,6 +250,17 @@ class UI:
         self.screen.fill(colors.black)
         self.screen.blit(self.game.worldmap.image, (100, 100))
 
+        # draw edges
+        for edge in self.game.worldmap.graph.edges():
+            start_pos = self.game.worldmap.get_node_pos(edge[0])
+            end_pos = self.game.worldmap.get_node_pos(edge[1])
+            current_reachable = list(self.game.worldmap.graph.neighbors(self.game.worldmap.current_node)) + [self.game.worldmap.current_node]
+            #  pg.draw.line(self.screen, colors.cyan, start_pos, end_pos, 4)  # line width
+            if self.game.worldmap.graph.node[edge[0]]['discovered'] and self.game.worldmap.graph.node[edge[1]]['discovered']:
+                pg.draw.line(self.screen, colors.blue, start_pos, end_pos, 4)  # line blend
+            if edge[0] in current_reachable and edge[1] in current_reachable:
+                pg.draw.line(self.screen, colors.red, start_pos, end_pos, 4)  # line blend
+
         # draw nodes
         for node, data in self.game.worldmap.graph.nodes(data=True):
             # print(node)
@@ -260,14 +271,6 @@ class UI:
                 pg.draw.circle(self.screen, colors.blue, node_pos, 10, 5)
             elif data['discovered']:
                 pg.draw.circle(self.screen, colors.yellow, node_pos, 10, 5)
-
-        # draw edges
-        for edge in self.game.worldmap.graph.edges():
-            start_pos = self.game.worldmap.get_node_pos(edge[0])
-            end_pos = self.game.worldmap.get_node_pos(edge[1])
-            #  pg.draw.line(self.screen, colors.cyan, start_pos, end_pos, 4)  # line width
-            if self.game.worldmap.graph.node[edge[0]]['discovered'] and self.game.worldmap.graph.node[edge[1]]['discovered']:
-                pg.draw.aaline(self.screen, colors.cyan, start_pos, end_pos, 4)  # line blend
 
         # current and destination nodes
         current_node_pos = int(self.game.worldmap.current_node[0] * self.game.worldmap.scalex) + 100 + int(self.game.worldmap.scalex / 2), int(self.game.worldmap.current_node[1] * self.game.worldmap.scaley) + 100 + int(self.game.worldmap.scaley / 2)
