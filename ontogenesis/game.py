@@ -165,15 +165,19 @@ class Game:
             ('main_menu', 'new_game'): 'playing',
 
             ('skills_menu', 'next'): 'playing',
+            ('skills_menu', 'view_skills'): 'playing',
             ('skills_menu', 'paused'): 'paused',
             ('skills_menu', 'info'): 'skill_detail',
+            ('skills_menu', 'view_map'): 'map_menu',
 
             ('skill_detail', 'view_skills'): 'skills_menu',
+            ('skill_detail', 'view_map'): 'map_menu',
             ('skill_detail', 'back'): 'skills_menu',  # universal back button?
 
             ('map_menu', 'paused'): 'paused',
             ('map_menu', 'view_skills'): 'skills_menu',
             ('map_menu', 'view_map'): 'playing',
+            ('map_menu', 'next'): 'playing',
 
             # gameplay
             ('playing', 'paused'): 'paused',
