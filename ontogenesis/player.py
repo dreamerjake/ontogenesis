@@ -121,11 +121,10 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             'passives': []
         }
 
+        # manual starting skills
         # TODO: remove this
         for skill in [run_skill, toughness_skill]:
-            print(self.sum_bonuses())
             self.equip('passives', skill)
-            print(self.sum_bonuses())
         self.equip('active_skill', lightning_skill)
 
     def load_images(self):
