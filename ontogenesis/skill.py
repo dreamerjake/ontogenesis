@@ -4,7 +4,7 @@ from random import randint
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
-from helpers import get_closest_sprite
+from helpers import get_closest_sprite, calc_dist
 
 
 class Skill:
@@ -76,32 +76,35 @@ def draw_lightning(surface, start_pos, end_pos):
 class LightningSkill(Skill):
     def __init__(self):
         super().__init__()
-        # base stuff
+        # basic
         self.name = 'Lightning'
         self.passive = False
         self.xp_current = 0
         self.xp_growth_rate = .1
 
-        # channeling specific stuff
-        self.ticks_per_sec = 1
+        # channeling specific
+        self.ticks_per_sec = 2
         self.last_tick = pg.time.get_ticks()
         self.tick_damage = 10
         self.tick_cost = 5
 
+        # targeting
+        self.range = 300
+
     def fire(self):
         if self.owner.resource_current >= self.tick_cost:
             target = get_closest_sprite(self.owner.game.mobs, pg.mouse.get_pos() - self.owner.game.camera.offset, radius=100)
-            if target:
+            if target and calc_dist(self.owner.pos, target.pos) < self.range:
                 target_pos = target.hit_rect.center
                 draw_lightning(self.owner.game.effects_screen, self.owner.pos + self.owner.proj_offset.rotate(-self.owner.rot), target_pos)
                 now = pg.time.get_ticks()
-                if now - self.last_tick > self.ticks_per_sec * self.owner.game.configs.fps:
+                if now - self.last_tick > 1000 // self.ticks_per_sec:
                     target.hp_current -= self.tick_damage
                     self.owner.resource_current -= self.tick_cost
                     print('ZAPPED {} for {}'.format(target, self.tick_damage))
                     self.last_tick = now
         else:
-            print('OOM')
+            print('OOM - cannot use skill {}'.format(self.name))
 
 
 lightning_skill = LightningSkill()
