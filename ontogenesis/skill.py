@@ -9,7 +9,7 @@ from helpers import get_closest_sprite
 
 class Skill:
     # base class for the skill mixin system
-    stat_attrs = ['passive', 'xp_current']  # handle 'bonuses' separately
+    stat_attrs = {'passive', 'xp_current'}  # handle 'bonuses' separately
 
     def __init__(self):
         self.bonuses = {}
