@@ -156,6 +156,10 @@ class UI:
                 settings.HEIGHT / 2 - settings.HEIGHT * .10 - offset,
                 align='center')
 
+    def draw_active_skill(self):
+        skill_name = self.game.player.equipped['active_skill'].name
+        self.draw_text(skill_name, self.game.settings_font, 24, colors.white, 25, settings.HEIGHT - 25, align='bottomleft')
+
     def draw_player_health(self, x, y, pct):
         if pct < 0:
             pct = 0
@@ -318,6 +322,7 @@ class UI:
         health_pct = self.game.player.hp_current / self.game.player.hp_max
         self.draw_player_health(5, 25, health_pct)
         self.draw_mobcount()
+        self.draw_active_skill()
 
         self.optional_messages()
         if self.game.configs.debug:
