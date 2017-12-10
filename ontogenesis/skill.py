@@ -4,18 +4,23 @@ from random import randint
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
+from helpers import get_closest_sprite
+
 
 class Skill:
     # base class for the skill mixin system
-    display_attrs = ['name', 'passive', 'xp_current']  # handle 'bonuses' separately
+    stat_attrs = ['passive', 'xp_current']  # handle 'bonuses' separately
 
     def __init__(self):
         self.bonuses = {}
+        self.owner = None
+
+    def __repr__(self):
+        return 'Skill "{}": {}'.format(self.name, self.stats)
 
     @property
-    def display(self):
-        display = {attr: getattr(self, attr) for attr in self.display_attrs if hasattr(self, attr)}
-        return display
+    def stats(self):
+        return {attr: getattr(self, attr) for attr in self.stat_attrs if hasattr(self, attr)}
 
 
 class Projectile(pg.sprite.Sprite):
@@ -43,24 +48,63 @@ class Projectile(pg.sprite.Sprite):
 
 
 def draw_lightning(surface, start_pos, end_pos):
-    # print('ZAPPING!')
     min_dist = 10
     max_amp = 5
 
     def get_points(sx, sy, x, y):
+        # min distance check
         if abs(sx - x) < min_dist and abs(sy - y) < min_dist:
             return [(sx, sy)]
+
+        # halfway point calculations
         midx = (sx + x) / 2 + randint(-max_amp, max_amp)
         midy = (sy + y) / 2 + randint(-max_amp, max_amp)
+
         upper = get_points(sx, sy, midx, midy)
         lower = get_points(x, y, midx, midy)
         upper.extend(lower)
+
         midl = [(midx, midy)]
         midl.extend(upper)
+
         return midl
 
     points = get_points(*start_pos, *end_pos)
     pg.draw.lines(surface, (100 + randint(0, 100), 100 + randint(0, 100), 255), True, points)
+
+
+class LightningSkill(Skill):
+    def __init__(self):
+        super().__init__()
+        # base stuff
+        self.name = 'Lightning'
+        self.passive = False
+        self.xp_current = 0
+        self.xp_growth_rate = .1
+
+        # channeling specific stuff
+        self.ticks_per_sec = 1
+        self.last_tick = pg.time.get_ticks()
+        self.tick_damage = 10
+        self.tick_cost = 5
+
+    def fire(self):
+        if self.owner.resource_current >= self.tick_cost:
+            target = get_closest_sprite(self.owner.game.mobs, pg.mouse.get_pos() - self.owner.game.camera.offset, radius=100)
+            if target:
+                target_pos = target.hit_rect.center
+                draw_lightning(self.owner.game.effects_screen, self.owner.pos + self.owner.proj_offset.rotate(-self.owner.rot), target_pos)
+                now = pg.time.get_ticks()
+                if now - self.last_tick > self.ticks_per_sec * self.owner.game.configs.fps:
+                    target.hp_current -= self.tick_damage
+                    self.owner.resource_current -= self.tick_cost
+                    print('ZAPPED {} for {}'.format(target, self.tick_damage))
+                    self.last_tick = now
+        else:
+            print('OOM')
+
+
+lightning_skill = LightningSkill()
 
 
 run_skill = Skill()

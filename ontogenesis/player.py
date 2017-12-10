@@ -7,10 +7,10 @@ import pygame as pg
 from pygame.math import Vector2 as Vec2
 
 from enemy import Collider
-from helpers import require_attributes
+from helpers import require_attributes, get_closest_sprite
 import settings
 from settings import layers
-from skill import Projectile, run_skill, toughness_skill, draw_lightning
+from skill import Projectile, run_skill, toughness_skill, draw_lightning, lightning_skill
 
 
 class Equippable:
@@ -36,13 +36,14 @@ class Equippable:
                         for bonus in item.bonuses:
                             bonuses[bonus] += item.bonuses[bonus]
                 else:
-                    for bonus in equip:
+                    for bonus in equip.bonuses:
                         bonuses[bonus] += equip.bonuses[bonus]
         return bonuses
 
     def equip(self, slot, equippable):
         # TODO: add a matching unequip method if it becomes necessary
         current = self.equipped[slot]
+        equippable.owner = self
 
         # append the item if the slot can hold multiple items
         if isinstance(current, list):
@@ -107,7 +108,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.hps_regen = 1  # hp per second
         self.resource_current = 50
         self.resource_max = 100
-        self.rps_regen = 1  # resource per second
+        self.rps_regen = 3  # resource per second
         self.fire_delay = 200  # TODO: move this into skill
 
         # item management
@@ -116,6 +117,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.equipped = {
             'armor': None,
             'weapon': None,
+            'active_skill': None,
             'passives': []
         }
 
@@ -124,6 +126,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             print(self.sum_bonuses())
             self.equip('passives', skill)
             print(self.sum_bonuses())
+        self.equip('active_skill', lightning_skill)
 
     def load_images(self):
         self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64, rot=-90)]
@@ -166,20 +169,21 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # skills
         # shoot bullets
         if keys[pg.K_SPACE] or pg.mouse.get_pressed()[0]:
-            if pg.time.get_ticks() - self.last_shot > self.fire_delay:  # TODO: can_fire function
-                damage = 10
-                direction = Vec2(1, 0).rotate(-self.rot)
-                speed = 500
-                vel = direction * speed
-                vel += self.vel
-                duration = 500
-                pos = self.pos + self.proj_offset.rotate(-self.rot)
-                kickback = 200
-                Projectile(game=self.game, damage=damage, pos=pos, vel=vel, duration=duration, kickback=kickback)
-                if kickback:
-                    kickback_vector = Vec2(-kickback, 0).rotate(-self.rot)
-                    self.vel += kickback_vector
-                self.last_shot = pg.time.get_ticks()
+            self.equipped['active_skill'].fire()
+            # if pg.time.get_ticks() - self.last_shot > self.fire_delay:  # TODO: can_fire function
+            #     damage = 10
+            #     direction = Vec2(1, 0).rotate(-self.rot)
+            #     speed = 500
+            #     vel = direction * speed
+            #     vel += self.vel
+            #     duration = 500
+            #     pos = self.pos + self.proj_offset.rotate(-self.rot)
+            #     kickback = 200
+            #     Projectile(game=self.game, damage=damage, pos=pos, vel=vel, duration=duration, kickback=kickback)
+            #     if kickback:
+            #         kickback_vector = Vec2(-kickback, 0).rotate(-self.rot)
+            #         self.vel += kickback_vector
+            #     self.last_shot = pg.time.get_ticks()
 
         # dash
         if keys[pg.K_LCTRL]:
@@ -188,8 +192,12 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             # self.move_state = 'dash'
 
         # lightning
-        if keys[pg.K_1]:
-            draw_lightning(self.game.effects_screen, self.pos + self.proj_offset.rotate(-self.rot), pg.mouse.get_pos())
+        # if keys[pg.K_1]:
+            # self.equipped['active_skill'].fire()
+            # target = get_closest_sprite(self.game.mobs, pg.mouse.get_pos() - self.game.camera.offset, radius=100)
+            # if target:
+            #     target_pos = target.hit_rect.center
+            #     draw_lightning(self.game.effects_screen, self.pos + self.proj_offset.rotate(-self.rot), target_pos)
 
     def update_speed(self):
         self.speed_mul = 1.0

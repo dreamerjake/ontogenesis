@@ -505,7 +505,8 @@ class Game:
         self.hud.draw(self.screen)
         self.ui.draw_hud()
 
-        self.screen.blit(self.effects_screen, (0, 0))
+        self.screen.blit(self.effects_screen, self.camera.offset)
+        # print(self.camera.offset)
 
         pg.display.flip()
 
