@@ -173,6 +173,17 @@ class UI:
         pg.draw.rect(self.screen, col, fill_rect)
         pg.draw.rect(self.screen, colors.white, outline_rect, 2)
 
+        # resource globe
+        # TODO: cleanup the variables here
+        resource_pct = self.game.player.resource_current / self.game.player.resource_max
+        h = int(self.game.mana_full_img.get_height() * resource_pct)
+        current_resource_img = pg.Surface((self.game.mana_full_img.get_width(), h), SRCALPHA)
+        current_resource_img.fill((0, 0, 0, 0))
+        extra_h = 0 - (self.game.mana_full_img.get_height() - h)
+        current_resource_img.blit(self.game.mana_full_img, (0, extra_h))
+        self.screen.blit(self.game.mana_empty_img, (settings.WIDTH - self.game.mana_empty_img.get_width(), settings.HEIGHT - self.game.mana_empty_img.get_height()))
+        self.screen.blit(current_resource_img, (settings.WIDTH - self.game.mana_full_img.get_width(), settings.HEIGHT - current_resource_img.get_height()))
+
     @staticmethod
     def hide_group(*groups):
         for group in groups:
@@ -303,9 +314,11 @@ class UI:
 
     def draw_hud(self):
         self.hide_group(self.all_buttons, self.all_windows)
+
         health_pct = self.game.player.hp_current / self.game.player.hp_max
         self.draw_player_health(5, 25, health_pct)
         self.draw_mobcount()
+
         self.optional_messages()
         if self.game.configs.debug:
             self.debug_messages()

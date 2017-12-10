@@ -8,6 +8,7 @@
         * Skill Mod Class (Skill attribute mods, Triggered Effects)
         * Ideas
             * Scouting
+        * Resource
 
     * Equipment System
         * ~~Function to adjust player stats based on equipment (call on equip/de-equip)~~

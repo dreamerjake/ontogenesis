@@ -105,9 +105,13 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.hp_current = 80
         self.hp_max = 100
         self.hps_regen = 1  # hp per second
-        self.fire_delay = 200
+        self.resource_current = 50
+        self.resource_max = 100
+        self.rps_regen = 1  # resource per second
+        self.fire_delay = 200  # TODO: move this into skill
 
         # item management
+        self.food = 100
         self.inventory = []
         self.equipped = {
             'armor': None,
@@ -202,9 +206,11 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.game.fsm('die')
 
     def update(self):
-        # health regen/degen
+        # health and resource regen/degen
         if self.hps_regen != 0:
             self.hp_current = min(self.hp_current + (self.hps_regen * self.game.delta_time), self.hp_max)
+        if self.rps_regen != 0:
+            self.resource_current = min(self.resource_current + (self.rps_regen * self.game.delta_time), self.resource_max)
 
         # handle controls
         self.process_input()

@@ -553,6 +553,8 @@ class Game:
         self.button_up = pg.image.load(path.join(ui_images_folder, 'up.png'))
         self.button_down = pg.image.load(path.join(ui_images_folder, 'down.png'))
         self.button_hover = pg.image.load(path.join(ui_images_folder, 'hover.png'))
+        self.mana_full_img = pg.image.load(path.join(ui_images_folder, 'mana_full.png')).convert_alpha()
+        self.mana_empty_img = pg.image.load(path.join(ui_images_folder, 'mana_empty.png')).convert_alpha()
 
         # sound effects
         self.music_intro = path.join(music_folder, 'soliloquy.mp3')
