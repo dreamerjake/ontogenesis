@@ -123,6 +123,7 @@ class Game:
         self.available_resolutions = pg.display.list_modes()
         self.screensize = (settings.WIDTH, settings.HEIGHT)
         self.screen = self.screen_update()
+        self.effects_screen = self.screen.copy().convert_alpha()
         self.current_music = None
 
         # time
@@ -163,6 +164,7 @@ class Game:
         self.state_table = {
             # menus
             ('main_menu', 'new_game'): 'playing',
+            ('main_menu', 'next'): 'playing',
 
             ('skills_menu', 'next'): 'playing',
             ('skills_menu', 'view_skills'): 'playing',
@@ -200,23 +202,19 @@ class Game:
 
     def skill_detail(self):
         self.ui.draw_info_skill()
-
         return 'stay'
 
     def skills_menu(self):
         self.ui.draw_skills_menu()
-
         return 'stay'
 
     def game_over(self):
         # TODO: autotransition after x seconds
         self.ui.draw_game_over()
-
         return 'stay'
 
     def main_menu(self):
         self.ui.draw_main_menu()
-
         return 'stay'
 
     def playing(self):
@@ -227,12 +225,10 @@ class Game:
 
         self.update()
         self.draw()
-
         return 'stay'
 
     def paused(self):
         self.ui.draw_pause_menu()
-
         return 'stay'
 
     def clear_map(self):
@@ -436,6 +432,8 @@ class Game:
 
     def update(self):
         """ update logic for main game loop """
+        self.effects_screen.fill((0, 0, 0, 0))
+
         self.all_sprites.update()
         self.camera.update(target=self.player, hit_rect=True)
 
@@ -506,6 +504,8 @@ class Game:
         self.hud.update()
         self.hud.draw(self.screen)
         self.ui.draw_hud()
+
+        self.screen.blit(self.effects_screen, (0, 0))
 
         pg.display.flip()
 

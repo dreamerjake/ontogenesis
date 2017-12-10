@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from random import randint
 
 import pygame as pg
 from pygame.math import Vector2 as Vec2
@@ -39,6 +40,27 @@ class Projectile(pg.sprite.Sprite):
         hit_wall = pg.sprite.spritecollideany(self, self.game.walls)
         if any([timed_out, hit_wall]):
             self.kill()
+
+
+def draw_lightning(surface, start_pos, end_pos):
+    # print('ZAPPING!')
+    min_dist = 10
+    max_amp = 5
+
+    def get_points(sx, sy, x, y):
+        if abs(sx - x) < min_dist and abs(sy - y) < min_dist:
+            return [(sx, sy)]
+        midx = (sx + x) / 2 + randint(-max_amp, max_amp)
+        midy = (sy + y) / 2 + randint(-max_amp, max_amp)
+        upper = get_points(sx, sy, midx, midy)
+        lower = get_points(x, y, midx, midy)
+        upper.extend(lower)
+        midl = [(midx, midy)]
+        midl.extend(upper)
+        return midl
+
+    points = get_points(*start_pos, *end_pos)
+    pg.draw.lines(surface, (100 + randint(0, 100), 100 + randint(0, 100), 255), True, points)
 
 
 run_skill = Skill()

@@ -10,7 +10,7 @@ from enemy import Collider
 from helpers import require_attributes
 import settings
 from settings import layers
-from skill import Projectile, run_skill, toughness_skill
+from skill import Projectile, run_skill, toughness_skill, draw_lightning
 
 
 class Equippable:
@@ -92,7 +92,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # self.x, self.y = start_pos
         self.pos = Vec2(start_pos)
         self.rot = 0
-        self.proj_offset = Vec2(25, 15)  # hardcoded to the placeholder graphics
+        self.proj_offset = Vec2(15, 15)  # hardcoded to the placeholder graphics
 
         # state
         self.last_shot = pg.time.get_ticks()
@@ -160,6 +160,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
                 self.vel += Vec2(-self.speed, 0).rotate(270)  # no backwards speed penalty
 
         # skills
+        # shoot bullets
         if keys[pg.K_SPACE] or pg.mouse.get_pressed()[0]:
             if pg.time.get_ticks() - self.last_shot > self.fire_delay:  # TODO: can_fire function
                 damage = 10
@@ -182,10 +183,9 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             self.game.delay_event(100, self.update_speed, map_specific=False)
             # self.move_state = 'dash'
 
-        # diagonal movement fix for 4-d movement
-        # if self.vx != 0 and self.vy != 0:
-        #     self.vx *= 0.7071
-        #     self.vy *= 0.7071
+        # lightning
+        if keys[pg.K_1]:
+            draw_lightning(self.game.effects_screen, self.pos + self.proj_offset.rotate(-self.rot), pg.mouse.get_pos())
 
     def update_speed(self):
         self.speed_mul = 1.0
