@@ -142,7 +142,8 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             self.equip('passives', skill)
         self.equip('active_skill', lightning_skill)
 
-        self.focus_skill = choice([self.equipped['active_skill']] + self.equipped['passives'])
+        self.focus_skill = None
+        # self.focus_skill = choice([self.equipped['active_skill']] + self.equipped['passives'])
 
     def load_images(self):
         self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64, rot=-90)]
@@ -225,7 +226,8 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.rect = self.image.get_rect()
 
     def gain_xp(self, xp):
-        self.focus_skill.gain_xp(xp)
+        if self.focus_skill:
+            self.focus_skill.gain_xp(xp)
 
     def die(self):
         print('Player Died')
