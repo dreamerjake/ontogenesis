@@ -84,7 +84,10 @@ class WorldMap:
         self.destination_node = None
         # print(self.current_node)
         # nodesAt5 = filter(lambda (n, d): d['at'] == 5, P.nodes(data=True))
-
+        all_shortest_paths = nx.single_source_shortest_path_length(self.graph, self.current_node)
+        furthest_node = max(all_shortest_paths, key=all_shortest_paths.get)
+        self.graph.node[furthest_node]['goal'] = True
+        # print(nx.get_node_attributes(self.graph, 'goal'))
         self.rect = self.image.get_rect()
 
     def calc_prune_chance(self, edge):
