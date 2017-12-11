@@ -157,11 +157,14 @@ class Game:
         self.projectiles = pg.sprite.Group()
 
         # components
-        self.save = None
         self.ui = UI(self)
         self.worldmap = None
         self.player = None
         self.camera = None
+
+        # save
+        self.save = None
+        self.unlocked_mods = {'speed', 'range'}
 
         # map stuff
         self.current_map = None
