@@ -122,7 +122,7 @@ class WorldMap:
                 node_coords.append(location)
         # scale node coordinates to map image locations
         # node_coords = [(int(node[0] * self.scalex), int(node[1] * self.scaley)) for node in node_coords]
-        nodes = {pos: {'name': pos, 'position': pos, 'discovered': False, 'visited': False, 'mobtype': next(self.mob_types)} for node_name, pos in enumerate(node_coords)}
+        nodes = {pos: {'name': pos, 'position': pos, 'discovered': False, 'visited': False, 'mobtype': next(self.mob_types), 'goal': False} for node_name, pos in enumerate(node_coords)}
         # labels = {node: next(self.mob_types) for node in nodes}
         #
         # node_positions = {k: k for k, v in nodes.items()}

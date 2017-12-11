@@ -194,18 +194,21 @@ class Game:
             ('map_menu', 'view_skills'): 'skills_menu',
             ('map_menu', 'view_map'): 'playing',
             ('map_menu', 'next'): 'playing',
+            ('map_menu', 'reach_goal'): 'goal',
 
             # gameplay
             ('playing', 'paused'): 'paused',
             ('playing', 'die'): 'game_over',
             ('playing', 'view_skills'): 'skills_menu',
             ('playing', 'view_map'): 'map_menu',
+            ('playing', 'reach_goal'): 'goal',
 
             ('paused', 'paused'): 'playing',
             ('paused', 'view_skills'): 'skills_menu',
             ('paused', 'view_map'): 'map_menu',
 
             # splashes
+            ('goal', 'next'): 'main_menu',
             ('game_over', 'next'): 'main_menu',
         }
         self.fsm = StateMachine(game=self, initial='main_menu', table=self.state_table)
@@ -221,6 +224,9 @@ class Game:
     def skills_menu(self):
         self.ui.draw_skills_menu()
         return 'stay'
+
+    def goal(self):
+        self.ui.draw_placeholder_menu('GOAL REACHED')
 
     def game_over(self):
         # TODO: autotransition after x seconds
@@ -298,6 +304,9 @@ class Game:
     def travel(self):
         # TODO: splash screen if travel loading becomes significant
         if self.worldmap.destination_node:
+            if self.worldmap.graph.node[self.worldmap.destination_node]['goal']:
+                self.fsm('reach_goal')
+                return
             # generate new current map
             self.clear_map()
             self.current_map = self.worldmap.graph.node[self.worldmap.current_node]['map']
