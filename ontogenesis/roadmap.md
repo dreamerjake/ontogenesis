@@ -149,6 +149,7 @@ Track the hometown over runs, for permanence
     * Each run's quests based on the current stats(needs) of the town
     * Finding the hometown is the objective of the story mode?
 Dynamic mob generation based on the game's fps
+Threat generation meter? (constant spawning?)
 
 ### Mob AI Scratchpad
 Predatory

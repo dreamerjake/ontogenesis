@@ -165,9 +165,13 @@ class Game:
         # state machine
         self.state_table = {
             # menus
-            ('main_menu', 'new_game'): 'playing',
-            ('main_menu', 'next'): 'playing',
+            ('main_menu', 'new_game'): 'create_char',
+            ('main_menu', 'next'): 'create_char',
 
+            ('create_char', 'next'): 'playing',
+            ('create_char', 'back'): 'main_menu',
+
+            # in-game menus
             ('skills_menu', 'next'): 'playing',
             ('skills_menu', 'view_skills'): 'playing',
             ('skills_menu', 'paused'): 'paused',
@@ -218,6 +222,10 @@ class Game:
     def main_menu(self):
         self.ui.draw_main_menu()
         return 'stay'
+
+    def create_char(self):
+        self.ui.draw_placeholder_menu('CHARACTER CREATION')
+        return
 
     def playing(self):
         if self.current_music != self.music_action:
