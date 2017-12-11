@@ -5,8 +5,8 @@ from random import randint
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
-from helpers import calc_dist
 import settings
+from helpers import calc_dist
 from settings import layers, colors
 
 

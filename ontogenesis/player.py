@@ -7,9 +7,9 @@ from random import choice
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
+import settings
 from enemy import Collider
 from helpers import require_attributes
-import settings
 from settings import layers
 from skill import PassiveSkill, LightningSkill
 

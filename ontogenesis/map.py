@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from io import BytesIO
+import random
 from itertools import product, combinations, cycle
 from math import sqrt
-import random
 
-import matplotlib.pyplot as plt
 import networkx as nx
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
+import settings
 from enemy import Mob, GiantLizard
 from helpers import calc_dist
-import settings
 from settings import colors
 
 
