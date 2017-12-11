@@ -12,8 +12,8 @@ class Skill:
     stat_attrs = {'passive', 'xp_current'}  # handle 'bonuses' separately
 
     def __init__(self):
-        self.bonuses = {}
         self.owner = None
+        self.bonuses = {}
 
     def __repr__(self):
         return 'Skill "{}": {}'.format(self.name, self.stats)
@@ -21,6 +21,13 @@ class Skill:
     @property
     def stats(self):
         return {attr: getattr(self, attr) for attr in self.stat_attrs if hasattr(self, attr)}
+
+    def gain_xp(self, xp):
+        mult = 1 + (xp * .01)
+        if self.passive:
+            self.bonuses[self.focus] *= mult
+        else:
+            setattr(self, self.focus, getattr(self, self.focus) * mult)
 
 
 class Projectile(pg.sprite.Sprite):
@@ -73,7 +80,16 @@ def draw_lightning(surface, start_pos, end_pos):
     pg.draw.lines(surface, (100 + randint(0, 100), 100 + randint(0, 100), 255), True, points)
 
 
+class PassiveSkill(Skill):
+    def __init__(self):
+        super().__init__()
+        self.passive = True
+
+
 class LightningSkill(Skill):
+
+    mods = {'ticks_per_sec', 'tick_damage', 'tick_cost', 'range'}
+
     def __init__(self):
         super().__init__()
         # basic
@@ -82,9 +98,12 @@ class LightningSkill(Skill):
         self.xp_current = 0
         self.xp_growth_rate = .1
 
+        # state
+        self.focus = next(iter(self.mods))
+        self.last_tick = pg.time.get_ticks()
+
         # channeling specific
         self.ticks_per_sec = 2
-        self.last_tick = pg.time.get_ticks()
         self.tick_damage = 10
         self.tick_cost = 5
 
@@ -110,16 +129,16 @@ class LightningSkill(Skill):
 lightning_skill = LightningSkill()
 
 
-run_skill = Skill()
+run_skill = PassiveSkill()
 run_skill.name = 'Run'
-run_skill.passive = True
 run_skill.bonuses = {'speed': 10}
-run_skill.xp_current = 0
-run_skill.xp_growth_rate = .1
+run_skill.focus = 'speed'
+# run_skill.xp_current = 0
+# run_skill.xp_growth_rate = .1
 
-toughness_skill = Skill()
+toughness_skill = PassiveSkill()
 toughness_skill.name = 'Toughness'
-toughness_skill.passive = True
 toughness_skill.bonuses = {'hp_max': 10}
-toughness_skill.xp_current = 0
-toughness_skill.xp_growth_rate = .1
+toughness_skill.focus = 'hp_max'
+# toughness_skill.xp_current = 0
+# toughness_skill.xp_growth_rate = .1

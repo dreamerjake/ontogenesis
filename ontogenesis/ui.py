@@ -164,6 +164,17 @@ class UI:
         skill_name = self.game.player.equipped['active_skill'].name
         self.draw_text(skill_name, self.game.settings_font, 24, colors.white, 25, settings.HEIGHT - 25, align='bottomleft')
 
+    def draw_focus_skill(self):
+        skill_name = self.game.player.focus_skill.name
+        skill_focus = self.game.player.focus_skill.focus
+        if self.game.player.focus_skill.passive:
+            skill_focus_val = self.game.player.focus_skill.bonuses[skill_focus]
+        else:
+            skill_focus_val = getattr(self.game.player.focus_skill, skill_focus)
+
+        desc = '{} {} {}'.format(skill_name, skill_focus, int(skill_focus_val))
+        self.draw_text(desc, self.game.settings_font, 24, colors.white, settings.WIDTH // 2, settings.HEIGHT - 25, align='midbottom')
+
     def draw_player_health(self, x, y, pct):
         if pct < 0:
             pct = 0
@@ -328,6 +339,7 @@ class UI:
         self.draw_mobcount()
         self.draw_food()
         self.draw_active_skill()
+        self.draw_focus_skill()
 
         self.optional_messages()
         if self.game.configs.debug:

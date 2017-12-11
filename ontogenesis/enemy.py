@@ -152,6 +152,7 @@ class Mob(pg.sprite.Sprite, Collider):
 
         # death conditions check
         if self.hp_current <= 0:
+            self.game.player.gain_xp(self.xp_value)
             self.kill()
 
     def draw_health(self):

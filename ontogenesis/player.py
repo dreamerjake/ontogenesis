@@ -2,6 +2,7 @@
 
 from collections import defaultdict
 from itertools import cycle
+from random import choice
 
 import pygame as pg
 from pygame.math import Vector2 as Vec2
@@ -132,6 +133,8 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             self.equip('passives', skill)
         self.equip('active_skill', lightning_skill)
 
+        self.focus_skill = choice([self.equipped['active_skill']] + self.equipped['passives'])
+
     def load_images(self):
         self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64, rot=-90)]
         self.moving_frames = cycle([
@@ -211,6 +214,9 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.rot = (target - self.hit_rect.center).angle_to(Vec2(1, 0))
         self.image = pg.transform.rotate(self.orig_image, self.rot)
         self.rect = self.image.get_rect()
+
+    def gain_xp(self, xp):
+        self.focus_skill.gain_xp(xp)
 
     def die(self):
         print('Player Died')
