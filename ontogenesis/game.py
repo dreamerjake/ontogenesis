@@ -114,6 +114,7 @@ class Game:
         # pygame initialization
         pg.mixer.pre_init(44100, -16, 4, 2048)  # frequency, size, channels, buffersize
         pg.init()
+        pg.mixer.music.set_volume(0)
         self.sfx_channel = pg.mixer.Channel(0)
 
         # configs
