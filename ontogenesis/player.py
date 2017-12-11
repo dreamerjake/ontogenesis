@@ -8,10 +8,10 @@ import pygame as pg
 from pygame.math import Vector2 as Vec2
 
 from enemy import Collider
-from helpers import require_attributes, get_closest_sprite
+from helpers import require_attributes
 import settings
 from settings import layers
-from skill import Projectile, run_skill, toughness_skill, draw_lightning, lightning_skill
+from skill import PassiveSkill, LightningSkill
 
 
 class Equippable:
@@ -43,9 +43,12 @@ class Equippable:
 
     def equip(self, slot, equippable):
         # TODO: add a matching unequip method if it becomes necessary
+        print('equipping', equippable)
         current = self.equipped[slot]
         equippable.owner = self
-
+        # setattr(equippable, 'owner', self)
+        # print(equippable.owner, equippable)
+        print('focus options', equippable.focus_options)
         # append the item if the slot can hold multiple items
         if isinstance(current, list):
             current.append(equippable)
@@ -70,6 +73,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self._layer = layers.player
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
+        super().__init__()
 
         # object references
         self.game = game
@@ -128,6 +132,11 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         }
 
         # manual starting skills
+
+        lightning_skill = LightningSkill(self.game)
+        run_skill = PassiveSkill(self.game, 'Run', speed=10)
+        toughness_skill = PassiveSkill(self.game, 'Toughness', hp_max=10)
+
         # TODO: remove this
         for skill in [run_skill, toughness_skill]:
             self.equip('passives', skill)

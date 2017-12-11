@@ -11,7 +11,8 @@ class Skill:
     # base class for the skill mixin system
     stat_attrs = {'passive', 'xp_current'}  # handle 'bonuses' separately
 
-    def __init__(self):
+    def __init__(self, game):
+        self.game = game
         self.owner = None
         self.bonuses = {}
 
@@ -21,6 +22,11 @@ class Skill:
     @property
     def stats(self):
         return {attr: getattr(self, attr) for attr in self.stat_attrs if hasattr(self, attr)}
+
+    @property
+    def focus_options(self):
+        # return self.owner
+        return self.owner.game.unlocked_mods.intersection(self.mods)
 
     def gain_xp(self, xp):
         mult = 1 + (xp * .01)
@@ -81,17 +87,21 @@ def draw_lightning(surface, start_pos, end_pos):
 
 
 class PassiveSkill(Skill):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, game, name, **bonuses):
+        super().__init__(game=game)
         self.passive = True
+        self.name = name
+        self.bonuses = {bonus: value for bonus, value in bonuses.items()}
+        self.mods = set(self.bonuses.keys())
+        self.focus = None
 
 
 class LightningSkill(Skill):
 
     mods = {'ticks_per_sec', 'tick_damage', 'range'}
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, game):
+        super().__init__(game=game)
         # basic
         self.name = 'Lightning'
         self.passive = False
@@ -124,21 +134,3 @@ class LightningSkill(Skill):
                     self.last_tick = now
         else:
             print('OOM - cannot use skill {}'.format(self.name))
-
-
-lightning_skill = LightningSkill()
-
-
-run_skill = PassiveSkill()
-run_skill.name = 'Run'
-run_skill.bonuses = {'speed': 10}
-run_skill.focus = 'speed'
-# run_skill.xp_current = 0
-# run_skill.xp_growth_rate = .1
-
-toughness_skill = PassiveSkill()
-toughness_skill.name = 'Toughness'
-toughness_skill.bonuses = {'hp_max': 10}
-toughness_skill.focus = 'hp_max'
-# toughness_skill.xp_current = 0
-# toughness_skill.xp_growth_rate = .1
