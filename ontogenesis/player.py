@@ -48,7 +48,7 @@ class Equippable:
         equippable.owner = self
         # setattr(equippable, 'owner', self)
         # print(equippable.owner, equippable)
-        print('focus options', equippable.focus_options)
+        # print('focus options', equippable.focus_options)
         # append the item if the slot can hold multiple items
         if isinstance(current, list):
             current.append(equippable)
