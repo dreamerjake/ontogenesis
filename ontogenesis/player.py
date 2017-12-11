@@ -109,10 +109,15 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.resource_current = 50
         self.resource_max = 100
         self.rps_regen = 3  # resource per second
+        self.eating_rate = 1  # food per second
         self.fire_delay = 200  # TODO: move this into skill
 
+        self.starving_penalties = {
+            'speed': 50
+        }
+
         # item management
-        self.food = 100
+        self.food = 10
         self.inventory = []
         self.equipped = {
             'armor': None,
@@ -218,6 +223,13 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             self.hp_current = min(self.hp_current + (self.hps_regen * self.game.delta_time), self.hp_max)
         if self.rps_regen != 0:
             self.resource_current = min(self.resource_current + (self.rps_regen * self.game.delta_time), self.resource_max)
+        # TODO: regen of health/resource consumes extra food
+        if self.eating_rate != 0:
+            self.food = max(0, self.food - (self.eating_rate * self.game.delta_time))
+
+        if self.food == 0:
+            for penalty in self.starving_penalties:
+                setattr(self, penalty, self.starving_penalties[penalty])
 
         # handle controls
         self.process_input()

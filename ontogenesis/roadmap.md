@@ -1,6 +1,6 @@
 ##ROADMAP:
 * ####ENGINE
-    * Skill System
+    * ~~Skill System~~
         * ~~Class Definition~~
             * Skill Type Subclasses
             * Skill Type List (Passive, Projectile, etc.)
@@ -8,7 +8,7 @@
         * Skill Mod Class (Skill attribute mods, Triggered Effects)
         * Ideas
             * Scouting
-        * Resource
+        * ~~Resource~~
 
     * Equipment System
         * ~~Function to adjust player stats based on equipment (call on equip/de-equip)~~
@@ -19,8 +19,9 @@
                 * ~~Slot~~
         * Equipment Sets? (procedurally generated?)
                 
-    * Currency System
+    * ~~Currency System~~
         * Concept: Food as the universal currency - constantly depleting and accepted in all trading
+            * regen of health/resource consumes extra food
     
     * Controls
         * Namespace for controls mapping?
