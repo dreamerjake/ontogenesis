@@ -19,6 +19,10 @@ import settings
 from settings import colors, game_configs
 
 
+class SaveGame:
+    pass
+
+
 class MessageQueue:
     def __init__(self, max_size):
         self._queue = []
@@ -153,6 +157,7 @@ class Game:
         self.projectiles = pg.sprite.Group()
 
         # components
+        self.save = None
         self.ui = UI(self)
         self.worldmap = None
         self.player = None
@@ -528,6 +533,13 @@ class Game:
     def flash_message(self, message, ttl):
         # TODO: add message to debug output
         self.message_flash_queue.put(message, ttl)
+
+    def save(self):
+        new_save = SaveGame()
+        self.save = new_save
+
+    def load(self, save):
+        self.save = save
 
     @timeit
     def load_assets(self):
