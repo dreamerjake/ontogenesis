@@ -88,7 +88,7 @@ class PassiveSkill(Skill):
 
 class LightningSkill(Skill):
 
-    mods = {'ticks_per_sec', 'tick_damage', 'tick_cost', 'range'}
+    mods = {'ticks_per_sec', 'tick_damage', 'range'}
 
     def __init__(self):
         super().__init__()
