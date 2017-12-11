@@ -7,8 +7,8 @@ import pygame as pg
 from pygame.locals import MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN, SRCALPHA
 from pygame.math import Vector2 as Vec2
 
-from map import Wall
 import settings
+from map import Wall
 from settings import colors, layers, keybinds
 
 
@@ -342,7 +342,6 @@ class UI:
             self.debug_messages()
         self.draw_flashed_messages()
         pg.display.flip()
-
 
     def draw_hud(self):
         self.hide_group(self.all_buttons, self.all_windows)
