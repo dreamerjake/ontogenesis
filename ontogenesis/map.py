@@ -10,6 +10,7 @@ import networkx as nx
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
+from enemy import Mob, GiantLizard
 from helpers import calc_dist
 import settings
 from settings import colors
@@ -49,7 +50,7 @@ class Camera:
 class WorldMap:
     def __init__(self, game, width=20, height=10, min_dist=4, path_base_chance=.1, path_length_bonus=.3):
         self.game = game
-        self.mob_types = cycle(['zombies'])
+        self.mob_types = cycle([Mob, GiantLizard])
         self.image = None
         self.visible = False
 
@@ -120,7 +121,7 @@ class WorldMap:
                 node_coords.append(location)
         # scale node coordinates to map image locations
         # node_coords = [(int(node[0] * self.scalex), int(node[1] * self.scaley)) for node in node_coords]
-        nodes = {pos: {'name': pos, 'position': pos, 'discovered': False, 'visited': False} for node_name, pos in enumerate(node_coords)}
+        nodes = {pos: {'name': pos, 'position': pos, 'discovered': False, 'visited': False, 'mobtype': next(self.mob_types)} for node_name, pos in enumerate(node_coords)}
         # labels = {node: next(self.mob_types) for node in nodes}
         #
         # node_positions = {k: k for k, v in nodes.items()}

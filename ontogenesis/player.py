@@ -117,7 +117,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         }
 
         # item management
-        self.food = 10
+        self.food = 100
         self.inventory = []
         self.equipped = {
             'armor': None,

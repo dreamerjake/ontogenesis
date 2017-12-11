@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from os import path
+from random import choice
 import sys
 import time
 
@@ -280,17 +281,17 @@ class Game:
     def travel(self):
         # TODO: splash screen if travel loading becomes significant
         if self.worldmap.destination_node:
-            # update worldmap nodes
-            self.worldmap.current_node = self.worldmap.destination_node
-            self.worldmap.destination_node = None
-            self.worldmap.visit_node(self.worldmap.current_node)
-            self.worldmap.discover_node(self.worldmap.current_node, neighbors=True)
-
             # generate new current map
             self.clear_map()
             self.current_map = self.worldmap.graph.node[self.worldmap.current_node]['map']
             self.generate_maptiles()
             self.player.pos = self.current_map.player_start
+
+            # update worldmap nodes
+            self.worldmap.current_node = self.worldmap.destination_node
+            self.worldmap.destination_node = None
+            self.worldmap.visit_node(self.worldmap.current_node)
+            self.worldmap.discover_node(self.worldmap.current_node, neighbors=True)
 
             # clear out all the map-specific delayed effects
             self.delayed_events = [event for event in self.delayed_events if not event[2]]
@@ -329,6 +330,11 @@ class Game:
             - this is kind of an efficiency hack since we're looping through the data anyways,
               but might need to be replaced later to separate functionality or as part of procedural gen
         """
+        mob_types = [self.worldmap.graph.node[self.worldmap.current_node]['mobtype']]
+
+        if self.worldmap.destination_node:
+            mob_types += [self.worldmap.graph.node[self.worldmap.destination_node]['mobtype']]
+
         for x in range(self.current_map.tilewidth):
             for y in range(self.current_map.tileheight):
 
@@ -356,7 +362,7 @@ class Game:
             for i in range(settings.pack_size):
                 x = (cluster[0] * settings.TILESIZE + i) + (settings.TILESIZE // 2)
                 y = (cluster[1] * settings.TILESIZE + i) + (settings.TILESIZE // 2)
-                self.spawn(Mob, (x, y))
+                self.spawn(choice(mob_types), (x, y))
 
     def run(self):
 
@@ -550,6 +556,7 @@ class Game:
         self.icon = pg.image.load(path.join(images_folder, 'letter_j_icon_small.png'))
         self.worldmap_background = pg.image.load(path.join(map_images_folder, 'newmap.png')).convert_alpha()
         self.mob_zombie_image = pg.image.load(path.join(mob_images_folder, 'zombie1.png'))
+        self.mob_lizard_image = pg.transform.scale(pg.image.load(path.join(mob_images_folder, 'lizard.png')).convert_alpha(), (64, 64))
         self.bullet_img = pg.image.load(path.join(skill_images_folder, 'bullet.png'))
         self.button_up = pg.image.load(path.join(ui_images_folder, 'up.png'))
         self.button_down = pg.image.load(path.join(ui_images_folder, 'down.png'))

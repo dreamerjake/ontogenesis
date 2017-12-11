@@ -184,3 +184,21 @@ class Mob(pg.sprite.Sprite, Collider):
             outline_image.set_at(point, color)
         return outline_image
 
+
+class GiantLizard(Mob):
+
+    debugname = 'Mob (Giant Lizard)'
+
+    def __init__(self, game, start_pos):
+        super().__init__(game, start_pos)
+
+        # stat adjustment relative to zombie
+        self.hit_rect = self.hit_rect.inflate(10, 10)
+        self.speed *= 1.3
+        self.collision_damage *= 1.3
+        self.collision_knockback *= 1.3
+        self.vision_distance *= .7
+        self.xp_value *= 1.3
+
+        self.image = self.game.mob_lizard_image
+        self.orig_image = self.image
