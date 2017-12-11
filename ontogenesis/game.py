@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 
-from os import path
-from random import choice
 import sys
 import time
+from os import path
+from random import choice
 
 import networkx as nx
 import pygame as pg
 from pygame.locals import FULLSCREEN
 from pygame.math import Vector2 as Vec2
 
+import settings
+from enemy import Mob, Collider
 from helpers import calc_dist
 from map import Map, WorldMap, Camera, Wall
 from player import Player
-from enemy import Mob, Collider
-from ui import UI
-import settings
 from settings import colors, game_configs
+from ui import UI
 
 
 class SaveGame:
