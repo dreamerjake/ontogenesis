@@ -9,7 +9,7 @@ import pygame as pg
 from pygame.math import Vector2 as Vec2
 
 import settings
-from enemy import Mob, GiantLizard
+from enemy import Zombie, GiantLizard
 from helpers import calc_dist
 from settings import colors
 
@@ -48,7 +48,7 @@ class Camera:
 class WorldMap:
     def __init__(self, game, width=40, height=20, min_dist=4, path_base_chance=.07, path_length_bonus=.23):
         self.game = game
-        self.mob_types = cycle([Mob, GiantLizard])
+        self.mob_types = cycle([Zombie, GiantLizard])
         self.image = None
         self.visible = False
 

@@ -186,6 +186,10 @@ class Mob(pg.sprite.Sprite, Collider):
         return outline_image
 
 
+class Zombie(Mob):
+    debugname = 'Mob (Zombie)'
+
+
 class GiantLizard(Mob):
 
     debugname = 'Mob (Giant Lizard)'
