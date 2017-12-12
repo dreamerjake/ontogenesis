@@ -130,6 +130,8 @@ class Game:
         self.screensize = (settings.WIDTH, settings.HEIGHT)
         self.screen = self.screen_update()
         self.effects_screen = self.screen.copy().convert_alpha()
+        self.light_filter = pg.Surface(self.screen.get_size())
+        self.light_filter.fill(colors.black)
         self.current_music = None
 
         # time
@@ -509,6 +511,12 @@ class Game:
             end_pos = (settings.WIDTH, y + self.camera.offset[1])
             pg.draw.line(self.screen, colors.lightgrey, start_pos, end_pos, line_width)
 
+    def render_light(self):
+        self.light_filter.fill(colors.black)
+        self.light_rect.center = self.camera.apply(self.player).center
+        self.light_filter.blit(self.light_image, self.light_rect)
+        self.screen.blit(self.light_filter, (0, 0), special_flags=pg.BLEND_MULT)
+
     def draw(self):
         self.screen.fill(settings.BGCOLOR)
 
@@ -540,6 +548,11 @@ class Game:
         # new_screen = pg.transform.rotate(self.screen, -45)
         # new_screen = pg.transform.scale(new_screen, (new_screen.get_width(), new_screen.get_height() // 2))
         # self.screen.blit(new_screen, (0, 0))
+
+        # self.light_filter.fill(colors.black)
+        # self.light_filter.blit(self.light_image, self.player.pos)
+        # self.screen.blit(self.light_filter, (0, 0))  # ,special_flags=pg.BLEND_RGBA_SUB)
+        self.render_light()
 
         # TODO: merge these
         self.hud.update()
@@ -597,6 +610,9 @@ class Game:
         # static images
         self.icon = pg.image.load(path.join(images_folder, 'letter_j_icon_small.png'))
         self.worldmap_background = pg.image.load(path.join(map_images_folder, 'newmap.png')).convert_alpha()
+        self.light_image = pg.image.load(path.join(images_folder, 'light_med.png')).convert_alpha()
+        # self.light_image = pg.transform.scale(self.light_image, ___)
+        self.light_rect = self.light_image.get_rect()
         self.mob_zombie_image = pg.image.load(path.join(mob_images_folder, 'zombie1.png'))
         self.mob_lizard_image = pg.transform.scale(pg.image.load(path.join(mob_images_folder, 'lizard.png')).convert_alpha(), (64, 64))
         self.bullet_img = pg.image.load(path.join(skill_images_folder, 'bullet.png'))

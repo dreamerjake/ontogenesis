@@ -108,6 +108,7 @@
         * ~~Player Health~~
         * ~~Player Resource~~
         * ~~Player Currency~~
+        * Mob Healthbars on effects layer
     * Settings Screen
     * Help Screen
         * Keybinds Display
