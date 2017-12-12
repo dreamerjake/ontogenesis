@@ -270,6 +270,8 @@ class Game:
 
     @timeit
     def new(self):
+        self.ui.draw_placeholder_menu("LOADING SCREEN")
+        pg.display.flip()
         # clean up old sprites
         for sprite in self.all_sprites:
             sprite.kill()
@@ -372,6 +374,7 @@ class Game:
             for y in range(self.current_map.tileheight):
 
                 if self.current_map.data[x][y] == 1:
+
                     self.spawn(Wall, (x * settings.TILESIZE, y * settings.TILESIZE))
 
                 elif self.current_map.player_start is None:
@@ -402,7 +405,10 @@ class Game:
         self.new()
 
         while True:
-            self.delta_time = self.clock.tick(self.configs.fps) / 1000
+            if self.configs.fps:
+                self.delta_time = self.clock.tick(self.configs.fps) / 1000
+            else:
+                self.delta_time = self.clock.tick() / 1000
             self.events()
             method = getattr(self, self.fsm.current_state)
             # if self.fsm.current_state not in ['game_over']:
@@ -463,6 +469,10 @@ class Game:
                     self.fsm('view_map')
                 if event.key == pg.K_F9:
                     self.travel()
+                if event.key == pg.K_F8:
+                    self.configs.fps = 0 if self.configs.fps else 60
+                    msg = 'MAX FPS SET TO 60' if self.configs.fps else 'MAX FPS REMOVED'
+                    self.flash_message(msg, 1)
 
     def screen_update(self):
         """ Create the display - called on Game init and display settings change"""
@@ -549,9 +559,6 @@ class Game:
         # new_screen = pg.transform.scale(new_screen, (new_screen.get_width(), new_screen.get_height() // 2))
         # self.screen.blit(new_screen, (0, 0))
 
-        # self.light_filter.fill(colors.black)
-        # self.light_filter.blit(self.light_image, self.player.pos)
-        # self.screen.blit(self.light_filter, (0, 0))  # ,special_flags=pg.BLEND_RGBA_SUB)
         self.render_light()
 
         # TODO: merge these
