@@ -80,6 +80,7 @@ def draw_lightning(surface, start_pos, end_pos):
         midl = [(midx, midy)]
         midl.extend(upper)
 
+        # print(midl)
         return midl
 
     points = get_points(*start_pos, *end_pos)
@@ -124,8 +125,10 @@ class LightningSkill(Skill):
         if self.owner.resource_current >= self.tick_cost:
             target = get_closest_sprite(self.owner.game.mobs, pg.mouse.get_pos() - self.owner.game.camera.offset, radius=100)
             if target and calc_dist(self.owner.pos, target.pos) < self.range:
-                target_pos = target.hit_rect.center
-                draw_lightning(self.owner.game.effects_screen, self.owner.pos + self.owner.proj_offset.rotate(-self.owner.rot), target_pos)
+                offset = self.owner.game.camera.offset
+                to_pos = target.hit_rect.center + offset
+                from_pos = self.owner.pos + self.owner.proj_offset.rotate(-self.owner.rot) + offset
+                draw_lightning(self.owner.game.effects_screen, from_pos, to_pos)
                 now = pg.time.get_ticks()
                 if now - self.last_tick > 1000 // self.ticks_per_sec:
                     target.hp_current -= self.tick_damage
