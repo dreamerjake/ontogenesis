@@ -20,7 +20,7 @@
         * Equipment Sets? (procedurally generated?)
                 
     * ~~Currency System~~
-        * Concept: Food as the universal currency - constantly depleting and accepted in all trading
+        * ~~Concept: Food as the universal currency - constantly depleting and accepted in all trading~~
             * regen of health/resource consumes extra food
     
     * Controls
@@ -36,7 +36,7 @@
     * Player
         * Attributes
             * ~~World Map Location~~
-            * Currency
+            * ~~Currency~~
         * ~~Animations~~
         * State Tracking
         
@@ -104,10 +104,10 @@
     * ~~Map Screen~~
     * ~~Skills Screen~~
     * HUD
-        * Active Skill
+        * ~~Active Skill~~
         * ~~Player Health~~
-        * Player Resource
-        * Player Currency
+        * ~~Player Resource~~
+        * ~~Player Currency~~
     * Settings Screen
     * Help Screen
         * Keybinds Display
@@ -138,11 +138,10 @@ isometric example
     
 pyinstaller -c -d -F --add-data="assets;assets" game.py
 
-
 ### Idea Scratchpad
-Worldmap has a series of nodes representing map points
-    * Each map node has a native enemy type
-        * Traveling from node A to node B will encounter a mix of A & B enemies
+~~Worldmap has a series of nodes representing map points~~
+    * ~~Each map node has a native enemy type~~
+        * ~~Traveling from node A to node B will encounter a mix of A & B enemies~~
 Reaching destination town(back home after quests???) will perma-unlock skills gained during run
 Track the hometown over runs, for permanence
     * Play until you run out of population???
