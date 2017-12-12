@@ -150,6 +150,7 @@ Track the hometown over runs, for permanence
     * Finding the hometown is the objective of the story mode?
 Dynamic mob generation based on the game's fps
 Threat generation meter? (constant spawning?)
+Monster Hunter type equipment?
 
 ### Mob AI Scratchpad
 Predatory

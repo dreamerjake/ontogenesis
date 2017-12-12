@@ -176,8 +176,10 @@ class Game:
             ('main_menu', 'new_game'): 'create_char',
             ('main_menu', 'next'): 'create_char',
 
-            ('create_char', 'next'): 'playing',
+            ('create_char', 'next'): 'select_destination',
             ('create_char', 'back'): 'main_menu',
+
+            ('select_destination', 'next'): 'playing',
 
             # in-game menus
             ('skills_menu', 'next'): 'playing',
@@ -236,6 +238,9 @@ class Game:
     def main_menu(self):
         self.ui.draw_main_menu()
         return 'stay'
+
+    def select_destination(self):
+        self.ui.draw_map_menu()
 
     def create_char(self):
         self.ui.draw_placeholder_menu('CHARACTER CREATION')
@@ -443,7 +448,11 @@ class Game:
                 if event.key == pg.K_9:
                     print(self.player.sum_bonuses())
                 if event.key == pg.K_RETURN:
-                    self.fsm('next')
+                    if self.fsm.current_state == 'select_destination' and not self.worldmap.destination_node:
+                        # force the player to pick a destination
+                        self.flash_message('SELECT A DESTINATION', 1)
+                    else:
+                        self.fsm('next')
                 if event.key == pg.K_k:
                     self.fsm('view_skills')
                 if event.key == pg.K_F1:
