@@ -124,6 +124,22 @@
     * OSX Support
         * Keyboard Input
     
+### Design Principles
+(Meta): Build for yourself, predicting other people is *really hard*
+1. Imbalance is fun.
+    - The player should strive for, and attain, a state of imbalance and enjoy it until their character dies.
+2. Consistency matters.
+    - Mechanics and narrative elements should apply as *universally* as possible.
+    - Negative experiences should feel fair and/or justified.
+
+### Influences
+(Note): These are just the ones that I explicitly thought about during creation and consciously thought
+"yeah, elements of this would be nice", obviously no one can trace every influencing work
+Solomon's Boneyard
+Path of Exile
+Diablo (before it got bad)
+(The idea that led to) No Man's Sky
+    
 ### Notes
 tweenting library to keep in mind
     https://github.com/asweigart/pytweening
@@ -151,6 +167,9 @@ Track the hometown over runs, for permanence
 Dynamic mob generation based on the game's fps
 Threat generation meter? (constant spawning?)
 Monster Hunter type equipment?
+Quick/intuitive way to evaluate whether an equippable is GOOD or not?
+    * Total exp in a skill, % distribution, delta w/ current equip?
+Have the characters realize they're living in a simulated world
 
 ### Mob AI Scratchpad
 Predatory
