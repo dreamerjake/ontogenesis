@@ -5,8 +5,7 @@ from PIL import Image, ImageChops
 
 
 def crop_directory(path='.', filetype=None, suffix='_resized', bg_pixel=(0, 0), output_format='PNG'):
-    dirs = os.listdir(path)
-    for item in dirs:
+    for item in os.listdir(path):
         filepath = os.path.join(path, item)
         if os.path.isfile(filepath):
             f, e = os.path.splitext(filepath)
