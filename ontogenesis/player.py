@@ -193,7 +193,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
     def load_link(self):
         link_dir = path.join(self.game.game_folder, 'assets', 'images', 'placeholder')
-        size = 64
+        size = 48
         self.standing_frames = {
             'left': cycle([
                 pg.transform.scale(pg.image.load(path.join(link_dir, 'link_side_0.png')), (size, size)),
