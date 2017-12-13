@@ -2,6 +2,8 @@
 
 from collections import defaultdict
 from itertools import cycle
+from math import atan2, degrees, pi
+from os import path
 from random import choice
 
 import pygame as pg
@@ -86,7 +88,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # graphics
         self.last_update = pg.time.get_ticks()
         self.frame_delay = 200
-        self.image = self.standing_frames[0]
+        self.image = next(self.standing_frames['down'])
         self.orig_image = self.image
 
         # physics
@@ -107,6 +109,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.speed_mul = 1.0
 
         # default stats
+        self.xp_total = 0
         self.speed = 100
         self.hp_current = 80
         self.hp_max = 100
@@ -130,33 +133,117 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             'active_skill': None,
             'passives': []
         }
+        self.focus_skill = None
+        # self.focus_skill = choice([self.equipped['active_skill']] + self.equipped['passives'])
 
-        # manual starting skills
+        self.load_placeholder_skills()
 
+    @property
+    def moving(self):
+        return self.vel.length() > 0
+
+    @property
+    def facing(self):
+        directions = {
+            0: 'up',
+            1: 'right',
+            2: 'down',
+            3: 'left',
+            # 90: 'right',
+            # 180: 'down',
+            # 270: 'left'
+        }
+        return directions[min(3, round(self.mouse_angle / 90))]
+
+    @property
+    def mouse_angle(self):
+        x1, y1 = self.game.camera.apply(self).center
+        x2, y2 = Vec2(pg.mouse.get_pos())
+        # print ((x1, y1), (x2, y2))
+        dx = x2 - x1
+        dy = y2 - y1
+        rads = atan2(dy, dx)
+        rads %= 2 * pi
+        degs = int(degrees(rads)) + 90
+        return degs % 360
+
+    def load_placeholder_skills(self):
+        # manually set starting skills
         lightning_skill = LightningSkill(self.game)
         run_skill = PassiveSkill(self.game, 'Run', speed=10)
         toughness_skill = PassiveSkill(self.game, 'Toughness', hp_max=10)
 
-        # TODO: remove this
         for skill in [run_skill, toughness_skill]:
             self.equip('passives', skill)
         self.equip('active_skill', lightning_skill)
 
-        self.focus_skill = None
-        # self.focus_skill = choice([self.equipped['active_skill']] + self.equipped['passives'])
-
     def load_images(self):
-        self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64, rot=-90)]
-        self.moving_frames = cycle([
-            self.game.player_wobble_spritesheet.get_image(0, 0, 64, 64, rot=-90, scale_to=(48, 48)),
-            self.game.player_wobble_spritesheet.get_image(64, 0, 64, 64, rot=-90, scale_to=(48, 48)),
-            self.game.player_wobble_spritesheet.get_image(128, 0, 64, 64, rot=-90, scale_to=(48, 48)),
-            self.game.player_wobble_spritesheet.get_image(192, 0, 64, 64, rot=-90, scale_to=(48, 48)),
-            self.game.player_wobble_spritesheet.get_image(256, 0, 64, 64, rot=-90, scale_to=(48, 48)),
-            self.game.player_wobble_spritesheet.get_image(320, 0, 64, 64, rot=-90, scale_to=(48, 48)),
-            self.game.player_wobble_spritesheet.get_image(384, 0, 64, 64, rot=-90, scale_to=(48, 48)),
-            self.game.player_wobble_spritesheet.get_image(448, 0, 64, 64, rot=-90, scale_to=(48, 48))
-        ])
+        self.load_link()
+        # self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64, rot=-90)]
+        # self.moving_frames = cycle([
+        #     self.game.player_wobble_spritesheet.get_image(0, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+        #     self.game.player_wobble_spritesheet.get_image(64, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+        #     self.game.player_wobble_spritesheet.get_image(128, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+        #     self.game.player_wobble_spritesheet.get_image(192, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+        #     self.game.player_wobble_spritesheet.get_image(256, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+        #     self.game.player_wobble_spritesheet.get_image(320, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+        #     self.game.player_wobble_spritesheet.get_image(384, 0, 64, 64, rot=-90, scale_to=(48, 48)),
+        #     self.game.player_wobble_spritesheet.get_image(448, 0, 64, 64, rot=-90, scale_to=(48, 48))
+        # ])
+
+    def load_link(self):
+        link_dir = path.join(self.game.game_folder, 'assets', 'images', 'placeholder')
+        size = 64
+        self.standing_frames = {
+            'left': cycle([
+                pg.transform.scale(pg.image.load(path.join(link_dir, 'link_side_0.png')), (size, size)),
+                #pg.transform.scale(pg.image.load(path.join(link_dir, 'link_side_1.png')), (size, size))
+            ]),
+
+            'right': cycle([
+                pg.transform.scale(pg.transform.flip(pg.image.load(path.join(link_dir, 'link_side_0.png')), True, False), (size, size)),
+                #pg.transform.scale(pg.transform.flip(pg.image.load(path.join(link_dir, 'link_side_1.png')), True, False), (size, size))
+            ]),
+
+            'up': cycle([
+                pg.transform.scale(pg.image.load(path.join(link_dir, 'link_up_0.png')), (size, size)),
+                #pg.transform.scale(pg.image.load(path.join(link_dir, 'link_up_1.png')), (size, size))
+            ]),
+
+            'down': cycle([
+                pg.transform.scale(pg.image.load(path.join(link_dir, 'link_down_0.png')), (size, size)),
+                #pg.transform.scale(pg.image.load(path.join(link_dir, 'link_down_1.png')), (size, size))
+            ])
+        }
+        self.moving_frames = {
+            'left': cycle([
+                pg.transform.scale(pg.image.load(path.join(link_dir, 'link_side_0.png')), (size, size)),
+                pg.transform.scale(pg.image.load(path.join(link_dir, 'link_side_1.png')), (size, size))
+            ]),
+
+            'right': cycle([
+                pg.transform.scale(pg.transform.flip(pg.image.load(path.join(link_dir, 'link_side_0.png')), True, False), (size, size)),
+                pg.transform.scale(pg.transform.flip(pg.image.load(path.join(link_dir, 'link_side_1.png')), True, False), (size, size))
+            ]),
+
+            'up': cycle([
+                pg.transform.scale(pg.image.load(path.join(link_dir, 'link_up_0.png')), (size, size)),
+                pg.transform.scale(pg.image.load(path.join(link_dir, 'link_up_1.png')), (size, size))
+            ]),
+
+            'down': cycle([
+                pg.transform.scale(pg.image.load(path.join(link_dir, 'link_down_0.png')), (size, size)),
+                pg.transform.scale(pg.image.load(path.join(link_dir, 'link_down_1.png')), (size, size))
+            ])
+        }
+
+    def animate(self):
+        # animate
+        now = pg.time.get_ticks()
+        if now - self.last_update > self.frame_delay:
+            self.image = next(self.moving_frames[self.facing]) if self.moving else next(self.standing_frames[self.facing])
+            self.rect = self.image.get_rect()
+            self.last_update = now
 
     def process_input(self):
         self.vel = Vec2(0, 0)  # this might be a problem later on, if external forces can effect player position
@@ -222,10 +309,11 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
     def rotate(self, target):
         """ face the target """
         self.rot = (target - self.hit_rect.center).angle_to(Vec2(1, 0))
-        self.image = pg.transform.rotate(self.orig_image, self.rot)
-        self.rect = self.image.get_rect()
+        # self.image = pg.transform.rotate(self.orig_image, self.rot)
+        # self.rect = self.image.get_rect()
 
     def gain_xp(self, xp):
+        self.xp_total += xp
         if self.focus_skill:
             self.focus_skill.gain_xp(xp)
 
@@ -235,6 +323,8 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.game.fsm('die')
 
     def update(self):
+        # print(self.moving, self.rot, self.mouse_angle, self.facing)
+
         # health and resource regen/degen
         if self.hps_regen != 0:
             self.hp_current = min(self.hp_current + (self.hps_regen * self.game.delta_time), self.hp_max)
@@ -251,14 +341,11 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # handle controls
         self.process_input()
 
-        # animate
-        now = pg.time.get_ticks()
-        if now - self.last_update > self.frame_delay:
-            self.orig_image = next(self.moving_frames)
-            self.last_update = now
-
         # face the mouse
-        self.rotate(Vec2(pg.mouse.get_pos()) - self.game.camera.offset)
+        self.rotate(self.game.mouse_pos)
+
+        # animate
+        self.animate()
 
         # move
         self.pos += self.vel * (self.game.delta_time * self.speed_mul)

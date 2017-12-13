@@ -217,6 +217,10 @@ class Game:
         }
         self.fsm = StateMachine(game=self, initial='main_menu', table=self.state_table)
 
+    @property
+    def mouse_pos(self):
+        return Vec2(pg.mouse.get_pos()) - self.camera.offset
+
     def map_menu(self):
         self.ui.draw_map_menu()
         return 'stay'
@@ -588,12 +592,12 @@ class Game:
 
         # folders
         if getattr(sys, 'frozen', False):
-            game_folder = path.dirname(sys.executable)
+            self.game_folder = path.dirname(sys.executable)
         else:
-            game_folder = path.dirname(path.realpath(__file__))
+            self.game_folder = path.dirname(path.realpath(__file__))
         # game_folder = path.curdir(__file__)
-        print(game_folder)
-        assets_folder = path.join(game_folder, 'assets')
+        # print(game_folder)
+        assets_folder = path.join(self.game_folder, 'assets')
         fonts_folder = path.join(assets_folder, 'fonts')
         audio_folder = path.join(assets_folder, 'audio')
         music_folder = path.join(audio_folder, 'music')
@@ -604,6 +608,7 @@ class Game:
         ui_images_folder = path.join(images_folder, 'ui')
         skill_images_folder = path.join(images_folder, 'skill')
         map_images_folder = path.join(images_folder, 'map')
+        placeholder_images_folder = path.join(images_folder, 'placeholder')
 
         # fonts
         self.hud_font = path.join(fonts_folder, 'Dense-Regular.ttf')
