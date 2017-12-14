@@ -351,11 +351,15 @@ class UI:
         self.draw_flashed_messages()
         pg.display.flip()
 
-    def draw_placeholder_splash(self, name):
+    def draw_placeholder_splash(self, name, text=None):
         self.hide_group(self.all_buttons, self.all_windows)
         self.screen.fill(colors.black)
 
-        self.draw_text(name, self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2, align='center')
+        self.draw_text(name, self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2 - 50, align='center')
+        if text:
+            for i, line in enumerate(text):
+                self.draw_text(line, self.game.hud_font, 32, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2 + (i * 32),
+                               align='center')
         # self.draw_menu_title()
         # self.optional_messages()
         # if self.game.configs.debug:

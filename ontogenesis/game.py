@@ -223,7 +223,9 @@ class Game:
         return Vec2(pg.mouse.get_pos()) - self.camera.offset
 
     def intro(self):
-        self.ui.draw_placeholder_splash('THE INTRO')
+        with open(self.intro_text) as f:
+            lines = [line.strip() for line in f]
+        self.ui.draw_placeholder_splash('THE INTRO', text=lines)
 
     def map_menu(self):
         self.ui.draw_map_menu()
