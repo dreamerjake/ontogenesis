@@ -2,6 +2,7 @@
 
 import sys
 import time
+from gc import get_referrers
 from os import path
 from random import choice
 
@@ -105,6 +106,7 @@ class StateMachine:
             debug_msg = "State change event: {} - current state: {} - next state: {} (Changed={})"
             print(debug_msg.format(event, self.current_state, next_state, changed))
         if changed:
+            print(f'Changing state: {self.current_state} => {next_state}')
             self.current_state = next_state
 
 
@@ -152,7 +154,6 @@ class Game:
 
         # sprite groups
         self.all_sprites = pg.sprite.LayeredUpdates()
-        # self.ui_elements = pg.sprite.Group()
         self.hud = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
@@ -255,6 +256,8 @@ class Game:
         self.ui.draw_map_menu()
 
     def create_char(self):
+        if not self.player or self.player.dead:
+            self.new()
         self.ui.draw_placeholder_menu('CHARACTER CREATION')
         return
 
@@ -278,13 +281,45 @@ class Game:
             if sprite != self.player:
                 sprite.kill()
 
+    def check_player_refs(self):
+        if self.player:
+            referrers = get_referrers(self.player)
+            print('Player exists with {} references'.format(sys.getrefcount(self.player)))
+            for referrer in referrers:
+                print(referrer)
+                if hasattr(referrer, '__name__'):
+                    print(referrer.__name__)
+                elif hasattr(referrer, '__qualname__'):
+                    print(referrer.__qualname__)
+                else:
+                    print(type(referrer))
+
     @timeit
     def new(self):
         self.ui.draw_placeholder_splash("LOADING SCREEN")
         pg.display.flip()
+
         # clean up old sprites
+        self.check_player_refs()
         for sprite in self.all_sprites:
             sprite.kill()
+        # self.check_player_refs()
+
+        # reset stuff
+        self.all_sprites = pg.sprite.LayeredUpdates()
+        self.hud = pg.sprite.Group()
+        self.walls = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
+        self.projectiles = pg.sprite.Group()
+        self.worldmap = None
+        self.camera = None
+        self.delayed_events = []
+
+        # self.check_player_refs()
+        if self.player:
+            self.player.unequip_all()
+        # self.check_player_refs()
+        self.player = None
 
         print('Starting New Game')
 
