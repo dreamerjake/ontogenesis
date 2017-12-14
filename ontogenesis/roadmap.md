@@ -156,6 +156,8 @@ volume settings math
 isometric example
     http://flarerpg.org/
     https://www.youtube.com/watch?v=KvSjJ-kdGio
+'qol creep'?
+    https://www.reddit.com/r/pathofexile/comments/7jk0kh/cohh_with_a_great_suggestion_this_is_why_external/
     
 pyinstaller -c -d -F --add-data="assets;assets" game.py
 
@@ -174,6 +176,8 @@ Monster Hunter type equipment?
 Quick/intuitive way to evaluate whether an equippable is GOOD or not?
     * Total exp in a skill, % distribution, delta w/ current equip?
 Have the characters realize they're living in a simulated world
+Make a universal-ish 'Info' button that can be used on almost everything
+The player could have a resource 'color' that changes represents their 'affinity' to various skilltypes
 
 ### Mob AI Scratchpad
 Predatory
