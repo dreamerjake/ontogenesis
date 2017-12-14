@@ -43,6 +43,9 @@ Button Images
 =============
 https://opengameart.org/users/stumpystrust
 
+Resource Orb Images:
+====================
+https://opengameart.org/content/health-orb-11
 
 Dense-Regular Font
 ==================
