@@ -143,7 +143,7 @@ Solomon's Boneyard
 Path of Exile
 Diablo (before it got bad)
 (The idea that led to) No Man's Sky
-    
+
 ### Notes
 tweenting library to keep in mind
     https://github.com/asweigart/pytweening
