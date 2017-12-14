@@ -42,12 +42,13 @@ class UI:
 
         # windows
         # TODO: fix scroll button bugs
+        # TODO: remove duplicated code for generating these
         self.start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
         self.keybinds_window = TextScrollwindow(
             self.game,
-            settings.WIDTH // 2, settings.HEIGHT - 100,
+            settings.WIDTH // 2 + 100, settings.HEIGHT - 100,
             (0, 100),
-            ['{} : {}'.format(v, pg.key.name(k)) for k, v in keybinds.items()],
+            ['{} : {}'.format(k, ', '.join([pg.key.name(button) for button in v])) for k, v in keybinds.items()],
             self.game.settings_font, 28)
 
         spacer = 10
@@ -66,8 +67,9 @@ class UI:
             self.game.settings_font, 28)
 
         # button groups
-        self.all_windows = [self.keybinds_window, self.passives_window, self.actives_window]
+        self.all_windows = [self.keybinds_window, self.passives_window, self.actives_window, self.keybinds_window]
         self.skill_menu_windows = [self.passives_window, self.actives_window]
+        self.controls_menu_windows = [self.keybinds_window]
         self.map_menu_windows = []
 
     def new(self):
@@ -91,9 +93,11 @@ class UI:
         self.start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
         self.keybinds_window = TextScrollwindow(
             self.game,
-            settings.WIDTH // 2, settings.HEIGHT - 100,
+            settings.WIDTH // 2 + 100, settings.HEIGHT - 100,
             (0, 100),
-            ['{} : {}'.format(v, pg.key.name(k)) for k, v in keybinds.items()],
+            # ['{} : {}'.format(k, v) for k, v in keybinds.items()],
+            ['{} : {}'.format(k, ', '.join([pg.key.name(button) for button in v])) for k, v in keybinds.items()],
+            # ['{} : {}'.format(v, pg.key.name(k)) for k, v in keybinds.items()],
             self.game.settings_font, 28)
 
         spacer = 10
@@ -221,6 +225,22 @@ class UI:
             for member in group:
                 member.visible = True
 
+    def draw_controls_menu(self):
+        self.hide_group(self.all_buttons, self.all_windows)
+        self.show_group(self.controls_menu_windows)
+
+        self.screen.fill(colors.black)
+        self.draw_menu_title()
+        self.optional_messages()
+        if self.game.configs.debug:
+            self.debug_messages()
+        self.draw_flashed_messages()
+
+        # TODO: this should be a general check for active/visible ui elements
+        self.keybinds_window.update()
+        self.keybinds_window.draw(self.game.screen)
+        pg.display.flip()
+
     def draw_main_menu(self):
         self.hide_group(self.all_buttons, self.all_windows)
         self.show_group(self.main_menu_buttons)
@@ -242,9 +262,6 @@ class UI:
         if self.game.configs.debug:
             self.debug_messages()
         self.draw_flashed_messages()
-
-        self.keybinds_window.update()
-        self.keybinds_window.draw(self.game.screen)
 
         pg.display.flip()
 

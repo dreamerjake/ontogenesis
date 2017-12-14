@@ -13,9 +13,35 @@ SYSTEM_DEBUG = True
 
 # keybinds
 keybinds = {
-    pg.K_ESCAPE: 'test_keyfunction',
-    pg.K_SPACE: 'test_keyfunction'
-    # 'forwards': [pg.K_UP, pg.K_w]
+    # system
+    'quit': [pg.K_ESCAPE],
+    'next': [pg.K_RETURN],
+    'toggle music': [pg.K_F2],
+    'toggle fullscreen': [pg.K_F10],
+    'toggle debug': [pg.K_F12],
+
+    # menu
+    'pause': [pg.K_p],
+    'view skills': [pg.K_k],
+    'view map': [pg.K_m],
+    'display bonuses': [pg.K_9],
+
+    # cheat
+    'cheat - travel': [pg.K_F9],
+    'cheat - dash': [pg.K_LCTRL],
+
+    # player
+    'move up': [pg.K_UP, pg.K_w],
+    'move down': [pg.K_DOWN, pg.K_s],
+    'move left': [pg.K_LEFT, pg.K_a],
+    'move right': [pg.K_RIGHT, pg.K_d],
+    # 'fire': []
+
+    # test format
+    # 'down': {
+    #     'category': 'movement',
+    #     'binds': [pg.K_DOWN, pg.K_s],
+    # }
 }
 
 # define some colors as (R, G, B) tuples

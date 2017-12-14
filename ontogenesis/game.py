@@ -195,6 +195,8 @@ class Game:
             ('skill_detail', 'view_map'): 'map_menu',
             ('skill_detail', 'back'): 'skills_menu',  # universal back button?
 
+            ('controls_menu', 'next'): 'playing',
+
             ('map_menu', 'paused'): 'paused',
             ('map_menu', 'view_skills'): 'skills_menu',
             ('map_menu', 'view_map'): 'playing',
@@ -215,7 +217,7 @@ class Game:
             # splashes
             ('goal', 'next'): 'main_menu',
             ('game_over', 'next'): 'main_menu',
-            ('intro', 'next'): 'playing',
+            ('intro', 'next'): 'controls_menu',
         }
         self.fsm = StateMachine(game=self, initial='main_menu', table=self.state_table)
 
@@ -227,6 +229,9 @@ class Game:
         with open(self.intro_text) as f:
             lines = [line.strip() for line in f]
         self.ui.draw_placeholder_splash('THE INTRO', text=lines)
+
+    def controls_menu(self):
+        self.ui.draw_controls_menu()
 
     def map_menu(self):
         self.ui.draw_map_menu()
