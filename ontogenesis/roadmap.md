@@ -114,6 +114,7 @@
         * Keybinds Display
     * ~~Minimap~~
         * Fog of War / Explored
+        * Adjust for light radius
 
 * ####SYSTEM
     * Display
@@ -134,8 +135,7 @@
 3. Time has value.
     - Don't prevent players from doing things efficiently
     - At any given time, the game should *quickly* move towards its current objective, not *slowly* move towards a distant finale
-        
-        
+
 ### Influences
 (Note): These are just the ones that I explicitly thought about during creation and consciously thought
 "yeah, elements of this would be nice", obviously no one can trace every influencing work

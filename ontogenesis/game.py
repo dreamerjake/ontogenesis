@@ -622,7 +622,7 @@ class Game:
         # static images
         self.icon = pg.image.load(path.join(images_folder, 'letter_j_icon_small.png'))
         self.worldmap_background = pg.image.load(path.join(map_images_folder, 'newmap.png')).convert_alpha()
-        self.light_image = pg.image.load(path.join(images_folder, 'light_med.png')).convert_alpha()
+        self.light_image = pg.transform.scale2x(pg.image.load(path.join(images_folder, 'light_med.png')).convert_alpha())
         # self.light_image = pg.transform.scale(self.light_image, ___)
         self.light_rect = self.light_image.get_rect()
         self.mob_zombie_image = pg.image.load(path.join(mob_images_folder, 'zombie1.png'))
