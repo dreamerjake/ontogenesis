@@ -613,6 +613,7 @@ class Game:
         skill_images_folder = path.join(images_folder, 'skill')
         map_images_folder = path.join(images_folder, 'map')
         placeholder_images_folder = path.join(images_folder, 'placeholder')
+        text_folder = path.join(assets_folder, 'text')
 
         # fonts
         self.hud_font = path.join(fonts_folder, 'Dense-Regular.ttf')
@@ -642,6 +643,9 @@ class Game:
         self.music_intro = path.join(music_folder, 'soliloquy.mp3')
         self.music_action = path.join(music_folder, 'action.mp3')
         self.player_sound_ow = pg.mixer.Sound(path.join(player_audio_folder, 'ow.wav'))
+
+        # text
+        self.intro_text = path.join(text_folder, 'intro_scene.txt')
 
         # startup values for display/mixer
         pg.display.set_caption(settings.TITLE)
