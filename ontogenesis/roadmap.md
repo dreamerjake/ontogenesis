@@ -198,3 +198,36 @@ high knockback # hits you with his tail
 low vision
 high xp
 inventory: lizard meat, various lizard parts
+
+
+### Misc Notes
+* too much info on minimap
+* starving should have an indicator
+* more (attack) skills
+* needs button tutorial image
+* needs tutorial
+* oom sound / brighter resource globe
+
+likes:
+* controls
+* difficulty
+* intro placement
+* minimap
+* zombies
+    * look
+    * behavior
+
+dislikes:
+* hard to notice when oom
+
+good starting skill:
+* gun? - shoot bullets (sounds like a weapon equipment)
+* THROW - throwing rocks? (ammo for a default throw skill)
+* MELEE ATTACK
+
+ideal skill:
+* arrows
+* multiple
+* explosive
+* flaming - burning damage effect
+* fast fire rate
