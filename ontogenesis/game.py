@@ -178,7 +178,7 @@ class Game:
             ('main_menu', 'new_game'): 'create_char',
             ('main_menu', 'next'): 'create_char',
 
-            ('create_char', 'next'): 'select_destination',
+            ('create_char', 'next'): 'intro',
             ('create_char', 'back'): 'main_menu',
 
             ('select_destination', 'next'): 'playing',
@@ -214,12 +214,16 @@ class Game:
             # splashes
             ('goal', 'next'): 'main_menu',
             ('game_over', 'next'): 'main_menu',
+            ('intro', 'next'): 'playing',
         }
         self.fsm = StateMachine(game=self, initial='main_menu', table=self.state_table)
 
     @property
     def mouse_pos(self):
         return Vec2(pg.mouse.get_pos()) - self.camera.offset
+
+    def intro(self):
+        self.ui.draw_placeholder_splash('THE INTRO')
 
     def map_menu(self):
         self.ui.draw_map_menu()
@@ -234,7 +238,7 @@ class Game:
         return 'stay'
 
     def goal(self):
-        self.ui.draw_placeholder_menu('GOAL REACHED')
+        self.ui.draw_placeholder_splash('GOAL REACHED')
 
     def game_over(self):
         # TODO: autotransition after x seconds
@@ -274,7 +278,7 @@ class Game:
 
     @timeit
     def new(self):
-        self.ui.draw_placeholder_menu("LOADING SCREEN")
+        self.ui.draw_placeholder_splash("LOADING SCREEN")
         pg.display.flip()
         # clean up old sprites
         for sprite in self.all_sprites:
