@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# import sys
 from collections import defaultdict
+from gc import get_referrers
 from itertools import cycle
 from math import atan2, degrees, pi
 from os import path
@@ -65,6 +67,22 @@ class Equippable:
             self.equipped[slot] = equippable
             self.add_bonuses(equippable)
 
+    def unequip_all(self):
+        for slot, equip in self.equipped.items():
+            if equip:
+                if isinstance(equip, list):  # see if the slot can hold multiple things
+                    for item in equip:
+                        item.owner = None
+                else:
+                    equip.owner = None
+
+        self.equipped = {
+            'armor': None,
+            'weapon': None,
+            'active_skill': None,
+            'passives': []
+        }
+
 
 class Player(pg.sprite.Sprite, Collider, Equippable):
 
@@ -103,6 +121,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.proj_offset = Vec2(15, 15)  # hardcoded to the placeholder graphics
 
         # state
+        self.dead = False
         self.last_shot = pg.time.get_ticks()
         self.focus_skill = None
         # self.move_state = 'normal'
@@ -319,8 +338,12 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
     def die(self):
         print('Player Died')
-        self.game.new()
+        # self.game.new()
+        self.dead = True
         self.game.fsm('die')
+        # print(sys.getrefcount(self))
+        # self.kill()
+        # print(get_referrers(self))
 
     def update(self):
         # print(self.moving, self.rot, self.mouse_angle, self.facing)
