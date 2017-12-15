@@ -13,6 +13,20 @@ from map import Wall
 from settings import colors, layers, keybinds
 
 
+def menu(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        self.hide_group(self.all_buttons, self.all_windows)
+        self.show_group(self.controls_menu_windows)
+        self.screen.fill(colors.black)
+        func(self, *args, **kwargs)
+        self.update_visible_elements()
+        self.draw_visible_elements()
+        pg.display.flip()
+
+    return wrapper
+
+
 class UI:
     """ Master class for the UI object"""
 
@@ -42,19 +56,6 @@ class UI:
         self.create_elements()
 
         # self.draw_controls_menu = self.as_menu(self.draw_controls_menu)
-
-    def menu(self, func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            self.hide_group(self.all_buttons, self.all_windows)
-            self.show_group(self.controls_menu_windows)
-            self.screen.fill(colors.black)
-            return func(*args, **kwargs)
-
-        self.update_visible_elements()
-        self.draw_visible_elements()
-        pg.display.flip()
-        return wrapper
 
     # def as_menu(self, func):
     #     def with_elements(*args, **kwargs):
@@ -302,23 +303,24 @@ class UI:
         self.draw_flashed_messages()
         pg.display.flip()
 
+    @menu
     def draw_skills_menu(self):
-        self.hide_group(self.all_buttons, self.all_windows)
-        self.show_group(self.skill_menu_windows)
-
-        self.screen.fill(colors.black)
+        # self.hide_group(self.all_buttons, self.all_windows)
+        # self.show_group(self.skill_menu_windows)
+        #
+        # self.screen.fill(colors.black)
         self.draw_menu_title()
 
         # self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
 
-        self.update_visible_elements()
-        self.draw_visible_elements()
-
-        self.optional_messages()
-        if self.game.configs.debug:
-            self.debug_messages()
-        self.draw_flashed_messages()
-        pg.display.flip()
+        # self.update_visible_elements()
+        # self.draw_visible_elements()
+        #
+        # self.optional_messages()
+        # if self.game.configs.debug:
+        #     self.debug_messages()
+        # self.draw_flashed_messages()
+        # # pg.display.flip()
 
     def draw_map_menu(self):
         self.hide_group(self.all_buttons, self.all_windows)

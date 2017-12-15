@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# import sys
 from collections import defaultdict
-from gc import get_referrers
 from itertools import cycle
 from math import atan2, degrees, pi
 from os import path
-from random import choice
 
 import pygame as pg
 from pygame.math import Vector2 as Vec2
