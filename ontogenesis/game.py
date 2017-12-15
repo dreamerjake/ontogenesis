@@ -613,7 +613,8 @@ class Game:
         # new_screen = pg.transform.scale(new_screen, (new_screen.get_width(), new_screen.get_height() // 2))
         # self.screen.blit(new_screen, (0, 0))
 
-        self.render_light()
+        if not self.configs.debug:
+            self.render_light()
 
         # TODO: merge these
         self.hud.update()
