@@ -216,7 +216,7 @@ class WorldMap:
         # print(distances)
         return min(distances, key=distances.get)
 
-    def process_input(self, event):
+    def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
             relative_pos = Vec2(event.pos)  # - Vec2(self.button_up.get_abs_offset()) - Vec2(self.rect.topleft)
             closest_node = self.get_closest_node(relative_pos)
