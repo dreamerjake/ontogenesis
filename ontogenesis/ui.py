@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict
+from functools import wraps
 from itertools import chain
 
 import pygame as pg
@@ -28,96 +29,97 @@ class UI:
         # hud
         self.minimap = Minimap(self.game)
 
+        # element group - buttons
+        self.all_buttons = set()
+        self.main_menu_buttons = set()
+
+        # element group - windows
+        self.all_windows = set()
+        self.controls_menu_windows = set()
+        self.map_menu_windows = set()
+        self.skill_menu_windows = set()
+
+        self.create_elements()
+
+        # self.draw_controls_menu = self.as_menu(self.draw_controls_menu)
+
+    def menu(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            self.hide_group(self.all_buttons, self.all_windows)
+            self.show_group(self.controls_menu_windows)
+            self.screen.fill(colors.black)
+            return func(*args, **kwargs)
+
+        self.update_visible_elements()
+        self.draw_visible_elements()
+        pg.display.flip()
+        return wrapper
+
+    # def as_menu(self, func):
+    #     def with_elements(*args, **kwargs):
+    #         self.hide_group(self.all_buttons, self.all_windows)
+    #         self.show_group(self.controls_menu_windows)
+    #         self.screen.fill(colors.black)
+    #
+    #         return func(*args, **kwargs)
+    #
+    #     self.update_visible_elements()
+    #     self.draw_visible_elements()
+    #     pg.display.flip()
+    #
+    #     return with_elements()
+
+    def create_elements(self):
+        """ make all the button and window objects and their corresponding groups"""
         # buttons
-        self.start_button = ImageButton(
+        start_button = ImageButton(
             self.game, settings.WIDTH // 2, 100,
+            groups=[self.all_buttons, self.main_menu_buttons],
             up_img=self.game.button_up,
             down_img=self.game.button_down,
             highlight_img=self.game.button_hover,
             caption='Start')
-
-        # button groups
-        self.all_buttons = [self.start_button]
-        self.main_menu_buttons = [self.start_button]
+        start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
 
         # windows
         # TODO: fix scroll button bugs
-        # TODO: remove duplicated code for generating these
-        self.start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
-        self.keybinds_window = TextScrollwindow(
+        # keybinds window
+        TextScrollwindow(
             self.game,
+            [self.all_windows, self.controls_menu_windows],
             settings.WIDTH // 2 + 100, settings.HEIGHT - 100,
             (0, 100),
             ['{} : {}'.format(k, ', '.join([pg.key.name(button) for button in v])) for k, v in keybinds.items()],
             self.game.settings_font, 28)
 
         spacer = 10
-        self.passives_window = TextScrollwindow(
+
+        # passive skills window
+        TextScrollwindow(
             self.game,
+            [self.all_windows, self.skill_menu_windows],
             settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
             (0 + spacer, 100),
+            # self.game.player.passive_names if hasattr(self.game, 'player') else None,
             [],
             self.game.settings_font, 28)
 
-        self.actives_window = TextScrollwindow(
+        # active skills window
+        TextScrollwindow(
             self.game,
+            [self.all_windows, self.skill_menu_windows],
             settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
             (settings.WIDTH // 2 + spacer, 100),
             ['Shoot', 'Fireball', 'Dash'],
             self.game.settings_font, 28)
 
-        # button groups
-        self.all_windows = [self.keybinds_window, self.passives_window, self.actives_window, self.keybinds_window]
-        self.skill_menu_windows = [self.passives_window, self.actives_window]
-        self.controls_menu_windows = [self.keybinds_window]
-        self.map_menu_windows = []
-
-    def new(self):
-        # hud
-        self.minimap = Minimap(self.game)
-
-        # buttons
-        self.start_button = ImageButton(
-            self.game, settings.WIDTH // 2, 100,
-            up_img=self.game.button_up,
-            down_img=self.game.button_down,
-            highlight_img=self.game.button_hover,
-            caption='Start')
-
-        # button groups
-        self.all_buttons = [self.start_button]
-        self.main_menu_buttons = [self.start_button]
-
-        # windows
-        # TODO: fix scroll button bugs
-        self.start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
-        self.keybinds_window = TextScrollwindow(
-            self.game,
-            settings.WIDTH // 2 + 100, settings.HEIGHT - 100,
-            (0, 100),
-            # ['{} : {}'.format(k, v) for k, v in keybinds.items()],
-            ['{} : {}'.format(k, ', '.join([pg.key.name(button) for button in v])) for k, v in keybinds.items()],
-            # ['{} : {}'.format(v, pg.key.name(k)) for k, v in keybinds.items()],
-            self.game.settings_font, 28)
-
-        spacer = 10
-        self.passives_window = TextScrollwindow(
-            self.game,
-            settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
-            (0 + spacer, 100),
-            [],
-            self.game.settings_font, 28)
-
-        self.actives_window = TextScrollwindow(
-            self.game,
-            settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
-            (settings.WIDTH // 2 + spacer, 100),
-            ['Shoot', 'Fireball', 'Dash'],
-            self.game.settings_font, 28)
-
-        # button groups
-        self.all_windows = [self.keybinds_window, self.passives_window, self.actives_window]
-        self.skill_menu_windows = [self.passives_window, self.actives_window]
+    # # TODO: figure out if this is necessary
+    # def new(self):
+    #     # hud
+    #     self.minimap = Minimap(self.game)
+    #
+    #     self.create_elements()
 
     # def draw(self):
     #     current_state = self.game.fsm.current_state
@@ -127,7 +129,7 @@ class UI:
         title = self.game.fsm.current_state
         title = title.replace('_', ' ').upper()
         self.draw_text(title, self.game.hud_font, 32, colors.white, settings.WIDTH // 2, 20, align='center')
-        self.start_button.draw(self.screen)
+        # self.start_button.draw(self.screen)
 
     def draw_fps(self):
         fps = self.game.clock.get_fps()
@@ -225,11 +227,30 @@ class UI:
             for member in group:
                 member.visible = True
 
+    def draw_visible_elements(self):
+        for button in self.all_buttons:
+            if button.visible:
+                button.draw(self.screen)
+
+        for window in self.all_windows:
+            if window.visible:
+                window.draw(self.screen)
+
+    def update_visible_elements(self):
+        for button in self.all_buttons:
+            if button.visible:
+                button.update()
+
+        for window in self.all_windows:
+            if window.visible:
+                window.update()
+
     def draw_controls_menu(self):
         self.hide_group(self.all_buttons, self.all_windows)
         self.show_group(self.controls_menu_windows)
 
         self.screen.fill(colors.black)
+
         self.draw_menu_title()
         self.optional_messages()
         if self.game.configs.debug:
@@ -237,15 +258,19 @@ class UI:
         self.draw_flashed_messages()
 
         # TODO: this should be a general check for active/visible ui elements
-        self.keybinds_window.update()
-        self.keybinds_window.draw(self.game.screen)
+        # self.keybinds_window.update()
+        self.update_visible_elements()
+        self.draw_visible_elements()
         pg.display.flip()
 
     def draw_main_menu(self):
         self.hide_group(self.all_buttons, self.all_windows)
         self.show_group(self.main_menu_buttons)
-
         self.screen.fill(colors.black)
+
+        self.update_visible_elements()
+        self.draw_visible_elements()
+
         self.draw_menu_title()
         self.optional_messages()
         if self.game.configs.debug:
@@ -284,11 +309,10 @@ class UI:
         self.screen.fill(colors.black)
         self.draw_menu_title()
 
-        self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
-        self.passives_window.draw(self.game.screen)
+        # self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
 
-        self.actives_window.update()
-        self.actives_window.draw(self.game.screen)
+        self.update_visible_elements()
+        self.draw_visible_elements()
 
         self.optional_messages()
         if self.game.configs.debug:
@@ -455,13 +479,16 @@ class Minimap(pg.sprite.Sprite):
 
 class ImageButton:
 
-    def __init__(self, game, x, y, up_img, down_img, highlight_img, caption='', font=None):
+    def __init__(self, game, x, y, groups, up_img, down_img, highlight_img, caption='', font=None):
 
         # check for mismatched image sizes
         if up_img.get_size() != down_img.get_size() != highlight_img.get_size():
             raise Exception('Button surfaces must all be the same size')
 
         self.game = game
+
+        for group in groups:
+            group.add(self)
 
         self.up_img = up_img
         self.down_img = down_img
@@ -487,6 +514,9 @@ class ImageButton:
             image.blit(self.caption_surface, self.caption_rect)
 
         self.callbacks = defaultdict(lambda: lambda x: None)
+
+    def update(self):
+        pass
 
     def draw(self, surface):
         if self.visible:
@@ -549,7 +579,7 @@ class ImageButton:
 
 
 class TextScrollwindow(pg.sprite.Sprite):
-    def __init__(self, game, width, height, pos, content, font_path, font_size):
+    def __init__(self, game, groups, width, height, pos, content, font_path, font_size):
         # pygame sprite stuff
         # self._layer = layers.ui
         # self.groups = game.ui_elements
@@ -557,6 +587,9 @@ class TextScrollwindow(pg.sprite.Sprite):
 
         # object references
         self.game = game
+
+        for group in groups:
+            group.add(self)
 
         self.content = content
         self.index = 0
@@ -588,7 +621,7 @@ class TextScrollwindow(pg.sprite.Sprite):
             i = (mousey - y) // item_height
             self.highlight_index = i
 
-    def process_input(self, event):
+    def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
             self.highlight()
             relative_pos = Vec2(event.pos) - Vec2(self.button_up.get_abs_offset()) - Vec2(self.rect.topleft)
@@ -598,6 +631,8 @@ class TextScrollwindow(pg.sprite.Sprite):
                     self.index += 1
 
     def update(self, new_content=None):
+        # self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
+
         if new_content:
             self.content = new_content
 

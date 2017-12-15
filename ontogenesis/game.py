@@ -329,7 +329,7 @@ class Game:
         print('Starting New Game')
 
         # get a clean ui instance
-        self.ui.new()
+        self.ui = UI(self)
 
         # fire up the intro music
         self.current_music = self.music_intro
@@ -340,8 +340,9 @@ class Game:
 
         # get fresh game elements
         self.worldmap = WorldMap(self)
-        self.ui.all_windows.append(self.worldmap)
-        self.ui.map_menu_windows = [self.worldmap]
+        # TODO: build a groups param into the WorldMap class
+        self.ui.all_windows.add(self.worldmap)
+        self.ui.map_menu_windows.add(self.worldmap)
         # for node in self.worldmap.graph.nodes():
         # atts = nx.get_node_attributes(self.worldmap.graph, 'map')
         # print(atts)
@@ -474,14 +475,17 @@ class Game:
         """ Event processing for the game object - handles system controls"""
         for event in pg.event.get():
             # print(event)
-            self.ui.start_button.handle_event(event)
+            # self.ui.start_button.handle_event(event)
+            for button in self.ui.all_buttons:
+                if button.visible:
+                    button.handle_event(event)
 
             for window in self.ui.all_windows:
                 if window.visible:
-                    window.process_input(event)
+                    window.handle_event(event)
 
             if self.worldmap.visible:
-                self.worldmap.process_input(event)
+                self.worldmap.handle_event(event)
 
             if event.type == pg.QUIT:
                 self.quit()
