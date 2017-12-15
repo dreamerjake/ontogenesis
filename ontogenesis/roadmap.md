@@ -144,6 +144,9 @@ Path of Exile
 Diablo (before it got bad)
 (The idea that led to) No Man's Sky
 
+### Research - Interviews
+Shattered Pixel Dungeon (Miles)
+
 ### Notes
 tweenting library to keep in mind
     https://github.com/asweigart/pytweening
@@ -178,6 +181,9 @@ Quick/intuitive way to evaluate whether an equippable is GOOD or not?
 Have the characters realize they're living in a simulated world
 Make a universal-ish 'Info' button that can be used on almost everything
 The player could have a resource 'color' that changes represents their 'affinity' to various skilltypes
+Chat system that interacts with the world?
+    -Sentiment Analysis
+    -Voice Radius
 
 ### Mob AI Scratchpad
 Predatory
