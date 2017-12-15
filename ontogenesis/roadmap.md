@@ -184,6 +184,9 @@ The player could have a resource 'color' that changes represents their 'affinity
 Chat system that interacts with the world?
     -Sentiment Analysis
     -Voice Radius
+Being present when a skill is used by a npc or enemy should let the player learn it after a while?
+    -Have this be in tutorial: start with no skills, and have NPC say "Watch closely..." etc
+    -Alternatively, learn skill components rather than full skills?
 
 ### Mob AI Scratchpad
 Predatory
