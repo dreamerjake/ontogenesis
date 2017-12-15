@@ -157,16 +157,14 @@ class Mob(pg.sprite.Sprite, Collider):
 
     def draw_health(self):
         hp_pct = self.hp_current / self.hp_max * 100
-        if hp_pct > 60:
-            col = colors.green
-        elif hp_pct > 30:
-            col = colors.yellow
-        else:
-            col = colors.red
-        width = int(self.rect.width * hp_pct / 100)
-        healthbar = pg.Rect(0, 0, width, 10)  # settings mob healthbar height?
+        width = int(settings.TILESIZE * hp_pct / 100)
+        pos = self.rect.topleft + self.game.camera.offset
+        pos.x = (self.rect.centerx - width // 2) + self.game.camera.offset.x
+        healthbar = pg.Rect(*pos, width, 10)  # settings mob healthbar height?
+        missing = pg.Rect(*pos, settings.TILESIZE, 10)
         if hp_pct < 100:
-            pg.draw.rect(self.image, col, healthbar)
+            pg.draw.rect(self.game.effects_screen, colors.red, missing)
+            pg.draw.rect(self.game.effects_screen, colors.green, healthbar)
 
     def get_outline(self, color=colors.red, threshold=127):
         """Returns an outlined image of the same size.  The image argument must
