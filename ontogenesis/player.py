@@ -186,6 +186,11 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         degs = int(degrees(rads)) + 90
         return degs % 360
 
+    @property
+    def passive_names(self):
+        return [skill.name for skill in self.equipped['passives']]
+        # self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
+
     def load_placeholder_skills(self):
         # manually set starting skills
         lightning_skill = LightningSkill(self.game)
