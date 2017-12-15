@@ -235,15 +235,12 @@ class Game:
 
     def map_menu(self):
         self.ui.draw_map_menu()
-        return 'stay'
 
     def skill_detail(self):
         self.ui.draw_info_skill()
-        return 'stay'
 
     def skills_menu(self):
         self.ui.draw_skills_menu()
-        return 'stay'
 
     def goal(self):
         self.ui.draw_placeholder_splash('GOAL REACHED')
@@ -251,11 +248,9 @@ class Game:
     def game_over(self):
         # TODO: autotransition after x seconds
         self.ui.draw_game_over()
-        return 'stay'
 
     def main_menu(self):
         self.ui.draw_main_menu()
-        return 'stay'
 
     def select_destination(self):
         self.ui.draw_map_menu()
@@ -274,11 +269,9 @@ class Game:
 
         self.update()
         self.draw()
-        return 'stay'
 
     def paused(self):
         self.ui.draw_pause_menu()
-        return 'stay'
 
     def clear_map(self):
         # clean up old sprites, except the current player
@@ -305,7 +298,7 @@ class Game:
         pg.display.flip()
 
         # clean up old sprites
-        self.check_player_refs()
+        # self.check_player_refs()
         for sprite in self.all_sprites:
             sprite.kill()
         # self.check_player_refs()
@@ -613,6 +606,8 @@ class Game:
         # new_screen = pg.transform.scale(new_screen, (new_screen.get_width(), new_screen.get_height() // 2))
         # self.screen.blit(new_screen, (0, 0))
 
+        self.screen.blit(self.effects_screen, (0, 0))
+
         if not self.configs.debug:
             self.render_light()
 
@@ -620,9 +615,6 @@ class Game:
         self.hud.update()
         self.hud.draw(self.screen)
         self.ui.draw_hud()
-
-        self.screen.blit(self.effects_screen, (0, 0))
-        # print(self.camera.offset)
 
         pg.display.flip()
 
