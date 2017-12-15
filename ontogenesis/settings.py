@@ -17,6 +17,7 @@ keybinds = {
     'quit': [pg.K_ESCAPE],
     'next': [pg.K_RETURN],
     'toggle music': [pg.K_F2],
+    'toggle fps cap': [pg.K_F8],
     'toggle fullscreen': [pg.K_F10],
     'toggle debug': [pg.K_F12],
 
