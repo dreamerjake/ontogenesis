@@ -5,6 +5,7 @@ venv/
 test/
 build/
 dist/
+notes/
 
 # filetypes
 *.pyc
