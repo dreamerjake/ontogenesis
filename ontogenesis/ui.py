@@ -3,6 +3,7 @@
 from collections import defaultdict
 from functools import wraps
 from itertools import chain
+from os import path
 
 import pygame as pg
 from pygame.locals import MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN, SRCALPHA
@@ -17,7 +18,7 @@ def menu(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         self.hide_group(self.all_buttons, self.all_windows)
-        self.show_group(self.controls_menu_windows)
+        # self.show_group(self.controls_menu_windows)
         self.screen.fill(colors.black)
         func(self, *args, **kwargs)
         self.update_visible_elements()
@@ -114,6 +115,39 @@ class UI:
             (settings.WIDTH // 2 + spacer, 100),
             ['Shoot', 'Fireball', 'Dash'],
             self.game.settings_font, 28)
+
+        # skill cards window
+        ScrollableSurface([self.all_windows, self.skill_menu_windows], (500, 500), (100, 100), self.create_album())
+
+    def create_album(self, cards=None):  # , cards):
+        # TODO: dynamic card sizing based on window size
+        card_width = settings.card_width  # cards[0].width
+        card_height = settings.card_height  # cards[0].height
+
+        if not cards:
+            folder = path.join(self.game.game_folder, 'assets', 'images', 'placeholder')
+            # temp_card = pg.image.load(path.join(folder, 'link_side_0.png'))
+            temp_card = pg.transform.scale(pg.image.load(path.join(folder, 'trading_card.jpg')), (card_width, card_height))
+            cards = [temp_card] * 20
+
+        num_cards = len(cards)
+        num_rows = 2
+        cards_in_row = num_cards // num_rows
+        spacer_x = 5
+        spacer_y = 5
+        spacer_width = spacer_x * (cards_in_row + 1)
+        cards_width = card_width * cards_in_row
+        spacer_height = spacer_y * (num_rows + 1)
+        cards_height = card_height * num_rows
+        surface = pg.Surface((spacer_width + cards_width, spacer_height + cards_height))
+
+        for i, card in enumerate(cards):
+            x = i % cards_in_row
+            y = i // cards_in_row
+            surface.blit(card, (spacer_x * (x + 1) + (card_width * x), spacer_y * (y + 1) + (card_height * y)))
+
+        return surface
+        # cards_album =
 
     # # TODO: figure out if this is necessary
     # def new(self):
@@ -309,6 +343,7 @@ class UI:
         # self.show_group(self.skill_menu_windows)
         #
         # self.screen.fill(colors.black)
+        self.show_group(self.skill_menu_windows)
         self.draw_menu_title()
 
         # self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
@@ -661,3 +696,51 @@ class TextScrollwindow(pg.sprite.Sprite):
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+
+
+class ScrollableSurface(pg.Surface):
+    def __init__(self, groups, size, pos, sub_surface, scroll_speed=7, scroll_area=40):  # scrolling=['x', 'y', 'xy']
+        pg.Surface.__init__(self, size)
+
+        for group in groups:
+            group.add(self)
+
+        self.pos = pos
+        self.scroll_speed = scroll_speed
+        self.visible = False
+        self.sub_surface = sub_surface
+
+        self.x_offset = 0
+        self.y_offset = 0
+
+        # self.upper_rect = pg.Rect(0, 0, size[0], scroll_area)
+        # self.lower_rect = pg.Rect(0, size[1] - scroll_area, size[0], scroll_area)
+        self.left_rect = pg.Rect(0, 0, scroll_area, size[1])
+        self.right_rect = pg.Rect(size[0] - scroll_area, 0, scroll_area, size[1])
+
+    def handle_event(self, event):
+        pass
+
+    def update(self):
+        (x, y) = self.pos
+        (mx, my) = pg.mouse.get_pos()
+        # max_x_offset = sub_surface.get_width() - self.get_width()
+
+        # scroll horizontal left
+        if self.left_rect.collidepoint((mx - x, my - y)):  # and self.x_offset != 0:
+            self.x_offset += self.scroll_speed
+            print('scrolling left')
+
+        # max offset check
+
+        # scroll horizontal right
+        if self.right_rect.collidepoint((mx - x, my - y)):  # and -self.x_offset < max_x_offset:
+            self.x_offset -= self.scroll_speed
+            print('scrolling right')
+
+        # max offset check
+
+    def draw(self, surface):
+        self.blit(self.sub_surface, (self.x_offset, self.y_offset))
+        # self.fill(colors.yellow)
+        surface.blit(self, self.pos)

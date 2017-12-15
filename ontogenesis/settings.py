@@ -7,6 +7,8 @@ import pygame as pg
 # game settings
 HEIGHT = 768
 WIDTH = 1024
+card_width = 63 * 3
+card_height = 88 * 3
 TITLE = "Ontogenesis"
 FULLSCREEN = False
 SYSTEM_DEBUG = True
@@ -69,7 +71,7 @@ game_configs = SimpleNamespace(
     debug_exclude=['Wall'],
     flash_messages_queuesize=2,
     ui_button_text_color=colors.white,
-    ui_button_text_size=32
+    ui_button_text_size=32,
 )
 
 # map settings
