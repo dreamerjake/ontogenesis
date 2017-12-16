@@ -683,8 +683,13 @@ class Game:
         self.button_up = pg.image.load(path.join(ui_images_folder, 'up.png'))
         self.button_down = pg.image.load(path.join(ui_images_folder, 'down.png'))
         self.button_hover = pg.image.load(path.join(ui_images_folder, 'hover.png'))
-        self.mana_full_img = pg.image.load(path.join(ui_images_folder, 'mana_full.png')).convert_alpha()
-        self.mana_empty_img = pg.image.load(path.join(ui_images_folder, 'mana_empty.png')).convert_alpha()
+        globe_size = 220
+        self.mana_full_img = pg.transform.scale(pg.image.load(path.join(ui_images_folder, 'mana_full.png')), (globe_size, globe_size)).convert_alpha()
+        self.mana_empty_img = pg.transform.scale(pg.image.load(path.join(ui_images_folder, 'mana_empty.png')), (globe_size, globe_size)).convert_alpha()
+        self.mana_full_blink_img = pg.transform.scale(pg.image.load(path.join(ui_images_folder, 'mana_full_blink.png')), (globe_size, globe_size)).convert_alpha()
+        self.mana_empty_blink_img = pg.transform.scale(pg.image.load(path.join(ui_images_folder, 'mana_empty_blink.png')), (globe_size, globe_size)).convert_alpha()
+        # for img in [self.mana_full_img, self.mana_full_blink_img, self.mana_empty_img, self.mana_empty_blink_img]:
+        #     img = pg.transform.scale2x(img)
 
         # sound effects
         self.music_intro = path.join(music_folder, 'soliloquy.mp3')

@@ -241,14 +241,21 @@ class UI:
 
         # resource globe
         # TODO: cleanup the variables here
+        if self.game.player.resource_current < self.game.player.equipped['active_skill'].cost:
+            full_img = self.game.mana_full_blink_img
+            empty_img = self.game.mana_empty_blink_img
+        else:
+            full_img = self.game.mana_full_img
+            empty_img = self.game.mana_empty_img
         resource_pct = self.game.player.resource_current / self.game.player.resource_max
-        h = int(self.game.mana_full_img.get_height() * resource_pct)
-        current_resource_img = pg.Surface((self.game.mana_full_img.get_width(), h), SRCALPHA)
-        current_resource_img.fill((0, 0, 0, 0))
-        extra_h = 0 - (self.game.mana_full_img.get_height() - h)
-        current_resource_img.blit(self.game.mana_full_img, (0, extra_h))
-        self.screen.blit(self.game.mana_empty_img, (settings.WIDTH - self.game.mana_empty_img.get_width(), settings.HEIGHT - self.game.mana_empty_img.get_height()))
-        self.screen.blit(current_resource_img, (settings.WIDTH - self.game.mana_full_img.get_width(), settings.HEIGHT - current_resource_img.get_height()))
+        height = int(full_img.get_height() * resource_pct)
+        current_img = pg.Surface((full_img.get_width(), height), SRCALPHA)
+        current_img.fill((0, 0, 0, 0))
+        extra_h = 0 - (full_img.get_height() - height)
+        current_img.blit(full_img, (0, extra_h))
+        spacer = 20
+        self.screen.blit(empty_img, (settings.WIDTH - empty_img.get_width() - spacer, settings.HEIGHT - empty_img.get_height() - spacer))
+        self.screen.blit(current_img, (settings.WIDTH - full_img.get_width() - spacer, settings.HEIGHT - current_img.get_height() - spacer))
 
     @staticmethod
     def hide_group(*groups):

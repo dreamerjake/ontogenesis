@@ -224,6 +224,10 @@ class LightningSkill(Skill):
     def damage_rate(self):
         return 1000 / self.ticks_per_sec
 
+    @property
+    def cost(self):
+        return self.tick_cost
+
     def fire(self):
         if self.owner.resource_current >= self.tick_cost:
             target = get_closest_sprite(self.owner.game.mobs, pg.mouse.get_pos() - self.owner.game.camera.offset, radius=100)
