@@ -37,12 +37,39 @@ class Skill:
             setattr(self, self.focus, getattr(self, self.focus) * mult)
 
 
+class MovingDamageArea(pg.sprite.Sprite):
+    def __init__(self, game, owner, image, damage, pos, vel, duration, moves_with_owner=False):
+        self.groups = game.all_sprites, game.aoe
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.owner = owner
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.pos = Vec2(pos)
+        self.rect.center = pos
+        self.vel = vel
+        self.duration = duration
+        self.damage = damage
+        self.spawn_time = pg.time.get_ticks()
+        self.moves_with_owner = moves_with_owner
+
+    def update(self):
+        if self.moves_with_owner:
+            self.pos += self.owner.vel * self.game.delta_time
+        else:
+            self.pos += self.vel * self.game.delta_time
+        self.rect.center = self.pos
+        timed_out = pg.time.get_ticks() - self.spawn_time > self.duration
+        if timed_out:
+            self.kill()
+
+
 class Projectile(pg.sprite.Sprite):
-    def __init__(self, game, damage, pos, vel, duration, kickback):
+    def __init__(self, game, image, damage, pos, vel, duration, kickback):
         self.groups = game.all_sprites, game.projectiles
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = self.game.bullet_img
+        self.image = image
         self.rect = self.image.get_rect()
         self.pos = Vec2(pos)
         self.rect.center = pos
@@ -98,6 +125,62 @@ class PassiveSkill(Skill):
         self.focus = None
 
 
+class MeleeSkill(Skill):
+    mods = {'ticks_per_sec', 'tick_damage', 'range'}
+
+    def __init__(self, game, image):
+        super().__init__(game=game)
+        # basic
+        self.image = image
+        self.name = 'Melee'
+        self.passive = False
+        self.xp_current = 0
+        self.xp_growth_rate = .1
+        self.fire_delay = 600
+        # self.kickback = 0
+
+        # state
+        self.focus = next(iter(self.mods))
+        self.last_fired = 0
+
+        # projectile
+        self.proj_damage = 10
+        self.proj_speed = 0
+        self.proj_duration = 300
+
+    @property
+    def rotated_img(self):
+        images = {
+            'up': pg.transform.flip(self.image, False, False),
+            'down': pg.transform.flip(self.image, False, True),
+            'left': pg.transform.rotate(self.image, 90),
+            'right': pg.transform.rotate(self.image, 270)
+        }
+        return images[self.owner.facing]
+
+    @property
+    def can_fire(self):
+        return pg.time.get_ticks() - self.last_fired > self.fire_delay
+
+    def fire(self):
+        spawn_point = self.owner.projectile_spawn
+        proj_direction = Vec2(1, 0).rotate(-self.owner.rot)
+        proj_vel = proj_direction * self.proj_speed
+        proj_vel += self.owner.vel  # no need to save
+
+        if self.can_fire:
+            MovingDamageArea(
+                game=self.game,
+                owner=self.owner,
+                image=self.rotated_img,
+                damage=self.proj_damage,
+                pos=spawn_point,
+                vel=proj_vel,
+                duration=self.proj_duration,
+                moves_with_owner=True)
+            self.last_fired = pg.time.get_ticks()
+
+
 class LightningSkill(Skill):
 
     mods = {'ticks_per_sec', 'tick_damage', 'range'}
@@ -128,7 +211,8 @@ class LightningSkill(Skill):
             if target and calc_dist(self.owner.pos, target.pos) < self.range:
                 offset = self.owner.game.camera.offset
                 to_pos = target.hit_rect.center + offset
-                from_pos = self.owner.pos + self.owner.proj_offset.rotate(-self.owner.rot) + offset
+                # from_pos = self.owner.pos + self.owner.proj_offset.rotate(-self.owner.rot) + offset
+                from_pos = self.owner.projectile_spawn + offset
                 draw_lightning(self.owner.game.effects_screen, from_pos, to_pos)
                 now = pg.time.get_ticks()
                 if now - self.last_tick > 1000 // self.ticks_per_sec:
