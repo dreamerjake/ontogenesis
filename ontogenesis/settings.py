@@ -38,6 +38,7 @@ keybinds = {
     'move down': [pg.K_DOWN, pg.K_s],
     'move left': [pg.K_LEFT, pg.K_a],
     'move right': [pg.K_RIGHT, pg.K_d],
+    'melee attack': [pg.K_SPACE],
     # 'fire': []
 
     # test format
