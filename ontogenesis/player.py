@@ -12,7 +12,7 @@ import settings
 from enemy import Collider
 from helpers import require_attributes
 from settings import layers
-from skill import PassiveSkill, LightningSkill
+from skill import PassiveSkill, LightningSkill, MeleeSkill
 
 
 class Equippable:
@@ -134,7 +134,6 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.resource_max = 100
         self.rps_regen = 3  # resource per second
         self.eating_rate = 1  # food per second
-        self.fire_delay = 200  # TODO: move this into skill
 
         self.starving_penalties = {
             'speed': 50
@@ -147,6 +146,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             'armor': None,
             'weapon': None,
             'active_skill': None,
+            'melee_skill': None,
             'passives': []
         }
         self.focus_skill = None
@@ -188,15 +188,27 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         return [skill.name for skill in self.equipped['passives']]
         # self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
 
+    @property
+    def projectile_spawn(self):
+        spawn_points = {
+            'up': self.rect.midtop,
+            'down': self.rect.midbottom,
+            'left': self.rect.midleft,
+            'right': self.rect.midright
+        }
+        return spawn_points[self.facing]
+
     def load_placeholder_skills(self):
         # manually set starting skills
         lightning_skill = LightningSkill(self.game)
+        melee_skill = MeleeSkill(self.game, self.game.sword_img)
         run_skill = PassiveSkill(self.game, 'Run', speed=10)
         toughness_skill = PassiveSkill(self.game, 'Toughness', hp_max=10)
 
         for skill in [run_skill, toughness_skill]:
             self.equip('passives', skill)
         self.equip('active_skill', lightning_skill)
+        self.equip('melee_skill', melee_skill)
 
     def load_images(self):
         self.load_link()
@@ -218,22 +230,18 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.standing_frames = {
             'left': cycle([
                 pg.transform.scale(pg.image.load(path.join(link_dir, 'link_side_0.png')), (size, size)),
-                #pg.transform.scale(pg.image.load(path.join(link_dir, 'link_side_1.png')), (size, size))
             ]),
 
             'right': cycle([
                 pg.transform.scale(pg.transform.flip(pg.image.load(path.join(link_dir, 'link_side_0.png')), True, False), (size, size)),
-                #pg.transform.scale(pg.transform.flip(pg.image.load(path.join(link_dir, 'link_side_1.png')), True, False), (size, size))
             ]),
 
             'up': cycle([
                 pg.transform.scale(pg.image.load(path.join(link_dir, 'link_up_0.png')), (size, size)),
-                #pg.transform.scale(pg.image.load(path.join(link_dir, 'link_up_1.png')), (size, size))
             ]),
 
             'down': cycle([
                 pg.transform.scale(pg.image.load(path.join(link_dir, 'link_down_0.png')), (size, size)),
-                #pg.transform.scale(pg.image.load(path.join(link_dir, 'link_down_1.png')), (size, size))
             ])
         }
         self.moving_frames = {
@@ -293,7 +301,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
         # skills
         # shoot bullets
-        if keys[pg.K_SPACE] or pg.mouse.get_pressed()[0]:
+        if pg.mouse.get_pressed()[0]:
             self.equipped['active_skill'].fire()
             # if pg.time.get_ticks() - self.last_shot > self.fire_delay:  # TODO: can_fire function
             #     damage = 10
@@ -309,6 +317,10 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             #         kickback_vector = Vec2(-kickback, 0).rotate(-self.rot)
             #         self.vel += kickback_vector
             #     self.last_shot = pg.time.get_ticks()
+
+        # melee attack
+        if keys[pg.K_SPACE]:
+            self.equipped['melee_skill'].fire()
 
         # dash
         if keys[pg.K_LCTRL]:
