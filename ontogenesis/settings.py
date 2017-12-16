@@ -27,6 +27,7 @@ keybinds = {
     'pause': [pg.K_p],
     'view skills': [pg.K_k],
     'view map': [pg.K_m],
+    'view controls': [pg.K_c],
     'display bonuses': [pg.K_9],
 
     # cheat

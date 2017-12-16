@@ -197,6 +197,7 @@ class Game:
             ('skill_detail', 'back'): 'skills_menu',  # universal back button?
 
             ('controls_menu', 'next'): 'playing',
+            ('controls_menu', 'view_controls'): 'playing',
 
             ('map_menu', 'paused'): 'paused',
             ('map_menu', 'view_skills'): 'skills_menu',
@@ -209,6 +210,7 @@ class Game:
             ('playing', 'die'): 'game_over',
             ('playing', 'view_skills'): 'skills_menu',
             ('playing', 'view_map'): 'map_menu',
+            ('playing', 'view_controls'): 'controls_menu',
             ('playing', 'reach_goal'): 'goal',
 
             ('paused', 'paused'): 'playing',
@@ -492,6 +494,8 @@ class Game:
                     self.fsm('paused')
                 # if event.key == pg.K_RETURN:
                 #     self.fsm(self.new())
+                if event.key == pg.K_c:
+                    self.fsm('view_controls')
                 if event.key == pg.K_F10:
                     self.fullscreen = not self.fullscreen
                     self.screen_update()
