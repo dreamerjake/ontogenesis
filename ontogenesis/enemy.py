@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from collections import defaultdict
 from random import randint
 
 import pygame as pg
@@ -70,6 +71,9 @@ class Mob(pg.sprite.Sprite, Collider):
         self.rot = 0
         self.avoid_radius = 100
 
+        # state
+        self.last_damage = defaultdict(int)
+
         # default stats
         self.speed = 80
         self.hp_current = 100
@@ -104,6 +108,13 @@ class Mob(pg.sprite.Sprite, Collider):
                 dist = self.pos - entity.pos
                 if 0 < dist.length() < radius:
                     self.acc += dist.normalize() * 10  # had to play with the 10x factor a bit
+
+    def take_damage(self, source):
+        if pg.time.get_ticks() - self.last_damage[source] > source.damage_rate:
+            self.hp_current -= source.damage
+            self.last_damage[source] = pg.time.get_ticks()
+            return True
+        return False
 
     def update(self):
         # health regen/degen
@@ -160,8 +171,8 @@ class Mob(pg.sprite.Sprite, Collider):
         width = int(settings.TILESIZE * hp_pct / 100)
         pos = self.rect.topleft + self.game.camera.offset
         pos.x = (self.rect.centerx - width // 2) + self.game.camera.offset.x
-        healthbar = pg.Rect(*pos, width, 10)  # settings mob healthbar height?
-        missing = pg.Rect(*pos, settings.TILESIZE, 10)
+        healthbar = pg.Rect(*pos, width, 8)  # settings mob healthbar height?
+        missing = pg.Rect(*pos, settings.TILESIZE, 8)
         if hp_pct < 100:
             pg.draw.rect(self.game.effects_screen, colors.red, missing)
             pg.draw.rect(self.game.effects_screen, colors.green, healthbar)

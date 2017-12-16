@@ -50,6 +50,7 @@ class MovingDamageArea(pg.sprite.Sprite):
         self.vel = vel
         self.duration = duration
         self.damage = damage
+        self.damage_rate = 2000
         self.spawn_time = pg.time.get_ticks()
         self.moves_with_owner = moves_with_owner
         self.align = align
@@ -79,6 +80,7 @@ class Projectile(pg.sprite.Sprite):
         self.duration = duration
         self.kickback = kickback
         self.damage = damage
+        self.damage_rate = 2000
         self.spawn_time = pg.time.get_ticks()
 
     def update(self):
@@ -204,7 +206,7 @@ class LightningSkill(Skill):
 
         # state
         self.focus = next(iter(self.mods))
-        self.last_tick = pg.time.get_ticks()
+        # self.last_tick = pg.time.get_ticks()
 
         # channeling specific
         self.ticks_per_sec = 2
@@ -213,6 +215,14 @@ class LightningSkill(Skill):
 
         # targeting
         self.range = 300
+
+    @property
+    def damage(self):
+        return self.tick_damage
+
+    @property
+    def damage_rate(self):
+        return 1000 / self.ticks_per_sec
 
     def fire(self):
         if self.owner.resource_current >= self.tick_cost:
@@ -223,11 +233,11 @@ class LightningSkill(Skill):
                 # from_pos = self.owner.pos + self.owner.proj_offset.rotate(-self.owner.rot) + offset
                 from_pos = self.owner.projectile_spawn + offset
                 draw_lightning(self.owner.game.effects_screen, from_pos, to_pos)
-                now = pg.time.get_ticks()
-                if now - self.last_tick > 1000 // self.ticks_per_sec:
-                    target.hp_current -= self.tick_damage
+                # now = pg.time.get_ticks()
+                # if now - self.last_tick > 1000 // self.ticks_per_sec:
+                if target.take_damage(self):
                     self.owner.resource_current -= self.tick_cost
                     print('ZAPPED {} for {}'.format(target, self.tick_damage))
-                    self.last_tick = now
+                    # self.last_tick = now
         else:
             print('OOM - cannot use skill {}'.format(self.name))

@@ -544,12 +544,14 @@ class Game:
         # projectiles hit mobs
         hits = pg.sprite.groupcollide(self.mobs, self.projectiles, False, True)
         for hit in hits:
-            hit.hp_current -= hits[hit][0].damage
+            hit.take_damage(hits[hit][0])
+            #hit.hp_current -= hits[hit][0].damage
 
         # mobs take area damage
         hits = pg.sprite.groupcollide(self.mobs, self.aoe, False, False)
         for hit in hits:
-            hit.hp_current -= hits[hit][0].damage
+            hit.take_damage(hits[hit][0])
+            # hit.hp_current -= hits[hit][0].damage
 
         # mobs hit player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, Collider.collide_hit_rect)
