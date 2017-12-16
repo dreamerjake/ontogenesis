@@ -38,7 +38,7 @@ class Skill:
 
 
 class MovingDamageArea(pg.sprite.Sprite):
-    def __init__(self, game, owner, image, damage, pos, vel, duration, moves_with_owner=False):
+    def __init__(self, game, owner, image, damage, pos, vel, duration, align='center', moves_with_owner=False):
         self.groups = game.all_sprites, game.aoe
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -52,13 +52,15 @@ class MovingDamageArea(pg.sprite.Sprite):
         self.damage = damage
         self.spawn_time = pg.time.get_ticks()
         self.moves_with_owner = moves_with_owner
+        self.align = align
 
     def update(self):
         if self.moves_with_owner:
             self.pos += self.owner.vel * self.game.delta_time
         else:
             self.pos += self.vel * self.game.delta_time
-        self.rect.center = self.pos
+        # self.rect.center = self.pos
+        setattr(self.rect, self.align, self.pos)
         timed_out = pg.time.get_ticks() - self.spawn_time > self.duration
         if timed_out:
             self.kill()
@@ -127,6 +129,12 @@ class PassiveSkill(Skill):
 
 class MeleeSkill(Skill):
     mods = {'ticks_per_sec', 'tick_damage', 'range'}
+    aligns = {
+        'up': 'midbottom',
+        'down': 'midtop',
+        'left': 'midright',
+        'right': 'midleft'
+    }
 
     def __init__(self, game, image):
         super().__init__(game=game)
@@ -177,6 +185,7 @@ class MeleeSkill(Skill):
                 pos=spawn_point,
                 vel=proj_vel,
                 duration=self.proj_duration,
+                align=self.aligns[self.owner.facing],
                 moves_with_owner=True)
             self.last_fired = pg.time.get_ticks()
 
