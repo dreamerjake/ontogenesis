@@ -158,6 +158,7 @@ class Game:
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.projectiles = pg.sprite.Group()
+        self.aoe = pg.sprite.Group()
 
         # components
         self.ui = UI(self)
@@ -309,6 +310,7 @@ class Game:
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.projectiles = pg.sprite.Group()
+        self.aoe = pg.sprite.Group()
         self.worldmap = None
         self.camera = None
         self.delayed_events = []
@@ -544,6 +546,11 @@ class Game:
         for hit in hits:
             hit.hp_current -= hits[hit][0].damage
 
+        # mobs take area damage
+        hits = pg.sprite.groupcollide(self.mobs, self.aoe, False, False)
+        for hit in hits:
+            hit.hp_current -= hits[hit][0].damage
+
         # mobs hit player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, Collider.collide_hit_rect)
         for hit in hits:
@@ -638,8 +645,6 @@ class Game:
             self.game_folder = path.dirname(sys.executable)
         else:
             self.game_folder = path.dirname(path.realpath(__file__))
-        # game_folder = path.curdir(__file__)
-        # print(game_folder)
         assets_folder = path.join(self.game_folder, 'assets')
         fonts_folder = path.join(assets_folder, 'fonts')
         audio_folder = path.join(assets_folder, 'audio')
@@ -672,6 +677,7 @@ class Game:
         self.mob_zombie_image = pg.image.load(path.join(mob_images_folder, 'zombie1.png'))
         self.mob_lizard_image = pg.transform.scale(pg.image.load(path.join(mob_images_folder, 'lizard.png')).convert_alpha(), (64, 64))
         self.bullet_img = pg.image.load(path.join(skill_images_folder, 'bullet.png'))
+        self.sword_img = pg.transform.scale(pg.image.load(path.join(placeholder_images_folder, 'sword_0.png')).convert_alpha(), (48, 48))
         self.button_up = pg.image.load(path.join(ui_images_folder, 'up.png'))
         self.button_down = pg.image.load(path.join(ui_images_folder, 'down.png'))
         self.button_hover = pg.image.load(path.join(ui_images_folder, 'hover.png'))
