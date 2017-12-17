@@ -98,6 +98,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # assets
         self.standing_frames = None
         self.moving_frames = None
+        self.attacking_frames = None
         self.load_images()
 
         # graphics
@@ -121,6 +122,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.dead = False
         self.last_shot = pg.time.get_ticks()
         self.focus_skill = None
+        self.attacking = False
         # self.move_state = 'normal'
         self.speed_mul = 1.0
 
@@ -153,6 +155,10 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # self.focus_skill = choice([self.equipped['active_skill']] + self.equipped['passives'])
 
         self.load_placeholder_skills()
+
+    # @property
+    # def attacking(self):
+    #     return
 
     @property
     def moving(self):
@@ -265,12 +271,34 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
                 pg.transform.scale(pg.image.load(path.join(link_dir, 'link_down_1.png')), (size, size))
             ])
         }
+        self.attacking_frames = {
+            'left': cycle([
+                pg.transform.scale(pg.image.load(path.join(link_dir, 'link_attack_side_0.png')), (size, size)),
+            ]),
+
+            'right': cycle([
+                pg.transform.scale(pg.transform.flip(pg.image.load(path.join(link_dir, 'link_attack_side_0.png')), True, False), (size, size)),
+            ]),
+
+            'up': cycle([
+                pg.transform.scale(pg.image.load(path.join(link_dir, 'link_attack_up_0.png')), (size, size)),
+            ]),
+
+            'down': cycle([
+                pg.transform.scale(pg.image.load(path.join(link_dir, 'link_attack_down_0.png')), (size, size)),
+            ])
+        }
 
     def animate(self):
         # animate
         now = pg.time.get_ticks()
         if now - self.last_update > self.frame_delay:
-            self.image = next(self.moving_frames[self.facing]) if self.moving else next(self.standing_frames[self.facing])
+            if self.attacking:
+                self.image = next(self.attacking_frames[self.facing])
+            elif self.moving:
+                self.image = next(self.moving_frames[self.facing])
+            else:
+                self.image = next(self.standing_frames[self.facing])
             self.rect = self.image.get_rect()
             self.last_update = now
 
@@ -326,18 +354,11 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         if keys[pg.K_LCTRL]:
             self.speed_mul = 4.0
             self.game.delay_event(100, self.update_speed, map_specific=False)
-            # shadow = pg.Surface((48, 48)).convert_alpha()
-            # shadow.blit(self.image, (0, 0))
-            # self.game.effects_screen.blit(shadow, self.pos)
-            # self.move_state = 'dash'
+            shadow = self.image.copy()
+            shadow.fill((255, 255, 255, 128), None, pg.BLEND_RGBA_MULT)
 
-        # lightning
-        # if keys[pg.K_1]:
-            # self.equipped['active_skill'].fire()
-            # target = get_closest_sprite(self.game.mobs, pg.mouse.get_pos() - self.game.camera.offset, radius=100)
-            # if target:
-            #     target_pos = target.hit_rect.center
-            #     draw_lightning(self.game.effects_screen, self.pos + self.proj_offset.rotate(-self.rot), target_pos)
+            self.game.effects_screen.blit(shadow, self.pos)
+            # self.move_state = 'dash'
 
     def update_speed(self):
         self.speed_mul = 1.0

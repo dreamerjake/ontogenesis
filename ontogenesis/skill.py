@@ -66,6 +66,7 @@ class MovingDamageArea(pg.sprite.Sprite):
         setattr(self.rect, self.align, self.pos)
         timed_out = pg.time.get_ticks() - self.spawn_time > self.duration
         if timed_out:
+            self.owner.attacking = False
             self.kill()
 
 
@@ -192,6 +193,7 @@ class MeleeSkill(Skill):
                 align=self.aligns[self.owner.facing],
                 moves_with_owner=True)
             self.last_fired = pg.time.get_ticks()
+            self.owner.attacking = True
 
 
 class LightningSkill(Skill):
