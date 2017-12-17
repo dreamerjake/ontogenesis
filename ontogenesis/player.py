@@ -358,16 +358,9 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # dash
         if keys[pg.K_LCTRL]:
             self.equipped['move_skill'].fire()
-            # self.speed_mul = 4.0
-            # self.game.delay_event(100, self.update_speed, map_specific=False)
-            # shadow = self.image.copy()
-            # shadow.fill((255, 255, 255, 128), None, pg.BLEND_RGBA_MULT)
-            #
-            # self.game.effects_screen.blit(shadow, self.pos)
-            # self.move_state = 'dash'
 
-    def update_speed(self):
-        self.speed_mul = 1.0
+    # def update_speed(self):
+    #     self.speed_mul = 1.0
 
     def rotate(self, target):
         """ face the target """
@@ -415,7 +408,10 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.animate()
 
         # move
-        self.pos += self.vel * (self.game.delta_time * self.speed_mul)
+        # self.pos += self.vel * (self.game.delta_time * self.speed_mul)
+        if self.moving:
+            self.vel.scale_to_length(self.speed / self.game.configs.fps)
+            self.pos += self.vel
 
         # collide with walls
         self.hit_rect.centerx = self.pos.x

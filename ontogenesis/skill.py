@@ -268,6 +268,7 @@ class DashSkill(Skill):
         self.focus = next(iter(self.mods))
         self.last_fired = 0
 
+        # stats
         self.fire_delay = 1000
         self.duration = 300
 
@@ -277,14 +278,19 @@ class DashSkill(Skill):
 
     def fire(self):
         if self.can_fire:
-            self.active = True
-            self.last_fired = pg.time.get_ticks()
-            self.owner.speed *= 2
-            self.game.active_skills.append(self)
+            self.activate()
+
+    def activate(self):
+        print(f'activating {self}')
+        self.active = True
+        self.last_fired = pg.time.get_ticks()
+        self.owner.speed *= 2
+        self.game.active_skills.append(self)
 
     def deactivate(self):
+        print(f'de-activating {self}')
         self.active = False
-        self.owner.speed_mul *= .5
+        self.owner.speed *= .5
         self.game.active_skills.remove(self)
 
     def update(self):
