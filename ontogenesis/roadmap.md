@@ -108,10 +108,10 @@
         * ~~Player Health~~
         * ~~Player Resource~~
         * ~~Player Currency~~
-        * Mob Healthbars on effects layer
+        * ~~Mob Healthbars on effects layer~~
     * Settings Screen
     * Help Screen
-        * Keybinds Display
+        * ~~Keybinds Display~~
     * ~~Minimap~~
         * Fog of War / Explored
         * Adjust for light radius
