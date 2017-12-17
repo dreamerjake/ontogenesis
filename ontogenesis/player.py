@@ -4,6 +4,7 @@ from collections import defaultdict
 from itertools import cycle
 from math import atan2, degrees, pi
 from os import path
+from queue import Queue
 
 import pygame as pg
 from pygame.math import Vector2 as Vec2
@@ -12,7 +13,7 @@ import settings
 from enemy import Collider
 from helpers import require_attributes
 from settings import layers, colors
-from skill import PassiveSkill, LightningSkill, MeleeSkill
+from skill import PassiveSkill, LightningSkill, MeleeSkill, DashSkill
 
 
 class Equippable:
@@ -125,6 +126,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.attacking = False
         # self.move_state = 'normal'
         self.speed_mul = 1.0
+        self.last_positions = Queue(maxsize=10)
 
         # default stats
         self.xp_total = 0
@@ -149,6 +151,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             'weapon': None,
             'active_skill': None,
             'melee_skill': None,
+            'move_skill': None,
             'passives': []
         }
         self.focus_skill = None
@@ -210,11 +213,13 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         melee_skill = MeleeSkill(self.game, self.game.sword_img)
         run_skill = PassiveSkill(self.game, 'Run', speed=10)
         toughness_skill = PassiveSkill(self.game, 'Toughness', hp_max=10)
+        dash_skill = DashSkill(self.game)
 
         for skill in [run_skill, toughness_skill]:
             self.equip('passives', skill)
         self.equip('active_skill', lightning_skill)
         self.equip('melee_skill', melee_skill)
+        self.equip('move_skill', dash_skill)
 
     def load_images(self):
         self.load_link()
@@ -352,12 +357,13 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
         # dash
         if keys[pg.K_LCTRL]:
-            self.speed_mul = 4.0
-            self.game.delay_event(100, self.update_speed, map_specific=False)
-            shadow = self.image.copy()
-            shadow.fill((255, 255, 255, 128), None, pg.BLEND_RGBA_MULT)
-
-            self.game.effects_screen.blit(shadow, self.pos)
+            self.equipped['move_skill'].fire()
+            # self.speed_mul = 4.0
+            # self.game.delay_event(100, self.update_speed, map_specific=False)
+            # shadow = self.image.copy()
+            # shadow.fill((255, 255, 255, 128), None, pg.BLEND_RGBA_MULT)
+            #
+            # self.game.effects_screen.blit(shadow, self.pos)
             # self.move_state = 'dash'
 
     def update_speed(self):

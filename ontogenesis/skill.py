@@ -249,3 +249,76 @@ class LightningSkill(Skill):
                     # self.last_tick = now
         else:
             print('OOM - cannot use skill {}'.format(self.name))
+
+
+class DashSkill(Skill):
+
+    mods = {'speed_mul'}
+
+    def __init__(self, game):
+        super().__init__(game=game)
+        # basic
+        self.name = 'Dash'
+        self.passive = False
+        self.xp_current = 0
+        self.xp_growth_rate = .1
+
+        # state
+        self.active = False
+        self.focus = next(iter(self.mods))
+        self.last_fired = 0
+
+        self.fire_delay = 1000
+        self.duration = 300
+
+    @property
+    def can_fire(self):
+        return pg.time.get_ticks() - self.last_fired > self.fire_delay
+
+    def fire(self):
+        if self.can_fire:
+            self.active = True
+            self.last_fired = pg.time.get_ticks()
+            self.owner.speed *= 2
+            self.game.active_skills.append(self)
+
+    def deactivate(self):
+        self.active = False
+        self.owner.speed_mul *= .5
+        self.game.active_skills.remove(self)
+
+    def update(self):
+        if self.active:
+            Shadow(self.game, self.owner, self.duration)
+            if pg.time.get_ticks() - self.last_fired > self.duration:
+                self.deactivate()
+
+        # shadow = self.image.copy()
+        # shadow.fill((255, 255, 255, 128), None, pg.BLEND_RGBA_MULT)
+        # self.game.effects_screen.blit(shadow, self.pos)
+
+
+class Shadow(pg.sprite.Sprite):
+    def __init__(self, game, target, duration):
+        self._layer = layers.player
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+
+        self.image = target.image.copy()
+        self.rect = self.image.get_rect()
+        self.pos = target.pos
+        self.rect.center = self.pos
+        self.duration = duration
+
+        # state
+        self.created = pg.time.get_ticks()
+
+    def update(self):
+        elapsed = pg.time.get_ticks() - self.created
+        if elapsed > self.duration:
+            self.kill()
+        else:
+            # lifespan = elapsed / self.duration
+            self.image.fill((255, 255, 255, 128), None, pg.BLEND_RGBA_MULT)
+            # self.game.effects_screen.blit()

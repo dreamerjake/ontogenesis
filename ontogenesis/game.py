@@ -140,6 +140,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.delta_time = None
         self.delayed_events = []
+        self.active_skills = []
 
         # messages, debug, and logging
         self.suppressed_debug_messages = 0
@@ -544,6 +545,8 @@ class Game:
         self.camera.update(target=self.player, hit_rect=True)
 
         self.trigger_delayed_events()
+        for skill in self.active_skills:
+            skill.update()
 
         # projectiles hit mobs
         hits = pg.sprite.groupcollide(self.mobs, self.projectiles, False, True)
