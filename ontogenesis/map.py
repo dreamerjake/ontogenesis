@@ -46,7 +46,7 @@ class Camera:
 
 
 class WorldMap:
-    def __init__(self, game, width=40, height=20, min_dist=4, path_base_chance=.07, path_length_bonus=.23):
+    def __init__(self, game, width=12, height=10, min_dist=3, path_base_chance=.07, path_length_bonus=.23):
         self.game = game
         self.mob_types = cycle([Zombie, GiantLizard])
         self.image = None
