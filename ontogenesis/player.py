@@ -11,7 +11,7 @@ from pygame.math import Vector2 as Vec2
 import settings
 from enemy import Collider
 from helpers import require_attributes
-from settings import layers
+from settings import layers, colors
 from skill import PassiveSkill, LightningSkill, MeleeSkill
 
 
@@ -326,6 +326,9 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         if keys[pg.K_LCTRL]:
             self.speed_mul = 4.0
             self.game.delay_event(100, self.update_speed, map_specific=False)
+            # shadow = pg.Surface((48, 48)).convert_alpha()
+            # shadow.blit(self.image, (0, 0))
+            # self.game.effects_screen.blit(shadow, self.pos)
             # self.move_state = 'dash'
 
         # lightning

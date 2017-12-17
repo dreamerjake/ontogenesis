@@ -91,9 +91,9 @@ minimap_height = 150
 layers = SimpleNamespace(
     wall=1,
     player=2,
-    # bullet=3,
+    projectile=3,
     mob=2,
-    ui=3
+    ui=4
     # effects=4,
     # items=1,
 )

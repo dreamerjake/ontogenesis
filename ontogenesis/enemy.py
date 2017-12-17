@@ -50,8 +50,7 @@ class Collider:
 
 class FloatingMessage(pg.sprite.Sprite):
     def __init__(self, game, start_pos, image, duration=500):
-        # pygame sprite stuff
-        # self._layer = layers.mob
+        self._layer = layers.ui
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
 

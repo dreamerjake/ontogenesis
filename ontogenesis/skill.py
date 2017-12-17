@@ -6,6 +6,7 @@ import pygame as pg
 from pygame.math import Vector2 as Vec2
 
 from helpers import get_closest_sprite, calc_dist
+from settings import layers
 
 
 class Skill:
@@ -39,6 +40,7 @@ class Skill:
 
 class MovingDamageArea(pg.sprite.Sprite):
     def __init__(self, game, owner, image, damage, pos, vel, duration, align='center', moves_with_owner=False):
+        self._layer = layers.projectile
         self.groups = game.all_sprites, game.aoe
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game

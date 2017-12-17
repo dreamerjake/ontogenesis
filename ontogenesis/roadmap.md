@@ -57,6 +57,7 @@
     * Map
         * ~~World Map~~
             * ~~Class Definition~~
+            * random offsets for nodes
         * Walls
             * Destructible walls?
         * Multiple Victory Conditions
@@ -67,7 +68,7 @@
         
     * Combat
         * Floating Damage Numbers
-        * Melee attacks
+        * ~~Melee attacks~~
         
     * AI
         
@@ -172,7 +173,7 @@ Reaching destination town(back home after quests???) will perma-unlock skills ga
 Track the hometown over runs, for permanence
     * Play until you run out of population???
     * Each run's quests based on the current stats(needs) of the town
-    * Finding the hometown is the objective of the story mode?
+    * ~~Finding the hometown is the objective of the story mode?~~
 Dynamic mob generation based on the game's fps
 Threat generation meter? (constant spawning?)
 Monster Hunter type equipment?
@@ -188,6 +189,7 @@ Being present when a skill is used by a npc or enemy should let the player learn
     -Have this be in tutorial: start with no skills, and have NPC say "Watch closely..." etc
     -Alternatively, learn skill components rather than full skills?
 Stamina system for movement and a basic attack?
+Screen shake/tint effects
 
 ### Mob AI Scratchpad
 Predatory
