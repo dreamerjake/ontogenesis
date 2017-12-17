@@ -11,6 +11,14 @@ from helpers import calc_dist
 from settings import layers, colors
 
 
+def draw_text(text, font_name, size, color):
+    font = pg.font.Font(font_name, size)
+    font.set_bold(True)
+    return font.render(text, True, color)
+    #text_rect = text_surface.get_rect(**{align: (x, y)})
+    #screen.blit(text_surface, text_rect)
+
+
 class Collider:
     # TODO: merge this into master mobile class
     @staticmethod
@@ -38,6 +46,25 @@ class Collider:
                     self.pos.y = hits[0].rect.bottom + self.hit_rect.height / 2
                 self.vel.y = 0
                 self.hit_rect.centery = self.pos.y
+
+
+class FloatingMessage(pg.sprite.Sprite):
+    def __init__(self, game, start_pos, image, duration=500):
+        # pygame sprite stuff
+        # self._layer = layers.mob
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+
+        self.game = game
+        self.image = image
+        self.rect = self.image.get_rect(center=start_pos)
+        self.duration = duration
+        self.created = pg.time.get_ticks()
+
+    def update(self):
+        self.rect.centery -= 1
+        if pg.time.get_ticks() - self.created > self.duration:
+            self.kill()
 
 
 class Mob(pg.sprite.Sprite, Collider):
@@ -113,6 +140,7 @@ class Mob(pg.sprite.Sprite, Collider):
         if pg.time.get_ticks() - self.last_damage[source] > source.damage_rate:
             self.hp_current -= source.damage
             self.last_damage[source] = pg.time.get_ticks()
+            FloatingMessage(self.game, self.rect.midtop, draw_text(str(source.damage), self.game.hud_font, 24, colors.white))
             return True
         return False
 
@@ -176,6 +204,15 @@ class Mob(pg.sprite.Sprite, Collider):
         if hp_pct < 100:
             pg.draw.rect(self.game.effects_screen, colors.red, missing)
             pg.draw.rect(self.game.effects_screen, colors.green, healthbar)
+
+    # def draw_indicator(self):
+    #     # print('drawing damage numbers')
+    #     text = '42'
+    #     font_name = self.game.hud_font
+    #     size = 16
+    #     color = colors.white
+    #     x, y = self.rect.midtop
+    #     draw_text(self.game.effects_screen, text, font_name, size, color, x, y, align='midbottom')
 
     def get_outline(self, color=colors.red, threshold=127):
         """Returns an outlined image of the same size.  The image argument must
