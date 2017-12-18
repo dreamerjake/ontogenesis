@@ -162,7 +162,7 @@ class MeleeSkill(Skill):
         # self.kickback = 0
 
         # state
-        self.focus = next(iter(self.mods))
+        # self.focus = next(iter(self.mods))
         self.last_fired = 0
 
         # projectile
@@ -218,7 +218,7 @@ class LightningSkill(Skill):
         self.xp_growth_rate = .1
 
         # state
-        self.focus = next(iter(self.mods))
+        # self.focus = next(iter(self.mods))
         # self.last_tick = pg.time.get_ticks()
 
         # channeling specific
@@ -274,7 +274,7 @@ class DashSkill(Skill):
 
         # state
         self.active = False
-        self.focus = next(iter(self.mods))
+        # self.focus = next(iter(self.mods))
         self.last_fired = 0
 
         # stats
