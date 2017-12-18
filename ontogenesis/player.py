@@ -169,19 +169,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
     @property
     def facing(self):
-        # directions = {
-        #     0: 'up',
-        #     1: 'right',
-        #     2: 'down',
-        #     3: 'left',
-        #     # 90: 'right',
-        #     # 180: 'down',
-        #     # 270: 'left'
-        # }
-        # return directions[round(self.mouse_angle / 90)]
-        direction = get_direction(round(self.mouse_angle), ['up', 'right', 'down', 'left'])
-        # print(direction)
-        return direction
+        return get_direction(self.mouse_angle, ['up', 'right', 'down', 'left'])
 
     @property
     def mouse_angle(self):
