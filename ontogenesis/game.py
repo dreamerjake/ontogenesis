@@ -213,6 +213,7 @@ class Game:
             ('playing', 'view_map'): 'map_menu',
             ('playing', 'view_controls'): 'controls_menu',
             ('playing', 'reach_goal'): 'goal',
+            ('playing', 'select_destination'): 'select_destination',
 
             ('paused', 'paused'): 'playing',
             ('paused', 'view_skills'): 'skills_menu',
@@ -429,7 +430,7 @@ class Game:
                 elif self.current_map.player_start is None:
                     tile_center_x = x * settings.TILESIZE + settings.TILESIZE / 2
                     tile_center_y = y * settings.TILESIZE + settings.TILESIZE / 2
-                    self.current_map.player_start = (int(tile_center_x), int(tile_center_y))
+                    self.current_map.player_start = Vec2(int(tile_center_x), int(tile_center_y))
 
                     if self.configs.debug:
                         print("Player starting coordinates set to: {}".format(self.current_map.player_start))
@@ -509,6 +510,8 @@ class Game:
                     self.flash_message(msg, 2)
                 if event.key == pg.K_9:
                     print(self.player.sum_bonuses())
+                if event.key == pg.K_0:
+                    self.mobs.empty()
                 if event.key == pg.K_RETURN:
                     if self.fsm.current_state == 'select_destination' and not self.worldmap.destination_node:
                         # force the player to pick a destination
@@ -570,7 +573,11 @@ class Game:
 
         if len(self.mobs) == 0:
             print('All mobs defeated')
-            self.travel()
+            self.flash_message('All Mobs Defeated', 3)
+            if not self.worldmap.destination_node:
+                self.fsm('select_destination')
+            else:
+                self.travel()
 
     def draw_grid(self, line_width=1):
         """ draws a grid of lines to display the boundaries of empty tiles """

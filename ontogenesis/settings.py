@@ -32,14 +32,15 @@ keybinds = {
 
     # cheat
     'cheat - travel': [pg.K_F9],
-    'cheat - dash': [pg.K_LCTRL],
+    'cheat - kill mobs': [pg.K_0],
 
     # player
     'move up': [pg.K_UP, pg.K_w],
     'move down': [pg.K_DOWN, pg.K_s],
     'move left': [pg.K_LEFT, pg.K_a],
     'move right': [pg.K_RIGHT, pg.K_d],
-    'melee attack': [pg.K_SPACE],
+    'use skill - melee': [pg.K_SPACE],
+    'use skill - movement': [pg.K_LCTRL],
     # 'fire': []
 
     # test format

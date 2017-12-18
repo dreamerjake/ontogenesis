@@ -402,6 +402,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # self.pos += self.vel * (self.game.delta_time * self.speed_mul)
         if self.moving:
             self.vel.scale_to_length(self.speed / self.game.configs.fps)
+            # print(type(self.pos))
             self.pos += self.vel
 
         # collide with walls
