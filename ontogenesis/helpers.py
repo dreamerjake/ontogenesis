@@ -3,6 +3,11 @@
 from math import sqrt
 
 
+def get_font_height(font):
+    font_object = font.render('a', False, (0, 0, 0))
+    return font_object.get_rect().height
+
+
 def get_direction(angle, directions):
     num_directions = len(directions)
     degree = 360 / num_directions
