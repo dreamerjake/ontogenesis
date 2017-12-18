@@ -41,10 +41,11 @@ class Skill:
 
     def gain_xp(self, xp):
         mult = 1 + (xp * .01)
-        if self.passive:
-            self.bonuses[self.focus] *= mult
-        else:
-            setattr(self, self.focus, getattr(self, self.focus) * mult)
+        if self.focus:
+            if self.passive:
+                self.bonuses[self.focus] *= mult
+            else:
+                setattr(self, self.focus, getattr(self, self.focus) * mult)
 
 
 class MovingDamageArea(pg.sprite.Sprite):

@@ -15,8 +15,8 @@ def draw_text(text, font_name, size, color):
     font = pg.font.Font(font_name, size)
     font.set_bold(True)
     return font.render(text, True, color)
-    #text_rect = text_surface.get_rect(**{align: (x, y)})
-    #screen.blit(text_surface, text_rect)
+    # text_rect = text_surface.get_rect(**{align: (x, y)})
+    # screen.blit(text_surface, text_rect)
 
 
 class Collider:
