@@ -10,6 +10,7 @@ from pygame.locals import MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN, SRCALPHA
 from pygame.math import Vector2 as Vec2
 
 import settings
+from helpers import get_font_height
 from map import Wall
 from settings import colors, layers, keybinds
 
@@ -186,6 +187,17 @@ class UI:
 
     def draw_debug_warning(self):
         self.draw_text('DEBUG MODE', self.game.hud_font, 18, colors.white, settings.WIDTH - 5, 5, align='topright')
+
+    def draw_messages(self):
+        if self.game.message_queue:
+            size = 18
+            height = get_font_height(pg.font.Font(self.game.hud_font, size))
+            y_offset = 575
+            x_offset = 5
+            for i, message in enumerate(self.game.message_queue.getall()):
+                # print(len(message), message[0])
+                text, color = message
+                self.draw_text(text, self.game.hud_font, size, color, x_offset, i * height + y_offset)
 
     def draw_flashed_messages(self):
         for i, message in enumerate(self.game.message_flash_queue.get()[::-1]):
@@ -462,6 +474,7 @@ class UI:
         self.draw_active_skill()
         self.draw_focus_skill()
 
+        self.draw_messages()
         self.optional_messages()
         if self.game.configs.debug:
             self.debug_messages()

@@ -24,7 +24,7 @@ class SaveGame:
     pass
 
 
-class MessageQueue:
+class TimeoutQueue:
     def __init__(self, max_size):
         self._queue = []
         self.max_size = max_size
@@ -43,11 +43,28 @@ class MessageQueue:
         self.reap()
         self._queue.append((time.time() + ttl, message))
         if len(self._queue) > self.max_size:
-            self._queue.pop()
+            self._queue.pop(0)
 
     def get(self):
         self.reap()
         return [item[1] for item in self._queue]
+
+
+class MessageQueue:
+    def __init__(self, max_size):
+        self._queue = []
+        self.max_size = max_size
+
+    def __bool__(self):
+        return len(self._queue) > 0
+
+    def put(self, message):
+        self._queue.append(message)
+        if len(self._queue) > self.max_size:
+            self._queue.pop(0)
+
+    def getall(self):
+        return self._queue
 
 
 def timeit(method):
@@ -144,7 +161,8 @@ class Game:
 
         # messages, debug, and logging
         self.suppressed_debug_messages = 0
-        self.message_flash_queue = MessageQueue(self.configs.flash_messages_queuesize)
+        self.message_flash_queue = TimeoutQueue(self.configs.flash_messages_queuesize)
+        self.message_queue = MessageQueue(max_size=self.configs.messages_queuesize)
 
         # assets
         self.hud_font = None
@@ -641,6 +659,9 @@ class Game:
 
         pg.display.flip()
 
+    def message(self, message, color=colors.white):
+        self.message_queue.put((message, color))
+
     def flash_message(self, message, ttl):
         # TODO: add message to debug output
         self.message_flash_queue.put(message, ttl)
@@ -697,13 +718,12 @@ class Game:
         self.button_up = pg.image.load(path.join(ui_images_folder, 'up.png'))
         self.button_down = pg.image.load(path.join(ui_images_folder, 'down.png'))
         self.button_hover = pg.image.load(path.join(ui_images_folder, 'hover.png'))
-        globe_size = 220
+
+        globe_size = 160
         self.mana_full_img = pg.transform.scale(pg.image.load(path.join(ui_images_folder, 'mana_full.png')), (globe_size, globe_size)).convert_alpha()
         self.mana_empty_img = pg.transform.scale(pg.image.load(path.join(ui_images_folder, 'mana_empty.png')), (globe_size, globe_size)).convert_alpha()
         self.mana_full_blink_img = pg.transform.scale(pg.image.load(path.join(ui_images_folder, 'mana_full_blink.png')), (globe_size, globe_size)).convert_alpha()
         self.mana_empty_blink_img = pg.transform.scale(pg.image.load(path.join(ui_images_folder, 'mana_empty_blink.png')), (globe_size, globe_size)).convert_alpha()
-        # for img in [self.mana_full_img, self.mana_full_blink_img, self.mana_empty_img, self.mana_empty_blink_img]:
-        #     img = pg.transform.scale2x(img)
 
         # sound effects
         self.music_intro = path.join(music_folder, 'soliloquy.mp3')

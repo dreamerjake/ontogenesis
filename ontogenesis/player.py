@@ -371,8 +371,13 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
     def gain_xp(self, xp):
         self.xp_total += xp
+        # print(f'player gained {xp} xp')
         if self.focus_skill:
             self.focus_skill.gain_xp(xp)
+            # print(f'{self.focus_skill.name} gained {xp} experience in {self.focus_skill.focus}')
+            self.game.message(f'{self.focus_skill.name} gained {xp} experience in {self.focus_skill.focus}', colors.yellow)
+        else:
+            self.game.message(f'No focus set - experience wasted', colors.orange)
 
     def die(self):
         print('Player Died')

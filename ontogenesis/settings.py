@@ -75,6 +75,7 @@ game_configs = SimpleNamespace(
     debug=False,
     debug_exclude=['Wall'],
     flash_messages_queuesize=2,
+    messages_queuesize=6,
     ui_button_text_color=colors.white,
     ui_button_text_size=32,
 )

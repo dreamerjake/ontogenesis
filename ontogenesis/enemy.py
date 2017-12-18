@@ -140,6 +140,7 @@ class Mob(pg.sprite.Sprite, Collider):
             self.hp_current -= source.damage
             self.last_damage[source] = pg.time.get_ticks()
             FloatingMessage(self.game, self.rect.midtop, draw_text(str(source.damage), self.game.hud_font, 24, colors.white))
+            self.game.message(f'{source.name} hit {self.name} for {source.damage}', colors.red)
             return True
         return False
 
@@ -234,6 +235,11 @@ class Mob(pg.sprite.Sprite, Collider):
 class Zombie(Mob):
     debugname = 'Mob (Zombie)'
 
+    def __init__(self, game, start_pos):
+        super().__init__(game, start_pos)
+
+        self.name = 'Zombie'
+
 
 class GiantLizard(Mob):
 
@@ -241,6 +247,8 @@ class GiantLizard(Mob):
 
     def __init__(self, game, start_pos):
         super().__init__(game, start_pos)
+
+        self.name = 'Giant Lizard'
 
         # stat adjustment relative to zombie
         self.hit_rect = self.hit_rect.inflate(10, 10)

@@ -49,12 +49,13 @@ class Skill:
 
 
 class MovingDamageArea(pg.sprite.Sprite):
-    def __init__(self, game, owner, image, damage, pos, vel, duration, align='center', moves_with_owner=False):
+    def __init__(self, game, name, owner, image, damage, pos, vel, duration, align='center', moves_with_owner=False):
         self._layer = layers.projectile
         self.groups = game.all_sprites, game.aoe
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.owner = owner
+        self.name = name
         self.image = image
         self.rect = self.image.get_rect()
         self.pos = Vec2(pos)
@@ -194,6 +195,7 @@ class MeleeSkill(Skill):
         if self.can_fire:
             MovingDamageArea(
                 game=self.game,
+                name=self.name,
                 owner=self.owner,
                 image=self.rotated_img,
                 damage=self.proj_damage,
