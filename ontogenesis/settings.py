@@ -41,6 +41,8 @@ keybinds = {
     'move right': [pg.K_RIGHT, pg.K_d],
     'use skill - melee': [pg.K_SPACE],
     'use skill - movement': [pg.K_LCTRL],
+    'switch focus skill': [pg.K_PAGEDOWN],
+    'switch focus bonus': [pg.K_PAGEUP],
     # 'fire': []
 
     # test format

@@ -211,13 +211,13 @@ class UI:
             skill_focus = self.game.player.focus_skill.focus
             if skill_focus:
                 if self.game.player.focus_skill.passive:
-                    skill_focus_val = self.game.player.focus_skill.bonuses[skill_focus]
+                    skill_focus_val = int(self.game.player.focus_skill.bonuses[skill_focus])
                 else:
-                    skill_focus_val = getattr(self.game.player.focus_skill, skill_focus)
+                    skill_focus_val = int(getattr(self.game.player.focus_skill, skill_focus))
             else:
                 skill_focus_val = 'None'
 
-            desc = '{} {} {}'.format(skill_name, skill_focus, int(skill_focus_val))
+            desc = '{} {} {}'.format(skill_name, skill_focus, skill_focus_val)
         else:
             desc = 'NO FOCUS SKILL'
         self.draw_text(desc, self.game.settings_font, 24, colors.white, settings.WIDTH // 2, settings.HEIGHT - 25, align='midbottom')

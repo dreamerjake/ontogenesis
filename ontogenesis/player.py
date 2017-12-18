@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict
-from itertools import cycle
+from itertools import cycle, chain
 from math import atan2, degrees, pi
 from os import path
 from queue import Queue
@@ -13,7 +13,7 @@ import settings
 from enemy import Collider
 from helpers import require_attributes, get_direction
 from settings import layers, colors
-from skill import PassiveSkill, LightningSkill, MeleeSkill, DashSkill
+from skill import Skill, PassiveSkill, LightningSkill, MeleeSkill, DashSkill
 
 
 class Equippable:
@@ -64,6 +64,9 @@ class Equippable:
         else:
             self.equipped[slot] = equippable
             self.add_bonuses(equippable)
+        self.calc_all_skills()
+        if isinstance(equippable, Skill):
+            equippable.set_focus_options()
 
     def unequip_all(self):
         for slot, equip in self.equipped.items():
@@ -80,6 +83,7 @@ class Equippable:
             'active_skill': None,
             'passives': []
         }
+        self.calc_all_skills()
 
 
 class Player(pg.sprite.Sprite, Collider, Equippable):
@@ -126,7 +130,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.attacking = False
         # self.move_state = 'normal'
         self.speed_mul = 1.0
-        self.last_positions = Queue(maxsize=10)
+        # self.last_positions = Queue(maxsize=10)
 
         # default stats
         self.xp_total = 0
@@ -155,6 +159,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             'passives': []
         }
         self.focus_skill = None
+        self.all_skills = None
         # self.focus_skill = choice([self.equipped['active_skill']] + self.equipped['passives'])
 
         self.load_placeholder_skills()
@@ -162,6 +167,12 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
     # @property
     # def attacking(self):
     #     return
+
+    # @property
+    def calc_all_skills(self):
+        active_skills = [self.equipped['active_skill'], self.equipped['melee_skill'], self.equipped['move_skill']]
+        passive_skills = self.equipped['passives']
+        self.all_skills = cycle(chain(active_skills, passive_skills))
 
     @property
     def moving(self):
@@ -324,34 +335,25 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
                 self.vel += Vec2(-self.speed, 0).rotate(270)  # no backwards speed penalty
 
         # skills
-        # shoot bullets
+        # switch focus skill
+        if keys[pg.K_PAGEDOWN]:
+            self.focus_skill = next(self.all_skills)
+
+        # switch focus bonus
+        if keys[pg.K_PAGEUP]:
+            self.focus_skill.next_focus()
+
+        # active skill
         if pg.mouse.get_pressed()[0]:
             self.equipped['active_skill'].fire()
-            # if pg.time.get_ticks() - self.last_shot > self.fire_delay:  # TODO: can_fire function
-            #     damage = 10
-            #     direction = Vec2(1, 0).rotate(-self.rot)
-            #     speed = 500
-            #     vel = direction * speed
-            #     vel += self.vel
-            #     duration = 500
-            #     pos = self.pos + self.proj_offset.rotate(-self.rot)
-            #     kickback = 200
-            #     Projectile(game=self.game, damage=damage, pos=pos, vel=vel, duration=duration, kickback=kickback)
-            #     if kickback:
-            #         kickback_vector = Vec2(-kickback, 0).rotate(-self.rot)
-            #         self.vel += kickback_vector
-            #     self.last_shot = pg.time.get_ticks()
 
         # melee attack
         if keys[pg.K_SPACE]:
             self.equipped['melee_skill'].fire()
 
-        # dash
+        # movement skill
         if keys[pg.K_LCTRL]:
             self.equipped['move_skill'].fire()
-
-    # def update_speed(self):
-    #     self.speed_mul = 1.0
 
     def rotate(self, target):
         """ face the target """

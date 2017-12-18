@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from itertools import cycle
 from random import randint
 
 import pygame as pg
@@ -17,6 +18,8 @@ class Skill:
         self.game = game
         self.owner = None
         self.bonuses = {}
+        self.focus = None
+        self.focus_options = None
 
     def __repr__(self):
         return 'Skill "{}": {}'.format(self.name, self.stats)
@@ -25,10 +28,16 @@ class Skill:
     def stats(self):
         return {attr: getattr(self, attr) for attr in self.stat_attrs if hasattr(self, attr)}
 
-    @property
-    def focus_options(self):
+    def set_focus_options(self):
         # return self.owner
-        return self.owner.game.unlocked_mods.intersection(self.mods)
+        options = self.owner.game.unlocked_mods.intersection(self.mods)
+        if options:
+            self.focus_options = cycle(options)
+        else:
+            self.focus_options = cycle([None])
+
+    def next_focus(self):
+        self.focus = next(self.focus_options)
 
     def gain_xp(self, xp):
         mult = 1 + (xp * .01)
@@ -129,11 +138,11 @@ class PassiveSkill(Skill):
         self.name = name
         self.bonuses = {bonus: value for bonus, value in bonuses.items()}
         self.mods = set(self.bonuses.keys())
-        self.focus = None
 
 
 class MeleeSkill(Skill):
-    mods = {'ticks_per_sec', 'tick_damage', 'range'}
+    mods = {'proj_damage', 'proj_speed', 'proj_duration'}
+
     aligns = {
         'up': 'midbottom',
         'down': 'midtop',
@@ -253,7 +262,7 @@ class LightningSkill(Skill):
 
 class DashSkill(Skill):
 
-    mods = {'speed_mul'}
+    mods = {'fire_delay', 'duration'}
 
     def __init__(self, game):
         super().__init__(game=game)
