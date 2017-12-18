@@ -3,6 +3,20 @@
 from math import sqrt
 
 
+def get_direction(angle, directions):
+    num_directions = len(directions)
+    degree = 360 / num_directions
+    angle += degree / 2
+
+    # print(f'directions: {num_directions}, degree:{degree}, angle: {angle}')
+
+    for i, direction in enumerate(directions):
+        if (i + 1) * degree > angle >= i * degree:
+            return directions[i]
+    else:
+        return directions[0]
+
+
 def require_methods(obj, method_list):
     for method in method_list:
         if not (method in dir(obj)) or not callable(getattr(obj, method)):
