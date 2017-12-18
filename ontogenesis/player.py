@@ -125,7 +125,8 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
         # state
         self.dead = False
-        self.last_shot = pg.time.get_ticks()
+        self.last_shot = 0
+        self.last_skill_change = 0
         self.focus_skill = None
         self.attacking = False
         # self.move_state = 'normal'
@@ -133,6 +134,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # self.last_positions = Queue(maxsize=10)
 
         # default stats
+        self.skill_change_delay = 100
         self.xp_total = 0
         self.speed = 100
         self.hp_current = 80
@@ -158,7 +160,6 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             'move_skill': None,
             'passives': []
         }
-        self.focus_skill = None
         self.all_skills = None
         # self.focus_skill = choice([self.equipped['active_skill']] + self.equipped['passives'])
 
@@ -167,6 +168,10 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
     # @property
     # def attacking(self):
     #     return
+
+    @property
+    def can_change_skills(self):
+        return pg.time.get_ticks() - self.last_skill_change > self.skill_change_delay
 
     # @property
     def calc_all_skills(self):
@@ -297,7 +302,6 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         }
 
     def animate(self):
-        # animate
         now = pg.time.get_ticks()
         if now - self.last_update > self.frame_delay:
             if self.attacking:
@@ -337,11 +341,15 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # skills
         # switch focus skill
         if keys[pg.K_PAGEDOWN]:
-            self.focus_skill = next(self.all_skills)
+            if self.can_change_skills:
+                self.focus_skill = next(self.all_skills)
+                self.last_skill_change = pg.time.get_ticks()
 
         # switch focus bonus
         if keys[pg.K_PAGEUP]:
-            self.focus_skill.next_focus()
+            if self.can_change_skills:
+                self.focus_skill.next_focus()
+                self.last_skill_change = pg.time.get_ticks()
 
         # active skill
         if pg.mouse.get_pressed()[0]:
