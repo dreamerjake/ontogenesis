@@ -59,9 +59,9 @@ class MovingDamageArea(pg.sprite.Sprite):
 
     def update(self):
         if self.moves_with_owner:
-            self.pos += self.owner.vel * self.game.delta_time
+            self.pos += self.owner.vel
         else:
-            self.pos += self.vel * self.game.delta_time
+            self.pos += self.vel
         # self.rect.center = self.pos
         setattr(self.rect, self.align, self.pos)
         timed_out = pg.time.get_ticks() - self.spawn_time > self.duration
@@ -298,10 +298,6 @@ class DashSkill(Skill):
             Shadow(self.game, self.owner, self.duration)
             if pg.time.get_ticks() - self.last_fired > self.duration:
                 self.deactivate()
-
-        # shadow = self.image.copy()
-        # shadow.fill((255, 255, 255, 128), None, pg.BLEND_RGBA_MULT)
-        # self.game.effects_screen.blit(shadow, self.pos)
 
 
 class Shadow(pg.sprite.Sprite):
