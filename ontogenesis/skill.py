@@ -84,7 +84,7 @@ class Skill:
         # total xp invested
         # total kills?
         # current focus
-        return card
+        return self, card
 
 
 class MovingDamageArea(pg.sprite.Sprite):

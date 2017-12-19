@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import sys
 from collections import defaultdict
 from functools import wraps
 from itertools import chain
@@ -55,7 +56,7 @@ class UI:
         self.map_menu_windows = set()
         self.skill_menu_windows = set()
 
-        self.skills_album = self.create_album()
+        self.skills_album = CardAlbum()
 
         self.create_elements()
 
@@ -118,42 +119,44 @@ class UI:
         #     self.game.settings_font, 28)
 
         # skill cards window
-        ScrollableSurface([self.all_windows, self.skill_menu_windows], (500, 500), (100, 100), self.skills_album)
+        ScrollableSurface([self.all_windows, self.skill_menu_windows], (settings.WIDTH - 100, settings.card_height * 2 + 15), (50, 100), self.skills_album.image, album=self.skills_album)
 
-    def create_album(self, cards=None):  # , cards):
-        # TODO: dynamic card sizing based on window size
-        card_width = settings.card_width  # cards[0].width
-        card_height = settings.card_height  # cards[0].height
-        # print(type(cards))
-
-        if not cards:
-            folder = path.join(self.game.game_folder, 'assets', 'images', 'placeholder')
-            temp_card = pg.transform.scale(pg.image.load(path.join(folder, 'trading_card.jpg')), (card_width, card_height))
-            cards = [temp_card] * 20
-
-            # cards = [skill.generate_card() for skill in self.game.player.calc_all_skills()]
-
-        num_cards = len(cards)
-        # print(f'generating card album for {num_cards} cards')
-
-        num_rows = 2
-        cards_in_row = num_cards // num_rows
-        spacer_x = 5
-        spacer_y = 5
-        spacer_width = spacer_x * (cards_in_row + 1)
-        cards_width = card_width * cards_in_row
-        spacer_height = spacer_y * (num_rows + 1)
-        cards_height = card_height * num_rows
-        surface = pg.Surface((spacer_width + cards_width, spacer_height + cards_height))
-        surface.fill(colors.lightgrey)
-
-        for i, card in enumerate(cards):
-            x = i % cards_in_row
-            y = i // cards_in_row
-            surface.blit(card, (spacer_x * (x + 1) + (card_width * x), spacer_y * (y + 1) + (card_height * y)))
-
-        return surface
-        # cards_album =
+    # def create_album(self, cards=None):  # , cards):
+    #     # TODO: dynamic card sizing based on window size
+    #     card_width = settings.card_width  # cards[0].width
+    #     card_height = settings.card_height  # cards[0].height
+    #     # print(type(cards))
+    #
+    #     if not cards:
+    #         folder = path.join(self.game.game_folder, 'assets', 'images', 'placeholder')
+    #         temp_card = pg.transform.scale(pg.image.load(path.join(folder, 'trading_card.jpg')), (card_width, card_height))
+    #         cards = [temp_card] * 20
+    #
+    #         # cards = [skill.generate_card() for skill in self.game.player.calc_all_skills()]
+    #
+    #     num_cards = len(cards)
+    #     # print(f'generating card album for {num_cards} cards')
+    #
+    #     num_rows = 2
+    #     cards_in_row = num_cards // num_rows
+    #     spacer_x = 5
+    #     spacer_y = 5
+    #     spacer_width = spacer_x * (cards_in_row + 1)
+    #     cards_width = card_width * cards_in_row
+    #     spacer_height = spacer_y * (num_rows + 1)
+    #     cards_height = card_height * num_rows
+    #     surface = pg.Surface((spacer_width + cards_width, spacer_height + cards_height))
+    #     surface.fill(colors.lightgrey)
+    #
+    #     # card_rects = []
+    #
+    #     for i, card in enumerate(cards):
+    #         x = i % cards_in_row
+    #         y = i // cards_in_row
+    #         surface.blit(card, (spacer_x * (x + 1) + (card_width * x), spacer_y * (y + 1) + (card_height * y)))
+    #         # card_rects.append(pg.Rect())
+    #
+    #     return surface  # , card_rects
 
     # # TODO: figure out if this is necessary
     # def new(self):
@@ -368,9 +371,11 @@ class UI:
         #
         # self.screen.fill(colors.black)
         self.show_group(self.skill_menu_windows)
-        self.skills_album = self.create_album(cards=[skill.generate_card() for skill in self.game.player.all_skills])
+        # self.skills_album = self.create_album(cards=[skill.generate_card() for skill in self.game.player.all_skills])
+        self.skills_album.update(cards=[skill.generate_card() for skill in self.game.player.all_skills])
+        # self.skills_album = self.create_album()
         for win in self.skill_menu_windows:
-            win.new(self.skills_album)
+            win.new(self.skills_album.image)
         self.draw_menu_title()
 
         # self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
@@ -727,7 +732,7 @@ class TextScrollwindow(pg.sprite.Sprite):
 
 
 class ScrollableSurface(pg.Surface):
-    def __init__(self, groups, size, pos, sub_surface, scroll_speed=7, scroll_area=50):  # scrolling=['x', 'y', 'xy']
+    def __init__(self, groups, size, pos, sub_surface, scroll_speed=7, scroll_area=50, album=None):  # scrolling=['x', 'y', 'xy']
         pg.Surface.__init__(self, size)
 
         for group in groups:
@@ -737,6 +742,7 @@ class ScrollableSurface(pg.Surface):
         self.scroll_speed = scroll_speed
         self.visible = False
         self.sub_surface = sub_surface
+        self.album = album
 
         self.x_offset = 0
         self.y_offset = 0
@@ -755,18 +761,27 @@ class ScrollableSurface(pg.Surface):
     def update(self):
         (x, y) = self.pos
         (mx, my) = pg.mouse.get_pos()
+        # print(self.pos, (mx, my))
+        relative_click = (mx - x, my - y)
+
+        if self.album:
+            for k, v in self.album.card_rects.items():
+                print(k, v.collidepoint(relative_click))
+
         max_x_offset = self.sub_surface.get_width() - self.get_width()
 
         # scroll horizontal left
-        if self.left_rect.collidepoint((mx - x, my - y)) and self.x_offset != 0:
+        if self.left_rect.collidepoint(relative_click) and self.x_offset != 0:
             self.x_offset += self.scroll_speed
+            self.x_offset = min(self.x_offset, 0)
             print('scrolling left')
 
         # max offset check
 
         # scroll horizontal right
-        if self.right_rect.collidepoint((mx - x, my - y)) and -self.x_offset < max_x_offset:
+        if self.right_rect.collidepoint(relative_click) and -self.x_offset < max_x_offset:
             self.x_offset -= self.scroll_speed
+            self.x_offset = -max_x_offset if -self.x_offset > max_x_offset and self.x_offset < 0 else self.x_offset
             print('scrolling right')
 
         # max offset check
@@ -775,3 +790,58 @@ class ScrollableSurface(pg.Surface):
         self.blit(self.sub_surface, (self.x_offset, self.y_offset))
         # self.fill(colors.yellow)
         surface.blit(self, self.pos)
+
+    # def get_mouseover_card(self, cards):
+    #
+    #     for i, card in enumerate(cards):
+
+
+class CardAlbum:
+    def __init__(self, cards=None, num_rows=2, spacer_x=5, spacer_y=5):
+
+        # placeholder handling
+        if not cards:
+            if getattr(sys, 'frozen', False):
+                self.game_folder = path.dirname(sys.executable)
+            else:
+                self.game_folder = path.dirname(path.realpath(__file__))
+            folder = path.join(self.game_folder, 'assets', 'images', 'placeholder')
+            temp_card = pg.image.load(path.join(folder, 'trading_card.jpg'))
+            self.cards = [temp_card] * 20
+        else:
+            self.cards = cards
+
+        self.num_rows = num_rows
+        self.spacer_x = spacer_x
+        self.spacer_y = spacer_y
+
+        self.image = None
+        self.card_rects = {}
+        self.update(self.cards)
+
+    def __len__(self):
+        return len(self.cards)
+
+    def update(self, cards):
+        self.cards = cards
+        card_width = self.cards[0][1].get_width()
+        card_height = self.cards[0][1].get_height()
+        num_cards = len(self)
+        cards_in_row = num_cards // self.num_rows
+
+        spacer_width = self.spacer_x * (cards_in_row + 1)
+        cards_width = card_width * cards_in_row
+        spacer_height = self.spacer_y * (self.num_rows + 1)
+        cards_height = card_height * self.num_rows
+        self.image = pg.Surface((spacer_width + cards_width, spacer_height + cards_height))
+        self.image.fill(colors.lightgrey)
+
+        self.card_rects = {}
+
+        for i, card in enumerate(self.cards):
+            x = i % cards_in_row
+            y = i // cards_in_row
+            top = self.spacer_y * (y + 1) + (card_height * y)
+            left = self.spacer_x * (x + 1) + (card_width * x)
+            self.image.blit(card, (left, top))
+            self.card_rects[card[0]] = pg.Rect(left, top, card_width, card_height)
