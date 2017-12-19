@@ -361,7 +361,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             self.equipped['active_skill'].fire()
 
         # melee attack
-        if keys[pg.K_SPACE]:
+        if keys[pg.K_SPACE] or pg.mouse.get_pressed()[2]:
             self.equipped['melee_skill'].fire()
 
         # movement skill
