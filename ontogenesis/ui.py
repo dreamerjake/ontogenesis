@@ -727,7 +727,7 @@ class TextScrollwindow(pg.sprite.Sprite):
 
 
 class ScrollableSurface(pg.Surface):
-    def __init__(self, groups, size, pos, sub_surface, scroll_speed=7, scroll_area=40):  # scrolling=['x', 'y', 'xy']
+    def __init__(self, groups, size, pos, sub_surface, scroll_speed=7, scroll_area=50):  # scrolling=['x', 'y', 'xy']
         pg.Surface.__init__(self, size)
 
         for group in groups:
@@ -755,17 +755,17 @@ class ScrollableSurface(pg.Surface):
     def update(self):
         (x, y) = self.pos
         (mx, my) = pg.mouse.get_pos()
-        # max_x_offset = sub_surface.get_width() - self.get_width()
+        max_x_offset = self.sub_surface.get_width() - self.get_width()
 
         # scroll horizontal left
-        if self.left_rect.collidepoint((mx - x, my - y)):  # and self.x_offset != 0:
+        if self.left_rect.collidepoint((mx - x, my - y)) and self.x_offset != 0:
             self.x_offset += self.scroll_speed
             print('scrolling left')
 
         # max offset check
 
         # scroll horizontal right
-        if self.right_rect.collidepoint((mx - x, my - y)):  # and -self.x_offset < max_x_offset:
+        if self.right_rect.collidepoint((mx - x, my - y)) and -self.x_offset < max_x_offset:
             self.x_offset -= self.scroll_speed
             print('scrolling right')
 
