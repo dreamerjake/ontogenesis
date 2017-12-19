@@ -69,7 +69,7 @@ class Equippable:
         else:
             self.equipped[slot] = equippable
             self.add_bonuses(equippable)
-        self.calc_all_skills()
+        # self.calc_all_skills()
         if isinstance(equippable, Skill):
             equippable.set_focus_options()
 
@@ -164,25 +164,28 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             'move_skill': None,
             'passives': []
         }
-        self.all_skills = None
         # self.focus_skill = choice([self.equipped['active_skill']] + self.equipped['passives'])
 
         self.load_placeholder_skills()
-        self.calc_all_skills()
-
-    # @property
-    # def attacking(self):
-    #     return
+        self.all_skills_gen = cycle(self.all_skills)
 
     @property
     def can_change_skills(self):
         return pg.time.get_ticks() - self.last_skill_change > self.skill_change_delay
 
-    # @property
-    def calc_all_skills(self):
+    @property
+    def all_skills(self):
         active_skills = [self.equipped['active_skill'], self.equipped['melee_skill'], self.equipped['move_skill']]
         passive_skills = self.equipped['passives']
-        self.all_skills = cycle(chain(active_skills, passive_skills))
+        skill_chain = chain(active_skills, passive_skills)
+        return skill_chain
+
+    # def calc_all_skills(self):
+    #     active_skills = [self.equipped['active_skill'], self.equipped['melee_skill'], self.equipped['move_skill']]
+    #     passive_skills = self.equipped['passives']
+    #     return chain(active_skills, passive_skills)
+    #     self.all_skills = cycle()
+        # return skills
 
     @property
     def moving(self):
@@ -347,7 +350,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # switch focus skill
         if keys[pg.K_PAGEDOWN]:
             if self.can_change_skills:
-                self.focus_skill = next(self.all_skills)
+                self.focus_skill = next(self.all_skills_gen)
                 self.last_skill_change = pg.time.get_ticks()
 
         # switch focus bonus
@@ -383,6 +386,10 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             self.game.message(f'{self.focus_skill.name} gained {xp} experience in {self.focus_skill.focus}', colors.yellow)
         else:
             self.game.message(f'No focus set - experience wasted', colors.orange)
+
+    def gain_food(self, food):
+        self.food += food
+        self.game.message(f'Gained {food} food', colors.green)
 
     def die(self):
         print('Player Died')

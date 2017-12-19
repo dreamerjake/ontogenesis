@@ -112,6 +112,7 @@ class Mob(pg.sprite.Sprite, Collider):
 
         # item management
         self.inventory = []
+        self.food = randint(5, 20)
 
     def load_images(self):
         self.standing_frames = [self.game.mob_zombie_image]
@@ -143,6 +144,12 @@ class Mob(pg.sprite.Sprite, Collider):
             self.game.message(f'{source.name} hit {self.name} for {source.damage}', colors.red)
             return True
         return False
+
+    def die(self):
+        self.game.message(f'{self.name} has died', colors.white)
+        self.game.player.gain_xp(self.xp_value)
+        self.game.player.gain_food(self.food)
+        self.kill()
 
     def update(self):
         # health regen/degen
@@ -191,8 +198,7 @@ class Mob(pg.sprite.Sprite, Collider):
 
         # death conditions check
         if self.hp_current <= 0:
-            self.game.player.gain_xp(self.xp_value)
-            self.kill()
+            self.die()
 
     def draw_health(self):
         hp_pct = self.hp_current / self.hp_max * 100
