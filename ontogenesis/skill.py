@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 
 from itertools import cycle
+from os import path
 from random import randint
 
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
-from helpers import get_closest_sprite, calc_dist
-from settings import layers
+import settings
+from helpers import get_closest_sprite, calc_dist, get_font_height
+from settings import layers, colors
 
 
 class Skill:
     # base class for the skill mixin system
-    stat_attrs = {'passive', 'xp_current'}  # handle 'bonuses' separately
+    stat_attrs = set()  # handle 'bonuses' separately
 
     def __init__(self, game):
         self.game = game
@@ -51,6 +53,38 @@ class Skill:
 
             else:
                 setattr(self, self.focus, getattr(self, self.focus) * mult)
+
+    def generate_card(self):
+        card_width = settings.card_width  # cards[0].width
+        card_height = settings.card_height  # cards[0].height
+        card_font_size = 24
+        folder = path.join(self.game.game_folder, 'assets', 'images', 'placeholder')
+        # temp_card = pg.transform.scale(pg.image.load(path.join(folder, 'trading_card.jpg')), (card_width, card_height))
+        card = pg.Surface((card_width, card_height))
+        font = pg.font.Font(self.game.card_font, card_font_size)
+        font.set_bold(True)
+        font_height = get_font_height(font)
+
+        name = self.name
+        if self.passive:
+            skilltype = 'passive'
+            contents = [(bonus, bonus in self.game.unlocked_mods, bonus == self.focus) for bonus in self.bonuses]
+        else:
+            skilltype = 'active'
+            contents = [(stat, stat in self.game.unlocked_mods, stat == self.focus) for stat in self.stats]
+
+        card.fill(colors.yellow if self.game.player.focus_skill == self else colors.white)
+        card.blit(font.render(name, True, colors.black), (0, 0))
+        card.blit(font.render(f'Type: {skilltype}', True, colors.blue), (0, font_height))
+        for i, attribute in enumerate(contents, start=2):
+            item, learned, focus = attribute
+            color = colors.green if learned else colors.red
+            card.blit(font.render(item, True, color, colors.orange if focus else None), (0, i * font_height))
+
+        # total xp invested
+        # total kills?
+        # current focus
+        return card
 
 
 class MovingDamageArea(pg.sprite.Sprite):
@@ -159,6 +193,8 @@ class MeleeSkill(Skill):
 
     def __init__(self, game, image):
         super().__init__(game=game)
+        self.stat_attrs = self.stat_attrs.union(self.mods)
+
         # basic
         self.image = image
         self.name = 'Melee'
@@ -219,6 +255,8 @@ class LightningSkill(Skill):
 
     def __init__(self, game):
         super().__init__(game=game)
+        self.stat_attrs = self.stat_attrs.union(self.mods)
+
         # basic
         self.name = 'Lightning'
         self.passive = False
@@ -274,6 +312,8 @@ class DashSkill(Skill):
 
     def __init__(self, game):
         super().__init__(game=game)
+        self.stat_attrs = self.stat_attrs.union(self.mods)
+
         # basic
         self.name = 'Dash'
         self.passive = False

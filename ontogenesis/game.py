@@ -376,6 +376,12 @@ class Game:
         self.generate_maptiles()
 
         self.player = self.spawn(Player, self.current_map.player_start)
+
+        # TODO: make this cleaner
+        self.ui.skills_album = self.ui.create_album(cards=[skill.generate_card() for skill in self.player.all_skills])
+        self.ui.skill_menu_windows.clear()
+        self.ui.create_elements()
+
         self.camera = Camera(self.current_map.width, self.current_map.height)
 
     def travel(self):
@@ -698,6 +704,7 @@ class Game:
 
         # fonts
         self.hud_font = path.join(fonts_folder, 'Dense-Regular.ttf')
+        self.card_font = path.join(fonts_folder, 'Dense-Regular.ttf')
         self.message_flash_font = path.join(fonts_folder, 'Angerpoise-Lampshade.ttf')
         self.settings_font = path.join(fonts_folder, 'Joystix-Monospace.ttf')
 

@@ -55,6 +55,8 @@ class UI:
         self.map_menu_windows = set()
         self.skill_menu_windows = set()
 
+        self.skills_album = self.create_album()
+
         self.create_elements()
 
         # self.draw_controls_menu = self.as_menu(self.draw_controls_menu)
@@ -96,42 +98,44 @@ class UI:
             ['{} : {}'.format(k, ', '.join([pg.key.name(button) for button in v])) for k, v in keybinds.items()],
             self.game.settings_font, 28)
 
-        spacer = 10
-
+        # spacer = 10
         # passive skills window
-        TextScrollwindow(
-            self.game,
-            [self.all_windows, self.skill_menu_windows],
-            settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
-            (0 + spacer, 100),
-            # self.game.player.passive_names if hasattr(self.game, 'player') else None,
-            [],
-            self.game.settings_font, 28)
-
+        # TextScrollwindow(
+        #     self.game,
+        #     [self.all_windows, self.skill_menu_windows],
+        #     settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
+        #     (0 + spacer, 100),
+        #     # self.game.player.passive_names if hasattr(self.game, 'player') else None,
+        #     [],
+        #     self.game.settings_font, 28)
         # active skills window
-        TextScrollwindow(
-            self.game,
-            [self.all_windows, self.skill_menu_windows],
-            settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
-            (settings.WIDTH // 2 + spacer, 100),
-            ['Shoot', 'Fireball', 'Dash'],
-            self.game.settings_font, 28)
+        # TextScrollwindow(
+        #     self.game,
+        #     [self.all_windows, self.skill_menu_windows],
+        #     settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
+        #     (settings.WIDTH // 2 + spacer, 100),
+        #     ['Shoot', 'Fireball', 'Dash'],
+        #     self.game.settings_font, 28)
 
         # skill cards window
-        ScrollableSurface([self.all_windows, self.skill_menu_windows], (500, 500), (100, 100), self.create_album())
+        ScrollableSurface([self.all_windows, self.skill_menu_windows], (500, 500), (100, 100), self.skills_album)
 
     def create_album(self, cards=None):  # , cards):
         # TODO: dynamic card sizing based on window size
         card_width = settings.card_width  # cards[0].width
         card_height = settings.card_height  # cards[0].height
+        # print(type(cards))
 
         if not cards:
             folder = path.join(self.game.game_folder, 'assets', 'images', 'placeholder')
-            # temp_card = pg.image.load(path.join(folder, 'link_side_0.png'))
             temp_card = pg.transform.scale(pg.image.load(path.join(folder, 'trading_card.jpg')), (card_width, card_height))
             cards = [temp_card] * 20
 
+            # cards = [skill.generate_card() for skill in self.game.player.calc_all_skills()]
+
         num_cards = len(cards)
+        # print(f'generating card album for {num_cards} cards')
+
         num_rows = 2
         cards_in_row = num_cards // num_rows
         spacer_x = 5
@@ -141,6 +145,7 @@ class UI:
         spacer_height = spacer_y * (num_rows + 1)
         cards_height = card_height * num_rows
         surface = pg.Surface((spacer_width + cards_width, spacer_height + cards_height))
+        surface.fill(colors.lightgrey)
 
         for i, card in enumerate(cards):
             x = i % cards_in_row
@@ -363,6 +368,9 @@ class UI:
         #
         # self.screen.fill(colors.black)
         self.show_group(self.skill_menu_windows)
+        self.skills_album = self.create_album(cards=[skill.generate_card() for skill in self.game.player.all_skills])
+        for win in self.skill_menu_windows:
+            win.new(self.skills_album)
         self.draw_menu_title()
 
         # self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
@@ -737,6 +745,9 @@ class ScrollableSurface(pg.Surface):
         # self.lower_rect = pg.Rect(0, size[1] - scroll_area, size[0], scroll_area)
         self.left_rect = pg.Rect(0, 0, scroll_area, size[1])
         self.right_rect = pg.Rect(size[0] - scroll_area, 0, scroll_area, size[1])
+
+    def new(self, new_surface):
+        self.sub_surface = new_surface
 
     def handle_event(self, event):
         pass
