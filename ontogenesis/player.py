@@ -4,7 +4,6 @@ from collections import defaultdict
 from itertools import cycle, chain
 from math import atan2, degrees, pi
 from os import path
-from queue import Queue
 
 import pygame as pg
 from pygame.math import Vector2 as Vec2
@@ -24,10 +23,16 @@ class Equippable:
 
     def add_bonuses(self, equippable):
         for bonus in equippable.bonuses:
+            old = getattr(self, bonus)
+            new = old + equippable.bonuses[bonus]
+            print(f'adding {equippable.name} - {bonus}: {old} => {new}')
             setattr(self, bonus, getattr(self, bonus) + equippable.bonuses[bonus])
 
     def remove_bonuses(self, equippable):
-        for bonus in equippable:
+        for bonus in equippable.bonuses:
+            old = getattr(self, bonus)
+            new = old - equippable.bonuses[bonus]
+            print(f'removing {equippable.name} - {bonus}: {old} => {new}')
             setattr(self, bonus, getattr(self, bonus) - equippable.bonuses[bonus])
 
     def sum_bonuses(self):
@@ -83,7 +88,6 @@ class Equippable:
             'active_skill': None,
             'passives': []
         }
-        self.calc_all_skills()
 
 
 class Player(pg.sprite.Sprite, Collider, Equippable):
@@ -164,6 +168,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # self.focus_skill = choice([self.equipped['active_skill']] + self.equipped['passives'])
 
         self.load_placeholder_skills()
+        self.calc_all_skills()
 
     # @property
     # def attacking(self):
@@ -347,7 +352,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
         # switch focus bonus
         if keys[pg.K_PAGEUP]:
-            if self.can_change_skills:
+            if self.can_change_skills and self.focus_skill:
                 self.focus_skill.next_focus()
                 self.last_skill_change = pg.time.get_ticks()
 

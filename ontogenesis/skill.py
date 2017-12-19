@@ -43,7 +43,12 @@ class Skill:
         mult = 1 + (xp * .01)
         if self.focus:
             if self.passive:
+                if self.owner:
+                    self.owner.remove_bonuses(self)
                 self.bonuses[self.focus] *= mult
+                if self.owner:
+                    self.owner.add_bonuses(self)
+
             else:
                 setattr(self, self.focus, getattr(self, self.focus) * mult)
 
