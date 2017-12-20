@@ -746,16 +746,26 @@ class ScrollableSurface(pg.Surface):
         (x, y) = self.pos
         (mx, my) = pg.mouse.get_pos()
         # print(self.pos, (mx, my))
-        relative_click = (mx - x, my - y)
+        album_relative_pos = (mx - x, my - y)
 
         if self.album:
-            for k, v in self.album.card_rects.items():
-                print(k, v.collidepoint(relative_click))
+            for skill_card, skill_card_rect in self.album.card_rects.items():
+                if skill_card_rect.collidepoint(album_relative_pos):
+                    cx, cy = skill_card_rect.topleft
+                    ax, ay = album_relative_pos
+                    card_relative_pos = (ax - cx, ay - cy)
+                    for name, rect in skill_card.clickables.items():
+                        if rect.collidepoint(card_relative_pos):
+                            clickable = name
+                            break
+                    else:
+                        clickable = 'None'
+                    print(f'Mouse is over SkillCard for skill {skill_card.skill.name} at {card_relative_pos}, clickable: {clickable}')
 
         max_x_offset = self.sub_surface.get_width() - self.get_width()
 
         # scroll horizontal left
-        if self.left_rect.collidepoint(relative_click) and self.x_offset != 0:
+        if self.left_rect.collidepoint(album_relative_pos) and self.x_offset != 0:
             self.x_offset += self.scroll_speed
             self.x_offset = min(self.x_offset, 0)
             print('scrolling left')
@@ -763,7 +773,7 @@ class ScrollableSurface(pg.Surface):
         # max offset check
 
         # scroll horizontal right
-        if self.right_rect.collidepoint(relative_click) and -self.x_offset < max_x_offset:
+        if self.right_rect.collidepoint(album_relative_pos) and -self.x_offset < max_x_offset:
             self.x_offset -= self.scroll_speed
             self.x_offset = -max_x_offset if -self.x_offset > max_x_offset and self.x_offset < 0 else self.x_offset
             print('scrolling right')

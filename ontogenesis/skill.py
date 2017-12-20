@@ -399,6 +399,7 @@ class SkillCard:
         self.skill = skill
         self.skilltype = None
         self.contents = None
+        self.clickables = {}
 
         self.update()
 
@@ -411,9 +412,18 @@ class SkillCard:
             self.contents = [(stat, stat in self.game.unlocked_mods, stat == self.skill.focus) for stat in self.skill.stats]
 
         self.image.fill(colors.yellow if self.game.player.focus_skill == self.skill else colors.white)
-        self.image.blit(self.font.render(self.skill.name, True, colors.black), (0, 0))
+
+        name_text = self.font.render(self.skill.name, True, colors.black)
+        name_text_loc = (0, 0)
+        self.image.blit(name_text, name_text_loc)
+        self.clickables['name_text'] = pg.Rect(name_text_loc, name_text.get_size())
+        # name_text_rect = name_text.get_rect()
+        # self.image.blit(self.font.render(self.skill.name, True, colors.black), (0, 0))
         self.image.blit(self.font.render(f'Type: {self.skilltype}', True, colors.blue), (0, self.font_height))
         for i, attribute in enumerate(self.contents, start=2):
             item, learned, focus = attribute
             color = colors.green if learned else colors.red
             self.image.blit(self.font.render(item, True, color, colors.orange if focus else None), (0, i * self.font_height))
+
+    # def get_clickable_rects(self):
+    #     return self.clickables
