@@ -5,6 +5,7 @@ from random import randint
 
 import pygame as pg
 from pygame.math import Vector2 as Vec2
+from pygame.locals import SRCALPHA
 
 import settings
 from helpers import get_closest_sprite, calc_dist, get_font_height
@@ -427,7 +428,7 @@ class SkillCard:
 
         self.image.fill(colors.yellow if self.game.player.focus_skill == self.skill else colors.white)
 
-        name_text = self.font.render(self.skill.name + ' *FOCUSED*' if self.game.player.focus_skill == self.skill else self.skill.name, True, colors.black)
+        name_text = self.font.render(self.skill.name + ' *FOCUS*' if self.game.player.focus_skill == self.skill else self.skill.name, True, colors.black)
         name_text_loc = (0, 0)
         self.image.blit(name_text, name_text_loc)
 
@@ -447,10 +448,13 @@ class SkillCard:
             item, learned, focus = attribute
             color = colors.green if learned else colors.red
             pos = (0, i * self.font_height)
-            item_text = self.font.render(item + ' *FOCUSED*' if self.skill.focus == item else item, True, color, colors.orange if focus else None)
-            self.image.blit(item_text, pos)
+            item_text = self.font.render(item + ' *FOCUS*' if self.skill.focus == item else item, True, color, colors.orange if focus else None)
+            item_textbox = pg.Surface((self.width, item_text.get_height()), SRCALPHA)
+            item_textbox.blit(item_text, (0, 0
+                                          ))
+            self.image.blit(item_textbox, pos)
             self.clickables[item] = {
-                'rect': pg.Rect(pos, item_text.get_size()),
+                'rect': pg.Rect(pos, item_textbox.get_size()),
                 'callback': self.skill.set_focus,
                 'callback_args': item,
             }
