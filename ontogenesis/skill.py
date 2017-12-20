@@ -197,7 +197,7 @@ class PassiveSkill(Skill):
 
 
 class MeleeSkill(Skill):
-    mods = {'proj_damage', 'proj_speed', 'proj_duration'}
+    mods = {'proj_damage', 'proj_speed', 'proj_duration', 'cooldown'}
 
     aligns = {
         'up': 'midbottom',
@@ -216,7 +216,7 @@ class MeleeSkill(Skill):
         self.passive = False
         self.xp_current = 0
         self.xp_growth_rate = .1
-        self.fire_delay = 600
+        self.cooldown = 600
         # self.kickback = 0
 
         # state
@@ -240,7 +240,7 @@ class MeleeSkill(Skill):
 
     @property
     def can_fire(self):
-        return pg.time.get_ticks() - self.last_fired > self.fire_delay
+        return pg.time.get_ticks() - self.last_fired > self.cooldown
 
     def fire(self):
         spawn_point = self.owner.projectile_spawn
@@ -266,7 +266,7 @@ class MeleeSkill(Skill):
 
 class LightningSkill(Skill):
 
-    mods = {'ticks_per_sec', 'tick_damage', 'range'}
+    mods = {'ticks_per_sec', 'tick_damage', 'range', 'lock_range'}
 
     def __init__(self, game):
         super().__init__(game=game)
@@ -289,6 +289,7 @@ class LightningSkill(Skill):
 
         # targeting
         self.range = 300
+        self.lock_range = 100
 
     @property
     def damage(self):
@@ -304,7 +305,7 @@ class LightningSkill(Skill):
 
     def fire(self):
         if self.owner.resource_current >= self.tick_cost:
-            target = get_closest_sprite(self.owner.game.mobs, pg.mouse.get_pos() - self.owner.game.camera.offset, radius=100)
+            target = get_closest_sprite(self.owner.game.mobs, pg.mouse.get_pos() - self.owner.game.camera.offset, radius=self.lock_range)
             if target and calc_dist(self.owner.pos, target.pos) < self.range:
                 offset = self.owner.game.camera.offset
                 to_pos = target.hit_rect.center + offset
@@ -323,7 +324,7 @@ class LightningSkill(Skill):
 
 class DashSkill(Skill):
 
-    mods = {'fire_delay', 'duration'}
+    mods = {'cooldown', 'duration', 'speed_mult'}
 
     def __init__(self, game):
         super().__init__(game=game)
@@ -341,12 +342,13 @@ class DashSkill(Skill):
         self.last_fired = 0
 
         # stats
-        self.fire_delay = 1000
+        self.cooldown = 1000
         self.duration = 300
+        self.speed_mult = 2
 
     @property
     def can_fire(self):
-        return pg.time.get_ticks() - self.last_fired > self.fire_delay
+        return pg.time.get_ticks() - self.last_fired > self.cooldown
 
     def fire(self):
         if self.can_fire:
@@ -356,13 +358,13 @@ class DashSkill(Skill):
         print(f'activating {self}')
         self.active = True
         self.last_fired = pg.time.get_ticks()
-        self.owner.speed *= 2
+        self.owner.speed *= self.speed_mult
         self.game.active_skills.append(self)
 
     def deactivate(self):
         print(f'de-activating {self}')
         self.active = False
-        self.owner.speed *= .5
+        self.owner.speed *= 1 / self.speed_mult
         self.game.active_skills.remove(self)
 
     def update(self):
