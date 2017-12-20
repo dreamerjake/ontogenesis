@@ -348,7 +348,7 @@ class DashSkill(Skill):
 
     @property
     def can_fire(self):
-        return pg.time.get_ticks() - self.last_fired > self.cooldown
+        return pg.time.get_ticks() - self.last_fired > self.cooldown and not self.active
 
     def fire(self):
         if self.can_fire:
