@@ -378,6 +378,8 @@ class Game:
         self.player = self.spawn(Player, self.current_map.player_start)
         self.camera = Camera(self.current_map.width, self.current_map.height)
 
+        self.ui.create_elements()
+
     def travel(self):
         # TODO: splash screen if travel loading becomes significant
         if self.worldmap.destination_node:

@@ -54,37 +54,40 @@ class Skill:
             else:
                 setattr(self, self.focus, getattr(self, self.focus) * mult)
 
-    def generate_card(self):
-        card_width = settings.card_width  # cards[0].width
-        card_height = settings.card_height  # cards[0].height
-        card_font_size = 24
-        folder = path.join(self.game.game_folder, 'assets', 'images', 'placeholder')
-        # temp_card = pg.transform.scale(pg.image.load(path.join(folder, 'trading_card.jpg')), (card_width, card_height))
-        card = pg.Surface((card_width, card_height))
-        font = pg.font.Font(self.game.card_font, card_font_size)
-        font.set_bold(True)
-        font_height = get_font_height(font)
+    def get_card(self):
+        return SkillCard(self.game, self)
 
-        name = self.name
-        if self.passive:
-            skilltype = 'passive'
-            contents = [(bonus, bonus in self.game.unlocked_mods, bonus == self.focus) for bonus in self.bonuses]
-        else:
-            skilltype = 'active'
-            contents = [(stat, stat in self.game.unlocked_mods, stat == self.focus) for stat in self.stats]
-
-        card.fill(colors.yellow if self.game.player.focus_skill == self else colors.white)
-        card.blit(font.render(name, True, colors.black), (0, 0))
-        card.blit(font.render(f'Type: {skilltype}', True, colors.blue), (0, font_height))
-        for i, attribute in enumerate(contents, start=2):
-            item, learned, focus = attribute
-            color = colors.green if learned else colors.red
-            card.blit(font.render(item, True, color, colors.orange if focus else None), (0, i * font_height))
-
-        # total xp invested
-        # total kills?
-        # current focus
-        return self, card
+    # def generate_card(self):
+    #     card_width = settings.card_width  # cards[0].width
+    #     card_height = settings.card_height  # cards[0].height
+    #     card_font_size = 24
+    #     folder = path.join(self.game.game_folder, 'assets', 'images', 'placeholder')
+    #     # temp_card = pg.transform.scale(pg.image.load(path.join(folder, 'trading_card.jpg')), (card_width, card_height))
+    #     card = pg.Surface((card_width, card_height))
+    #     font = pg.font.Font(self.game.card_font, card_font_size)
+    #     font.set_bold(True)
+    #     font_height = get_font_height(font)
+    #
+    #     name = self.name
+    #     if self.passive:
+    #         skilltype = 'passive'
+    #         contents = [(bonus, bonus in self.game.unlocked_mods, bonus == self.focus) for bonus in self.bonuses]
+    #     else:
+    #         skilltype = 'active'
+    #         contents = [(stat, stat in self.game.unlocked_mods, stat == self.focus) for stat in self.stats]
+    #
+    #     card.fill(colors.yellow if self.game.player.focus_skill == self else colors.white)
+    #     card.blit(font.render(name, True, colors.black), (0, 0))
+    #     card.blit(font.render(f'Type: {skilltype}', True, colors.blue), (0, font_height))
+    #     for i, attribute in enumerate(contents, start=2):
+    #         item, learned, focus = attribute
+    #         color = colors.green if learned else colors.red
+    #         card.blit(font.render(item, True, color, colors.orange if focus else None), (0, i * font_height))
+    #
+    #     # total xp invested
+    #     # total kills?
+    #     # current focus
+    #     return card
 
 
 class MovingDamageArea(pg.sprite.Sprite):
@@ -381,3 +384,36 @@ class Shadow(pg.sprite.Sprite):
             # lifespan = elapsed / self.duration
             self.image.fill((255, 255, 255, 128), None, pg.BLEND_RGBA_MULT)
             # self.game.effects_screen.blit()
+
+
+class SkillCard:
+    def __init__(self, game, skill):
+        self.game = game
+        self.width = settings.card_width  # cards[0].width
+        self.height = settings.card_height  # cards[0].height
+        self.font_size = 24
+        self.image = pg.Surface((self.width, self.height))
+        self.font = pg.font.Font(self.game.card_font, self.font_size)
+        self.font.set_bold(True)
+        self.font_height = get_font_height(self.font)
+        self.skill = skill
+        self.skilltype = None
+        self.contents = None
+
+        self.update()
+
+    def update(self):
+        if self.skill.passive:
+            self.skilltype = 'passive'
+            self.contents = [(bonus, bonus in self.game.unlocked_mods, bonus == self.skill.focus) for bonus in self.skill.bonuses]
+        else:
+            self.skilltype = 'active'
+            self.contents = [(stat, stat in self.game.unlocked_mods, stat == self.skill.focus) for stat in self.skill.stats]
+
+        self.image.fill(colors.yellow if self.game.player.focus_skill == self.skill else colors.white)
+        self.image.blit(self.font.render(self.skill.name, True, colors.black), (0, 0))
+        self.image.blit(self.font.render(f'Type: {self.skilltype}', True, colors.blue), (0, self.font_height))
+        for i, attribute in enumerate(self.contents, start=2):
+            item, learned, focus = attribute
+            color = colors.green if learned else colors.red
+            self.image.blit(self.font.render(item, True, color, colors.orange if focus else None), (0, i * self.font_height))

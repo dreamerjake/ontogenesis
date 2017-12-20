@@ -56,9 +56,9 @@ class UI:
         self.map_menu_windows = set()
         self.skill_menu_windows = set()
 
-        self.skills_album = CardAlbum()
+        self.skills_album = None
 
-        self.create_elements()
+        # self.create_elements()
 
         # self.draw_controls_menu = self.as_menu(self.draw_controls_menu)
 
@@ -119,6 +119,7 @@ class UI:
         #     self.game.settings_font, 28)
 
         # skill cards window
+        self.skills_album = CardAlbum(cards=[skill.get_card() for skill in self.game.player.all_skills])
         ScrollableSurface([self.all_windows, self.skill_menu_windows], (settings.WIDTH - 100, settings.card_height * 2 + 15), (50, 100), self.skills_album.image, album=self.skills_album)
 
     # def create_album(self, cards=None):  # , cards):
@@ -366,28 +367,11 @@ class UI:
 
     @menu
     def draw_skills_menu(self):
-        # self.hide_group(self.all_buttons, self.all_windows)
-        # self.show_group(self.skill_menu_windows)
-        #
-        # self.screen.fill(colors.black)
         self.show_group(self.skill_menu_windows)
-        # self.skills_album = self.create_album(cards=[skill.generate_card() for skill in self.game.player.all_skills])
-        self.skills_album.update(cards=[skill.generate_card() for skill in self.game.player.all_skills])
-        # self.skills_album = self.create_album()
+        self.skills_album.update(new_cards=[skill.get_card() for skill in self.game.player.all_skills])
         for win in self.skill_menu_windows:
             win.new(self.skills_album.image)
         self.draw_menu_title()
-
-        # self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
-
-        # self.update_visible_elements()
-        # self.draw_visible_elements()
-        #
-        # self.optional_messages()
-        # if self.game.configs.debug:
-        #     self.debug_messages()
-        # self.draw_flashed_messages()
-        # # pg.display.flip()
 
     def draw_map_menu(self):
         self.hide_group(self.all_buttons, self.all_windows)
@@ -797,19 +781,19 @@ class ScrollableSurface(pg.Surface):
 
 
 class CardAlbum:
-    def __init__(self, cards=None, num_rows=2, spacer_x=5, spacer_y=5):
+    def __init__(self, cards, num_rows=2, spacer_x=5, spacer_y=5):
 
         # placeholder handling
-        if not cards:
-            if getattr(sys, 'frozen', False):
-                self.game_folder = path.dirname(sys.executable)
-            else:
-                self.game_folder = path.dirname(path.realpath(__file__))
-            folder = path.join(self.game_folder, 'assets', 'images', 'placeholder')
-            temp_card = pg.image.load(path.join(folder, 'trading_card.jpg'))
-            self.cards = [temp_card] * 20
-        else:
-            self.cards = cards
+        # if not cards:
+        #     if getattr(sys, 'frozen', False):
+        #         self.game_folder = path.dirname(sys.executable)
+        #     else:
+        #         self.game_folder = path.dirname(path.realpath(__file__))
+        #     folder = path.join(self.game_folder, 'assets', 'images', 'placeholder')
+        #     temp_card = pg.image.load(path.join(folder, 'trading_card.jpg'))
+        #     self.cards = [temp_card] * 20
+        # else:
+        self.cards = cards
 
         self.num_rows = num_rows
         self.spacer_x = spacer_x
@@ -822,10 +806,13 @@ class CardAlbum:
     def __len__(self):
         return len(self.cards)
 
-    def update(self, cards):
-        self.cards = cards
-        card_width = self.cards[0][1].get_width()
-        card_height = self.cards[0][1].get_height()
+    def update(self, new_cards):
+        if new_cards:
+            self.cards = new_cards
+        for card in self.cards:
+            card.update()
+        card_width = self.cards[0].image.get_width()
+        card_height = self.cards[0].image.get_height()
         num_cards = len(self)
         cards_in_row = num_cards // self.num_rows
 
@@ -843,5 +830,5 @@ class CardAlbum:
             y = i // cards_in_row
             top = self.spacer_y * (y + 1) + (card_height * y)
             left = self.spacer_x * (x + 1) + (card_width * x)
-            self.image.blit(card, (left, top))
-            self.card_rects[card[0]] = pg.Rect(left, top, card_width, card_height)
+            self.image.blit(card.image, (left, top))
+            self.card_rects[card] = pg.Rect(left, top, card_width, card_height)
