@@ -226,11 +226,11 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # manually set starting skills
         lightning_skill = LightningSkill(self.game)
         melee_skill = MeleeSkill(self.game, self.game.sword_img)
-        run_skill = PassiveSkill(self.game, 'Run', speed=10)
+        running_skill = PassiveSkill(self.game, 'Running', speed=10)
         toughness_skill = PassiveSkill(self.game, 'Toughness', hp_max=10)
         dash_skill = DashSkill(self.game)
 
-        for skill in [run_skill, toughness_skill]:
+        for skill in [running_skill, toughness_skill]:
             self.equip('passives', skill)
         self.equip('active_skill', lightning_skill)
         self.equip('melee_skill', melee_skill)

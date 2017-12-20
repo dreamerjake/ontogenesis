@@ -829,7 +829,7 @@ class CardAlbum:
     def update(self, new_cards):
         if new_cards:
             self.cards = new_cards
-            print('Skills card album now contains {} cards'.format(len(new_cards)))
+            # print('Skills card album now contains {} cards'.format(len(new_cards)))
         for card in self.cards:
             card.update()
         card_width = self.cards[0].image.get_width()
