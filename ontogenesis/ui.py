@@ -754,13 +754,23 @@ class ScrollableSurface(pg.Surface):
                     cx, cy = skill_card_rect.topleft
                     ax, ay = album_relative_pos
                     card_relative_pos = (ax - cx, ay - cy)
-                    for name, rect in skill_card.clickables.items():
-                        if rect.collidepoint(card_relative_pos):
+                    # print(skill_card.clickables.items())
+                    for name, props in skill_card.clickables.items():
+                        if props['rect'].collidepoint(card_relative_pos):
                             clickable = name
+                            callback = props['callback']
+                            callback_args = props['callback_args']
                             break
                     else:
-                        clickable = 'None'
-                    print(f'Mouse is over SkillCard for skill {skill_card.skill.name} at {card_relative_pos}, clickable: {clickable}')
+                        clickable = f'SkillCard {skill_card.skill.name} background'
+                        callback = None
+                    # print(f'Mouse is over SkillCard for skill {skill_card.skill.name} at {card_relative_pos}, clickable: {clickable}')
+                    if pg.mouse.get_pressed()[0]:
+                        print(f'Clicked {clickable}')
+                        if 'background' in clickable:
+                            skill_card.game.player.focus_skill = skill_card.skill
+                        else:
+                            callback(callback_args) if callback else print('No callback')
 
         max_x_offset = self.sub_surface.get_width() - self.get_width()
 

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from itertools import cycle
-from os import path
 from random import randint
 
 import pygame as pg
@@ -22,6 +21,7 @@ class Skill:
         self.bonuses = {}
         self.focus = None
         self.focus_options = None
+        self.focus_options_cycle = None
 
     def __repr__(self):
         return 'Skill "{}": {}'.format(self.name, self.stats)
@@ -34,9 +34,21 @@ class Skill:
         # return self.owner
         options = self.owner.game.unlocked_mods.intersection(self.mods)
         if options:
-            self.focus_options = cycle(options)
+            self.focus_options = options
+            self.focus_options_cycle = cycle(options)
         else:
-            self.focus_options = cycle([None])
+            self.focus_options = set()
+            self.focus_options_cycle = cycle([None])
+
+    def set_focus(self, new_focus):
+        print(f'attempting to set skill {self.name} focus to {new_focus}')
+        if new_focus == self.focus:
+            print(f'skill {self.name} focus is already set to {new_focus} - no change')
+        elif new_focus in self.focus_options:
+            self.focus = new_focus
+            print(f'skill {self.name} focus set to {new_focus}')
+        else:
+            print(f'cannot set skill {self.name} focus to {new_focus}')
 
     def next_focus(self):
         self.focus = next(self.focus_options)
@@ -413,17 +425,33 @@ class SkillCard:
 
         self.image.fill(colors.yellow if self.game.player.focus_skill == self.skill else colors.white)
 
-        name_text = self.font.render(self.skill.name, True, colors.black)
+        name_text = self.font.render(self.skill.name + ' *FOCUSED*' if self.game.player.focus_skill == self.skill else self.skill.name, True, colors.black)
         name_text_loc = (0, 0)
         self.image.blit(name_text, name_text_loc)
-        self.clickables['name_text'] = pg.Rect(name_text_loc, name_text.get_size())
+
+        # test = self.skilltype
+        # def name_text_callback():
+        #     print('Name text callback triggered')
+        #     print(self, test)
+        # self.clickables['name_text'] = {
+        #     'rect': pg.Rect(name_text_loc, name_text.get_size()),
+        #     'callback': name_text_callback,
+        # }
+
         # name_text_rect = name_text.get_rect()
         # self.image.blit(self.font.render(self.skill.name, True, colors.black), (0, 0))
         self.image.blit(self.font.render(f'Type: {self.skilltype}', True, colors.blue), (0, self.font_height))
         for i, attribute in enumerate(self.contents, start=2):
             item, learned, focus = attribute
             color = colors.green if learned else colors.red
-            self.image.blit(self.font.render(item, True, color, colors.orange if focus else None), (0, i * self.font_height))
+            pos = (0, i * self.font_height)
+            item_text = self.font.render(item + ' *FOCUSED*' if self.skill.focus == item else item, True, color, colors.orange if focus else None)
+            self.image.blit(item_text, pos)
+            self.clickables[item] = {
+                'rect': pg.Rect(pos, item_text.get_size()),
+                'callback': self.skill.set_focus,
+                'callback_args': item,
+            }
 
     # def get_clickable_rects(self):
     #     return self.clickables
