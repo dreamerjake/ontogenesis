@@ -142,6 +142,10 @@ class Mob(pg.sprite.Sprite, Collider):
             self.last_damage[source] = pg.time.get_ticks()
             FloatingMessage(self.game, self.rect.midtop, draw_text(str(source.damage), self.game.hud_font, 24, colors.white))
             self.game.message(f'{source.name} hit {self.name} for {source.damage}', colors.red)
+
+            dist = calc_dist(self.pos, source.owner.pos)
+            if self.vision_distance < dist:
+                self.vision_distance = dist
             return True
         return False
 

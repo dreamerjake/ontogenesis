@@ -51,7 +51,7 @@ class Skill:
             print(f'cannot set skill {self.name} focus to {new_focus}')
 
     def next_focus(self):
-        self.focus = next(self.focus_options)
+        self.focus = next(self.focus_options_cycle)
 
     def gain_xp(self, xp):
         mult = 1 + (xp * .01)
