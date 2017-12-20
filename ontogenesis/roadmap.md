@@ -67,7 +67,8 @@
             * Guide (in exchange for currency?)
         
     * Combat
-        * Floating Damage Numbers
+        * ~~Floating Damage Numbers~~
+            * Dynamic coloring
         * ~~Melee attacks~~
         
     * AI
@@ -247,3 +248,4 @@ ideal skill:
 * explosive
 * flaming - burning damage effect
 * fast fire rate
+

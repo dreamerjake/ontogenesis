@@ -444,7 +444,6 @@ class Game:
             for y in range(self.current_map.tileheight):
 
                 if self.current_map.data[x][y] == 1:
-
                     self.spawn(Wall, (x * settings.TILESIZE, y * settings.TILESIZE))
 
                 elif self.current_map.player_start is None:

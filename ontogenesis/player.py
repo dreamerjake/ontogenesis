@@ -223,7 +223,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         return spawn_points[self.facing]
 
     def load_placeholder_skills(self):
-        # manually set starting skills
+        """manually set starting skills"""
         lightning_skill = LightningSkill(self.game)
         melee_skill = MeleeSkill(self.game, self.game.sword_img)
         running_skill = PassiveSkill(self.game, 'Running', speed=10)
