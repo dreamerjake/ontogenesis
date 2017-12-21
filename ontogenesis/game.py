@@ -665,7 +665,9 @@ class Game:
 
         # TODO: merge these
         self.hud.update()
-        self.hud.draw(self.screen)
+        # self.hud.draw(self.screen)
+        for hud_sprite in self.hud:
+            hud_sprite.draw(self.screen)
         self.ui.draw_hud()
 
         pg.display.flip()

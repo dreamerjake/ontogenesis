@@ -577,6 +577,11 @@ class Minimap(pg.sprite.Sprite):
             size,
             size])
 
+    def draw(self, screen):
+        bordered = add_border(self.image, 2, colors.white)
+        bordered.set_alpha(40)
+        screen.blit(bordered, self.rect.topleft)
+
 
 class ImageButton:
 
@@ -607,23 +612,23 @@ class ImageButton:
         self.mouseover = False
         self.last_mousedown_over = False
 
-        self.caption_surface = self.font.render(self.caption, True, self.game.configs.ui_button_text_color)
+        caption_surface = self.font.render(self.caption, True, self.game.configs.ui_button_text_color)
         # self.caption_rect = self.caption_surface.get_rect()
         # self.caption_rect.center = self.width // 2, self.height // 2
 
         # outline caption text
-        final_surface = self.caption_surface.copy()
+        final_surface = caption_surface.copy()
         outline_surface = self.font.render(self.caption, True, colors.black)
         for point in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
             final_surface.blit(outline_surface, point)
-        final_surface.blit(self.caption_surface, (0, 0))
+        final_surface.blit(caption_surface, (0, 0))
         final_rect = final_surface.get_rect()
         final_rect.center = self.width // 2, self.height // 2
 
         for image in [self.up_img, self.down_img, self.highlight_img]:
             image.blit(final_surface, final_rect)
 
-        self.callbacks = defaultdict(lambda: lambda x: None)
+        self.callbacks = defaultdict(lambda: lambda event: None)
 
     def update(self):
         pass
@@ -911,3 +916,10 @@ class CardAlbum:
             left = self.spacer_x * (x + 1) + (card_width * x)
             self.image.blit(card.image, (left, top))
             self.card_rects[card] = pg.Rect(left, top, card_width, card_height)
+
+
+def add_border(surface, thickness, color):
+    new_surface = pg.Surface((2 * thickness + surface.get_width(), 2 * thickness + surface.get_height()))
+    new_surface.fill(color)
+    new_surface.blit(surface, (thickness, thickness))
+    return new_surface
