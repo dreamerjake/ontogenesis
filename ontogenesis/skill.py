@@ -203,10 +203,22 @@ class MeleeSkill(Skill):
     mods = {'proj_damage', 'proj_speed', 'proj_duration', 'cooldown'}
 
     aligns = {
+        # 4-d
         'up': 'midbottom',
         'down': 'midtop',
         'left': 'midright',
-        'right': 'midleft'
+        'right': 'midleft',
+
+        # 8-d
+        'N': 'midbottom',
+        'S': 'midtop',
+        'W': 'midright',
+        'E': 'midleft',
+        'SW': 'topright',
+        'NW': 'bottomright',
+        'SE': 'topleft',
+        # 'NE': 'bottomleft',
+        'NE': 'center',
     }
 
     def __init__(self, game, icon, image):
@@ -234,10 +246,21 @@ class MeleeSkill(Skill):
     @property
     def rotated_img(self):
         images = {
-            'up': pg.transform.flip(self.image, False, False),
-            'down': pg.transform.flip(self.image, False, True),
-            'left': pg.transform.rotate(self.image, 90),
-            'right': pg.transform.rotate(self.image, 270)
+            # 4-d
+            # 'up': pg.transform.flip(self.image, False, False),
+            # 'down': pg.transform.flip(self.image, False, True),
+            # 'left': pg.transform.rotate(self.image, 90),
+            # 'right': pg.transform.rotate(self.image, 270)
+
+            # 8-d
+            'N': pg.transform.flip(self.image, False, False),
+            'S': pg.transform.flip(self.image, False, True),
+            'W': pg.transform.rotate(self.image, 90),
+            'E': pg.transform.rotate(self.image, 270),
+            'NW': pg.transform.rotate(self.image, 45),
+            'NE': pg.transform.rotate(self.image, 315),
+            'SW': pg.transform.rotate(self.image, 135),
+            'SE': pg.transform.rotate(self.image, 225),
         }
         return images[self.owner.facing]
 

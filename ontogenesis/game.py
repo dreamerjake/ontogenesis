@@ -728,6 +728,7 @@ class Game:
         self.player_move_spritesheet = Spritesheet(path.join(player_images_folder, 'player-move.png'))
         self.player_wobble_spritesheet = Spritesheet(path.join(player_images_folder, 'player-wobble.png'))
         self.robot_spritesheet = Spritesheet(path.join(placeholder_images_folder, 'celarobotkanova.png'), sprite_size=(120, 180))
+        self.eightdir_spritesheet = Spritesheet(path.join(placeholder_images_folder, '8dirguy.png'), sprite_size=(61, 121))
 
         # static images
         self.icon = pg.image.load(path.join(images_folder, 'letter_j_icon_small.png'))

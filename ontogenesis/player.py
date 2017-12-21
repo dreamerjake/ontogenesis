@@ -113,7 +113,8 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # graphics
         self.last_update = pg.time.get_ticks()
         self.frame_delay = 200
-        self.image = next(self.standing_frames['down'])
+        # self.image = next(self.standing_frames['down'])
+        self.image = next(self.standing_frames['S'])
         self.orig_image = self.image
 
         # physics
@@ -184,8 +185,8 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
     @property
     def facing(self):
-        # return get_direction(self.mouse_angle, ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
-        return get_direction(self.mouse_angle, ['up', 'right', 'down', 'left'])
+        return get_direction(self.mouse_angle, ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
+        # return get_direction(self.mouse_angle, ['up', 'right', 'down', 'left'])
 
     @property
     def mouse_angle(self):
@@ -206,10 +207,20 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
     @property
     def projectile_spawn(self):
         spawn_points = {
+            # 4-d
             'up': self.rect.midtop,
             'down': self.rect.midbottom,
             'left': self.rect.midleft,
-            'right': self.rect.midright
+            'right': self.rect.midright,
+            # 8-d
+            'N': self.rect.midtop,
+            'NE': self.hit_rect.topright,
+            'E': self.rect.center,
+            'SE': self.rect.center,
+            'S': self.rect.center,
+            'SW': self.rect.center,
+            'W': self.rect.center,
+            'NW': self.rect.center,
         }
         return spawn_points[self.facing]
 
@@ -229,7 +240,8 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.equip('move_skill', dash_skill)
 
     def load_images(self):
-        self.load_link()
+        # self.load_link()
+        self.load_8d()
         # self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64, rot=-90)]
         # self.moving_frames = cycle([
         #     self.game.player_wobble_spritesheet.get_image(0, 0, 64, 64, rot=-90, scale_to=(48, 48)),
@@ -303,13 +315,38 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
     def load_robot(self):
         self.moving_frames = {
+            'N': [],
             'NE': cycle(self.game.robot_spritesheet.get_row(0, scale_to=(60, 90))),
             'E': cycle(self.game.robot_spritesheet.get_row(1, scale_to=(60, 90))),
             'SE': cycle(self.game.robot_spritesheet.get_row(2, scale_to=(60, 90))),
             'SW': cycle(self.game.robot_spritesheet.get_row(3, scale_to=(60, 90))),
             'W': cycle(self.game.robot_spritesheet.get_row(4, scale_to=(60, 90))),
             'NW': cycle(self.game.robot_spritesheet.get_row(5, scale_to=(60, 90))),
+            'S': [],
         }
+
+    def load_8d(self):
+        self.standing_frames = {
+            'SW': cycle([self.game.eightdir_spritesheet.get_row(0, scale_to=(45, 90))[0]]),
+            'S': cycle([self.game.eightdir_spritesheet.get_row(1, scale_to=(45, 90))[0]]),
+            'SE': cycle([self.game.eightdir_spritesheet.get_row(2, scale_to=(45, 90))[0]]),
+            'W': cycle([self.game.eightdir_spritesheet.get_row(3, scale_to=(45, 90))[0]]),
+            'NW': cycle([self.game.eightdir_spritesheet.get_row(4, scale_to=(45, 90))[0]]),
+            'E': cycle([self.game.eightdir_spritesheet.get_row(5, scale_to=(45, 90))[0]]),
+            'NE': cycle([self.game.eightdir_spritesheet.get_row(6, scale_to=(45, 90))[0]]),
+            'N': cycle([self.game.eightdir_spritesheet.get_row(7, scale_to=(45, 90))[0]]),
+        }
+        self.moving_frames = {
+            'SW': cycle(self.game.eightdir_spritesheet.get_row(0, scale_to=(45, 90))),
+            'S': cycle(self.game.eightdir_spritesheet.get_row(1, scale_to=(45, 90))),
+            'SE': cycle(self.game.eightdir_spritesheet.get_row(2, scale_to=(45, 90))),
+            'W': cycle(self.game.eightdir_spritesheet.get_row(3, scale_to=(45, 90))),
+            'NW': cycle(self.game.eightdir_spritesheet.get_row(4, scale_to=(45, 90))),
+            'E': cycle(self.game.eightdir_spritesheet.get_row(5, scale_to=(45, 90))),
+            'NE': cycle(self.game.eightdir_spritesheet.get_row(6, scale_to=(45, 90))),
+            'N': cycle(self.game.eightdir_spritesheet.get_row(7, scale_to=(45, 90))),
+        }
+        self.attacking_frames = self.moving_frames
 
     def animate(self):
         now = pg.time.get_ticks()
