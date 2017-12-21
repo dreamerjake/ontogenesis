@@ -460,6 +460,41 @@ class UI:
         # self.draw_flashed_messages()
         pg.display.flip()
 
+    def draw_icon_bar(self):
+        spacer = 20
+        font = pg.font.Font(self.game.hud_font, 24)
+        font.set_bold(True)
+        font_height = get_font_height(font)
+        icon_size = self.game.configs.icon_size
+        surface = pg.Surface((spacer * 4 + icon_size * 3, spacer * 2 + font_height + icon_size))
+        surface.fill(colors.lightgrey)
+        highlight_size = 2
+        highlight = pg.Surface((highlight_size * 2 + icon_size, highlight_size * 2 + icon_size))
+        highlight.fill(colors.red)
+
+        skills = [
+            self.game.player.equipped['active_skill'],
+            self.game.player.equipped['melee_skill'],
+            self.game.player.equipped['move_skill'],
+        ]
+        for i, skill in enumerate(skills):
+            x = icon_size * i + spacer * (i + 1)
+            y = spacer + font_height
+            if not skill.can_fire:
+                surface.blit(highlight, (x - highlight_size, y - highlight_size))
+            surface.blit(skill.icon, (x, y))
+
+        names = ['ACTIVE', 'MELEE', 'MOVE']
+        for i, name in enumerate(names):
+            text = font.render(name, True, colors.red)
+            text_rect = text.get_rect()
+            text_rect.center = (icon_size * (i + .5) + spacer * (i + 1), (spacer + font_height) // 2)
+            surface.blit(text, text_rect)
+
+        surface_rect = surface.get_rect()
+        surface_rect.midbottom = settings.WIDTH // 2, settings.HEIGHT - 5
+        self.screen.blit(surface, surface_rect)
+
     def draw_hud(self):
         self.hide_group(self.all_buttons, self.all_windows)
 
@@ -467,8 +502,10 @@ class UI:
         self.draw_player_health(5, 25, health_pct)
         self.draw_mobcount()
         self.draw_food()
-        self.draw_active_skill()
-        self.draw_focus_skill()
+
+        # self.draw_active_skill()
+        # self.draw_focus_skill()
+        self.draw_icon_bar()
 
         self.draw_messages()
         self.optional_messages()

@@ -293,7 +293,6 @@ class LightningSkill(Skill):
         # targeting
         self.range = 300
         self.lock_range = 100
-        #self.min_range = 30
 
     @property
     def damage(self):
@@ -307,8 +306,12 @@ class LightningSkill(Skill):
     def cost(self):
         return self.tick_cost
 
+    @property
+    def can_fire(self):
+        return self.owner.resource_current >= self.tick_cost
+
     def fire(self):
-        if self.owner.resource_current >= self.tick_cost:
+        if self.can_fire:
             target = get_closest_sprite(self.owner.game.mobs, pg.mouse.get_pos() - self.owner.game.camera.offset, radius=self.lock_range)
             if target and calc_dist(self.owner.pos, target.pos) < self.range:
                 offset = self.owner.game.camera.offset
@@ -322,8 +325,6 @@ class LightningSkill(Skill):
                     self.owner.resource_current -= self.tick_cost
                     print('ZAPPED {} for {}'.format(target, self.tick_damage))
                     # self.last_tick = now
-        else:
-            print('OOM - cannot use skill {}'.format(self.name))
 
 
 class DashSkill(Skill):

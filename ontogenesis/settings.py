@@ -78,6 +78,7 @@ game_configs = SimpleNamespace(
     messages_queuesize=6,
     ui_button_text_color=colors.white,
     ui_button_text_size=32,
+    icon_size=64,
 )
 
 # map settings

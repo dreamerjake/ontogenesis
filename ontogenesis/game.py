@@ -731,7 +731,7 @@ class Game:
         self.button_down = pg.image.load(path.join(ui_images_folder, 'down.png'))
         self.button_hover = pg.image.load(path.join(ui_images_folder, 'hover.png'))
 
-        icon_size = 64
+        icon_size = self.configs.icon_size
         self.lightning_icon = pg.transform.scale(pg.image.load(path.join(skill_images_folder, 'lightning_icon.png')), (icon_size, icon_size)).convert_alpha()
         self.dash_icon = pg.transform.scale(pg.image.load(path.join(skill_images_folder, 'dash_icon.png')), (icon_size, icon_size)).convert_alpha()
         self.toughness_icon = pg.transform.scale(pg.image.load(path.join(skill_images_folder, 'toughness_icon.png')), (icon_size, icon_size)).convert_alpha()
