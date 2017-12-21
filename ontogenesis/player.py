@@ -138,6 +138,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         # self.last_positions = Queue(maxsize=10)
 
         # default stats
+        self.vision_radius = 300
         self.skill_change_delay = 100
         self.xp_total = 0
         self.speed = 100
@@ -349,6 +350,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             'NE': cycle(self.game.eightdir_spritesheet.get_row(6, scale_to=size)),
             'N': cycle(self.game.eightdir_spritesheet.get_row(7, scale_to=size)),
         }
+
         self.attacking_frames = self.moving_frames
 
     def animate(self):

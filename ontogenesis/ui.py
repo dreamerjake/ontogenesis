@@ -9,7 +9,7 @@ from pygame.locals import MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN, SRCALPHA
 from pygame.math import Vector2 as Vec2
 
 import settings
-from helpers import get_font_height
+from helpers import get_font_height, calc_dist
 from map import Wall
 from settings import colors, layers, keybinds
 
@@ -565,8 +565,10 @@ class Minimap(pg.sprite.Sprite):
         # draw non-player things
         for sprite in chain(self.game.walls, self.game.mobs):
             pos = self.game.camera.apply(sprite)
-            color = colors.brown if isinstance(sprite, Wall) else colors.red
-            self.image.fill(color, [pos[0] / self.scalex, pos[1] / self.scaley, size, size])
+            dist = calc_dist(pos, self.game.camera.apply(self.game.player))
+            if dist < self.game.player.vision_radius:
+                color = colors.brown if isinstance(sprite, Wall) else colors.red
+                self.image.fill(color, [pos[0] / self.scalex, pos[1] / self.scaley, size, size])
 
         # draw player
         # TODO: icon for player location?
