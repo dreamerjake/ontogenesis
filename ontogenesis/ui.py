@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import sys
 from collections import defaultdict
 from functools import wraps
 from itertools import chain
-from os import path
 
 import pygame as pg
 from pygame.locals import MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN, SRCALPHA
@@ -25,6 +23,7 @@ def menu(func):
         func(self, *args, **kwargs)
         self.update_visible_elements()
         self.draw_visible_elements()
+        self.draw_flashed_messages()
         pg.display.flip()
 
     return wrapper
@@ -212,12 +211,13 @@ class UI:
         for i, message in enumerate(self.game.message_flash_queue.get()[::-1]):
             height = pg.font.Font(self.game.message_flash_font, 40).size(message)[1]
             offset = i * height
-            self.draw_text(
+            self.draw_outlined_text(
                 # 'FLASHED MESSAGE',
                 message,
                 self.game.message_flash_font,
                 40,
                 colors.yellow,
+                colors.black,
                 settings.WIDTH / 2,
                 settings.HEIGHT / 2 - settings.HEIGHT * .10 - offset,
                 align='center')
@@ -492,6 +492,17 @@ class UI:
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect(**{align: (x, y)})
         self.screen.blit(text_surface, text_rect)
+
+    def draw_outlined_text(self, text, font_name, size, color, outline_color, x, y, align="topleft"):
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        final_surface = text_surface.copy()
+        outline_surface = font.render(text, True, outline_color)
+        for point in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
+            final_surface.blit(outline_surface, point)
+        final_surface.blit(text_surface, (0, 0))
+        final_rect = final_surface.get_rect(**{align: (x, y)})
+        self.screen.blit(final_surface, final_rect)
 
 
 class Minimap(pg.sprite.Sprite):

@@ -199,9 +199,11 @@ class Game:
             ('main_menu', 'new_game'): 'create_char',
             ('main_menu', 'next'): 'create_char',
 
-            ('create_char', 'next'): 'intro',
+            ('create_char', 'next'): 'select_focus',
             ('create_char', 'back'): 'main_menu',
 
+            # mandatory choices
+            ('select_focus', 'next'): 'intro',
             ('select_destination', 'next'): 'playing',
 
             # in-game menus
@@ -275,6 +277,9 @@ class Game:
     def main_menu(self):
         self.ui.draw_main_menu()
 
+    def select_focus(self):
+        self.ui.draw_skills_menu()
+
     def select_destination(self):
         self.ui.draw_map_menu()
 
@@ -282,7 +287,6 @@ class Game:
         if not self.player or self.player.dead:
             self.new()
         self.ui.draw_placeholder_menu('CHARACTER CREATION')
-        return
 
     def playing(self):
         if self.current_music != self.music_action:
@@ -535,6 +539,12 @@ class Game:
                     if self.fsm.current_state == 'select_destination' and not self.worldmap.destination_node:
                         # force the player to pick a destination
                         self.flash_message('SELECT A DESTINATION', 1)
+                    elif self.fsm.current_state == 'select_focus' and self.player and not self.player.focus_skill:
+                        # force the player to pick a focus skill
+                        self.flash_message('SELECT A FOCUS SKILL', 1)
+                    elif self.fsm.current_state == 'select_focus' and self.player and not self.player.focus_skill.focus:
+                        # force the player to pick a focus skill modifier
+                        self.flash_message('SELECT A FOCUS SKILL MODIFIER', 1)
                     else:
                         self.fsm('next')
                 if event.key == pg.K_k:
