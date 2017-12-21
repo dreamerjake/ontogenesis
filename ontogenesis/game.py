@@ -187,7 +187,7 @@ class Game:
 
         # save
         self.save = None
-        self.unlocked_mods = {'speed', 'range', 'duration', 'ticks_per_sec'}
+        self.unlocked_mods = {'speed', 'range', 'duration', 'ticks_per_sec', 'rps_regen'}
 
         # map stuff
         self.current_map = None
@@ -513,8 +513,8 @@ class Game:
                 self.quit()
             if event.type == pg.KEYDOWN:
                 # TODO: mapping structure for keydown binds
-                if event.key == pg.K_ESCAPE:
-                    self.quit()
+                # if event.key == pg.K_ESCAPE:
+                #     self.quit()
                 if event.key == pg.K_p:
                     self.fsm('paused')
                 # if event.key == pg.K_RETURN:

@@ -229,8 +229,9 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         running_skill = PassiveSkill(self.game, 'Running', speed=10)
         toughness_skill = PassiveSkill(self.game, 'Toughness', hp_max=10)
         dash_skill = DashSkill(self.game)
+        meditation_skill = PassiveSkill(self.game, 'Meditation', rps_regen=.1)
 
-        for skill in [running_skill, toughness_skill]:
+        for skill in [running_skill, toughness_skill, meditation_skill]:
             self.equip('passives', skill)
         self.equip('active_skill', lightning_skill)
         self.equip('melee_skill', melee_skill)

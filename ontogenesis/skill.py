@@ -460,6 +460,3 @@ class SkillCard:
                 'callback': self.skill.set_focus,
                 'callback_args': item,
             }
-
-    # def get_clickable_rects(self):
-    #     return self.clickables

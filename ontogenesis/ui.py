@@ -198,9 +198,9 @@ class UI:
 
     def draw_messages(self):
         if self.game.message_queue:
-            size = 18
+            size = 24
             height = get_font_height(pg.font.Font(self.game.hud_font, size))
-            y_offset = 575
+            y_offset = 525
             x_offset = 5
             for i, message in enumerate(self.game.message_queue.getall()):
                 # print(len(message), message[0])
