@@ -185,7 +185,8 @@ def draw_lightning(surface, start_pos, end_pos):
         return midl
 
     points = get_points(*start_pos, *end_pos)
-    pg.draw.lines(surface, (100 + randint(0, 100), 100 + randint(0, 100), 255), True, points)
+    if len(points) > 1:
+        pg.draw.lines(surface, (100 + randint(0, 100), 100 + randint(0, 100), 255), True, points)
 
 
 class PassiveSkill(Skill):
@@ -291,6 +292,7 @@ class LightningSkill(Skill):
         # targeting
         self.range = 300
         self.lock_range = 100
+        #self.min_range = 30
 
     @property
     def damage(self):

@@ -212,7 +212,6 @@ class UI:
             height = pg.font.Font(self.game.message_flash_font, 40).size(message)[1]
             offset = i * height
             self.draw_outlined_text(
-                # 'FLASHED MESSAGE',
                 message,
                 self.game.message_flash_font,
                 40,
