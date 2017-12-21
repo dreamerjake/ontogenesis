@@ -269,7 +269,7 @@ class MeleeSkill(Skill):
 
 class LightningSkill(Skill):
 
-    mods = {'ticks_per_sec', 'tick_damage', 'range', 'lock_range'}
+    mods = {'ticks_per_sec', 'tick_damage', 'range', 'lock_range', 'targets'}
 
     def __init__(self, game, icon):
         super().__init__(game=game, icon=icon)
@@ -293,6 +293,7 @@ class LightningSkill(Skill):
         # targeting
         self.range = 300
         self.lock_range = 100
+        self.targets = 1
 
     @property
     def damage(self):
@@ -312,19 +313,29 @@ class LightningSkill(Skill):
 
     def fire(self):
         if self.can_fire:
-            target = get_closest_sprite(self.owner.game.mobs, pg.mouse.get_pos() - self.owner.game.camera.offset, radius=self.lock_range)
-            if target and calc_dist(self.owner.pos, target.pos) < self.range:
-                offset = self.owner.game.camera.offset
-                to_pos = target.hit_rect.center + offset
-                # from_pos = self.owner.pos + self.owner.proj_offset.rotate(-self.owner.rot) + offset
-                from_pos = self.owner.projectile_spawn + offset
-                draw_lightning(self.owner.game.effects_screen, from_pos, to_pos)
-                # now = pg.time.get_ticks()
-                # if now - self.last_tick > 1000 // self.ticks_per_sec:
-                if target.take_damage(self):
-                    self.owner.resource_current -= self.tick_cost
-                    print('ZAPPED {} for {}'.format(target, self.tick_damage))
-                    # self.last_tick = now
+            targets = []
+            distances = get_closest_sprite(self.owner.game.mobs, pg.mouse.get_pos() - self.owner.game.camera.offset, radius=self.lock_range, get_all=True)
+            # target = get_closest_sprite(self.owner.game.mobs, pg.mouse.get_pos() - self.owner.game.camera.offset, radius=self.lock_range)
+
+            for _ in range(int(self.targets)):
+                if distances:
+                    closest = min(distances, key=distances.get)
+                    targets.append(closest)
+                    del distances[closest]
+
+            for target in targets:
+                if target and calc_dist(self.owner.pos, target.pos) < self.range and self.can_fire:
+                    offset = self.owner.game.camera.offset
+                    to_pos = target.hit_rect.center + offset
+                    # from_pos = self.owner.pos + self.owner.proj_offset.rotate(-self.owner.rot) + offset
+                    from_pos = self.owner.projectile_spawn + offset
+                    draw_lightning(self.owner.game.effects_screen, from_pos, to_pos)
+                    # now = pg.time.get_ticks()
+                    # if now - self.last_tick > 1000 // self.ticks_per_sec:
+                    if target.take_damage(self):
+                        self.owner.resource_current -= self.tick_cost
+                        print('ZAPPED {} for {}'.format(target, self.tick_damage))
+                        # self.last_tick = now
 
 
 class DashSkill(Skill):

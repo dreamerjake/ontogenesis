@@ -187,7 +187,7 @@ class Game:
 
         # save
         self.save = None
-        self.unlocked_mods = {'speed', 'range', 'duration', 'ticks_per_sec', 'rps_regen'}
+        self.unlocked_mods = {'speed', 'range', 'duration', 'ticks_per_sec', 'rps_regen', 'targets'}
 
         # map stuff
         self.current_map = None

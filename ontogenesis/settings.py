@@ -7,8 +7,8 @@ import pygame as pg
 # game settings
 HEIGHT = 768
 WIDTH = 1024
-card_width = 63 * 3
-card_height = 88 * 3
+card_width = 63 * 3.5
+card_height = 88 * 3.5
 TITLE = "Ontogenesis"
 FULLSCREEN = False
 SYSTEM_DEBUG = True

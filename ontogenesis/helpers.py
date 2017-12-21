@@ -39,7 +39,7 @@ def calc_dist(point1, point2):
     return dist
 
 
-def get_closest_sprite(group, pos, radius=None, get_range=False):
+def get_closest_sprite(group, pos, radius=None, get_range=False, get_all=False):
     if radius:
         distances = {}
         for sprite in group:
@@ -48,6 +48,8 @@ def get_closest_sprite(group, pos, radius=None, get_range=False):
                 distances[sprite] = distance
     else:
         distances = {sprite: calc_dist(sprite.pos, pos) for sprite in group}
+    if get_all:
+        return distances
     closest_sprite = min(distances, key=distances.get) if distances else None
     if get_range:
         return closest_sprite, distances[closest_sprite]
