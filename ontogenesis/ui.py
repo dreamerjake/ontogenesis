@@ -608,11 +608,20 @@ class ImageButton:
         self.last_mousedown_over = False
 
         self.caption_surface = self.font.render(self.caption, True, self.game.configs.ui_button_text_color)
-        self.caption_rect = self.caption_surface.get_rect()
-        self.caption_rect.center = self.width // 2, self.height // 2
+        # self.caption_rect = self.caption_surface.get_rect()
+        # self.caption_rect.center = self.width // 2, self.height // 2
+
+        # outline caption text
+        final_surface = self.caption_surface.copy()
+        outline_surface = self.font.render(self.caption, True, colors.black)
+        for point in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
+            final_surface.blit(outline_surface, point)
+        final_surface.blit(self.caption_surface, (0, 0))
+        final_rect = final_surface.get_rect()
+        final_rect.center = self.width // 2, self.height // 2
 
         for image in [self.up_img, self.down_img, self.highlight_img]:
-            image.blit(self.caption_surface, self.caption_rect)
+            image.blit(final_surface, final_rect)
 
         self.callbacks = defaultdict(lambda: lambda x: None)
 

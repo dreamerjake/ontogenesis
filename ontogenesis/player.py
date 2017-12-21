@@ -133,7 +133,6 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.last_skill_change = 0
         self.focus_skill = None
         self.attacking = False
-        # self.move_state = 'normal'
         self.speed_mul = 1.0
         # self.last_positions = Queue(maxsize=10)
 
@@ -164,7 +163,6 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             'move_skill': None,
             'passives': []
         }
-        # self.focus_skill = choice([self.equipped['active_skill']] + self.equipped['passives'])
 
         self.load_placeholder_skills()
         self.all_skills_gen = cycle(self.all_skills)
@@ -180,26 +178,19 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         skill_chain = chain(active_skills, passive_skills)
         return skill_chain
 
-    # def calc_all_skills(self):
-    #     active_skills = [self.equipped['active_skill'], self.equipped['melee_skill'], self.equipped['move_skill']]
-    #     passive_skills = self.equipped['passives']
-    #     return chain(active_skills, passive_skills)
-    #     self.all_skills = cycle()
-        # return skills
-
     @property
     def moving(self):
         return self.vel.length() > 0
 
     @property
     def facing(self):
+        # return get_direction(self.mouse_angle, ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
         return get_direction(self.mouse_angle, ['up', 'right', 'down', 'left'])
 
     @property
     def mouse_angle(self):
         x1, y1 = self.game.camera.apply(self).center
         x2, y2 = Vec2(pg.mouse.get_pos())
-        # print ((x1, y1), (x2, y2))
         dx = x2 - x1
         dy = y2 - y1
         rads = atan2(dy, dx)
