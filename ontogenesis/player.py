@@ -326,25 +326,28 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         }
 
     def load_8d(self):
+        size_mult = 1.2
+        size = (int(45 * size_mult), int(90 * size_mult))
         self.standing_frames = {
-            'SW': cycle([self.game.eightdir_spritesheet.get_row(0, scale_to=(45, 90))[0]]),
-            'S': cycle([self.game.eightdir_spritesheet.get_row(1, scale_to=(45, 90))[0]]),
-            'SE': cycle([self.game.eightdir_spritesheet.get_row(2, scale_to=(45, 90))[0]]),
-            'W': cycle([self.game.eightdir_spritesheet.get_row(3, scale_to=(45, 90))[0]]),
-            'NW': cycle([self.game.eightdir_spritesheet.get_row(4, scale_to=(45, 90))[0]]),
-            'E': cycle([self.game.eightdir_spritesheet.get_row(5, scale_to=(45, 90))[0]]),
-            'NE': cycle([self.game.eightdir_spritesheet.get_row(6, scale_to=(45, 90))[0]]),
-            'N': cycle([self.game.eightdir_spritesheet.get_row(7, scale_to=(45, 90))[0]]),
+            'SW': cycle([self.game.eightdir_spritesheet.get_row(0, scale_to=size)[0]]),
+            'S': cycle([self.game.eightdir_spritesheet.get_row(1, scale_to=size)[0]]),
+            'SE': cycle([self.game.eightdir_spritesheet.get_row(2, scale_to=size)[0]]),
+            'W': cycle([self.game.eightdir_spritesheet.get_row(3, scale_to=size)[0]]),
+            'NW': cycle([self.game.eightdir_spritesheet.get_row(4, scale_to=size)[0]]),
+            'E': cycle([self.game.eightdir_spritesheet.get_row(5, scale_to=size)[0]]),
+            'NE': cycle([self.game.eightdir_spritesheet.get_row(6, scale_to=size)[0]]),
+            'N': cycle([self.game.eightdir_spritesheet.get_row(7, scale_to=size)[0]]),
         }
+
         self.moving_frames = {
-            'SW': cycle(self.game.eightdir_spritesheet.get_row(0, scale_to=(45, 90))),
-            'S': cycle(self.game.eightdir_spritesheet.get_row(1, scale_to=(45, 90))),
-            'SE': cycle(self.game.eightdir_spritesheet.get_row(2, scale_to=(45, 90))),
-            'W': cycle(self.game.eightdir_spritesheet.get_row(3, scale_to=(45, 90))),
-            'NW': cycle(self.game.eightdir_spritesheet.get_row(4, scale_to=(45, 90))),
-            'E': cycle(self.game.eightdir_spritesheet.get_row(5, scale_to=(45, 90))),
-            'NE': cycle(self.game.eightdir_spritesheet.get_row(6, scale_to=(45, 90))),
-            'N': cycle(self.game.eightdir_spritesheet.get_row(7, scale_to=(45, 90))),
+            'SW': cycle(self.game.eightdir_spritesheet.get_row(0, scale_to=size)),
+            'S': cycle(self.game.eightdir_spritesheet.get_row(1, scale_to=size)),
+            'SE': cycle(self.game.eightdir_spritesheet.get_row(2, scale_to=size)),
+            'W': cycle(self.game.eightdir_spritesheet.get_row(3, scale_to=size)),
+            'NW': cycle(self.game.eightdir_spritesheet.get_row(4, scale_to=size)),
+            'E': cycle(self.game.eightdir_spritesheet.get_row(5, scale_to=size)),
+            'NE': cycle(self.game.eightdir_spritesheet.get_row(6, scale_to=size)),
+            'N': cycle(self.game.eightdir_spritesheet.get_row(7, scale_to=size)),
         }
         self.attacking_frames = self.moving_frames
 
