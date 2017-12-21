@@ -85,8 +85,10 @@ def timeit(method):
 
 class Spritesheet:
     """ Helper class for working with spritesheets"""
-    def __init__(self, filename):
+    def __init__(self, filename, sprite_size=None):
         self.spritesheet = pg.image.load(filename).convert_alpha()
+        if sprite_size:
+            self.sprite_width, self.sprite_height = sprite_size
 
     def get_image(self, x, y, width, height, rot=None, scale_to=None):
         """ Gets a single image from the spritesheet"""
@@ -97,6 +99,13 @@ class Spritesheet:
         if rot:
             image = pg.transform.rotate(image, rot)
         return image
+
+    def get_row(self, row, **kwargs):
+        images = []
+        for i in range(self.spritesheet.get_width() // self.sprite_width):
+            image = self.get_image(i * self.sprite_width, row * self.sprite_height, self.sprite_width, self.sprite_height, **kwargs)
+            images.append(image)
+        return images
 
 
 class StateMachine:
@@ -718,6 +727,7 @@ class Game:
         # spritesheets
         self.player_move_spritesheet = Spritesheet(path.join(player_images_folder, 'player-move.png'))
         self.player_wobble_spritesheet = Spritesheet(path.join(player_images_folder, 'player-wobble.png'))
+        self.robot_spritesheet = Spritesheet(path.join(placeholder_images_folder, 'celarobotkanova.png'), sprite_size=(120, 180))
 
         # static images
         self.icon = pg.image.load(path.join(images_folder, 'letter_j_icon_small.png'))

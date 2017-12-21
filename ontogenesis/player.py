@@ -301,6 +301,16 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             ])
         }
 
+    def load_robot(self):
+        self.moving_frames = {
+            'NE': cycle(self.game.robot_spritesheet.get_row(0, scale_to=(60, 90))),
+            'E': cycle(self.game.robot_spritesheet.get_row(1, scale_to=(60, 90))),
+            'SE': cycle(self.game.robot_spritesheet.get_row(2, scale_to=(60, 90))),
+            'SW': cycle(self.game.robot_spritesheet.get_row(3, scale_to=(60, 90))),
+            'W': cycle(self.game.robot_spritesheet.get_row(4, scale_to=(60, 90))),
+            'NW': cycle(self.game.robot_spritesheet.get_row(5, scale_to=(60, 90))),
+        }
+
     def animate(self):
         now = pg.time.get_ticks()
         if now - self.last_update > self.frame_delay:

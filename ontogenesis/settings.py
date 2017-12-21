@@ -16,7 +16,7 @@ SYSTEM_DEBUG = True
 # keybinds
 keybinds = {
     # system
-    'quit': [pg.K_ESCAPE],
+    # 'quit': [pg.K_ESCAPE],
     'next': [pg.K_RETURN],
     'toggle music': [pg.K_F2],
     'toggle fps cap': [pg.K_F8],
