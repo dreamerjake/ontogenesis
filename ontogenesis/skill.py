@@ -433,7 +433,8 @@ class SkillCard:
         self.image.fill(colors.yellow if self.game.player.focus_skill == self.skill else colors.white)
 
         icon = self.skill.icon
-        self.image.blit(icon, (self.width - icon.get_width() - 2, 2))
+        # self.image.blit(icon, (self.width - icon.get_width() - 2, 2))  # topright
+        self.image.blit(icon, (self.width // 2 - icon.get_width() // 2, self.height - 2 - icon.get_height()))  # midbottom
 
         name_text = self.font.render(self.skill.name + ' *FOCUS*' if self.game.player.focus_skill == self.skill else self.skill.name, True, colors.black)
         name_text_loc = (0, 0)
