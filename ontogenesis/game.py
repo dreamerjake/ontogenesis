@@ -731,6 +731,13 @@ class Game:
         self.button_down = pg.image.load(path.join(ui_images_folder, 'down.png'))
         self.button_hover = pg.image.load(path.join(ui_images_folder, 'hover.png'))
 
+        icon_size = 64
+        self.lightning_icon = pg.transform.scale(pg.image.load(path.join(skill_images_folder, 'lightning_icon.png')), (icon_size, icon_size)).convert_alpha()
+        self.dash_icon = pg.transform.scale(pg.image.load(path.join(skill_images_folder, 'dash_icon.png')), (icon_size, icon_size)).convert_alpha()
+        self.toughness_icon = pg.transform.scale(pg.image.load(path.join(skill_images_folder, 'toughness_icon.png')), (icon_size, icon_size)).convert_alpha()
+        self.meditation_icon = pg.transform.scale(pg.image.load(path.join(skill_images_folder, 'meditation_icon.png')), (icon_size, icon_size)).convert_alpha()
+        self.melee_icon = pg.transform.scale(pg.image.load(path.join(skill_images_folder, 'melee_icon.png')), (icon_size, icon_size)).convert_alpha()
+
         globe_size = 160
         self.mana_full_img = pg.transform.scale(pg.image.load(path.join(ui_images_folder, 'mana_full.png')), (globe_size, globe_size)).convert_alpha()
         self.mana_empty_img = pg.transform.scale(pg.image.load(path.join(ui_images_folder, 'mana_empty.png')), (globe_size, globe_size)).convert_alpha()

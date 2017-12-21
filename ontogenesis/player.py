@@ -224,12 +224,12 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
     def load_placeholder_skills(self):
         """manually set starting skills"""
-        lightning_skill = LightningSkill(self.game)
-        melee_skill = MeleeSkill(self.game, self.game.sword_img)
-        running_skill = PassiveSkill(self.game, 'Running', speed=10)
-        toughness_skill = PassiveSkill(self.game, 'Toughness', hp_max=10)
-        dash_skill = DashSkill(self.game)
-        meditation_skill = PassiveSkill(self.game, 'Meditation', rps_regen=.1)
+        lightning_skill = LightningSkill(self.game, self.game.lightning_icon)
+        melee_skill = MeleeSkill(self.game, self.game.melee_icon, self.game.sword_img)
+        running_skill = PassiveSkill(self.game, 'Running', self.game.dash_icon, speed=10)
+        toughness_skill = PassiveSkill(self.game, 'Toughness', self.game.toughness_icon, hp_max=10)
+        dash_skill = DashSkill(self.game, self.game.dash_icon)
+        meditation_skill = PassiveSkill(self.game, 'Meditation', self.game.meditation_icon, rps_regen=.1)
 
         for skill in [running_skill, toughness_skill, meditation_skill]:
             self.equip('passives', skill)

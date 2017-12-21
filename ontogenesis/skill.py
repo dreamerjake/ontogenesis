@@ -16,8 +16,9 @@ class Skill:
     # base class for the skill mixin system
     stat_attrs = set()  # handle 'bonuses' separately
 
-    def __init__(self, game):
+    def __init__(self, game, icon):
         self.game = game
+        self.icon = icon
         self.owner = None
         self.bonuses = {}
         self.focus = None
@@ -190,8 +191,8 @@ def draw_lightning(surface, start_pos, end_pos):
 
 
 class PassiveSkill(Skill):
-    def __init__(self, game, name, **bonuses):
-        super().__init__(game=game)
+    def __init__(self, game, name, icon, **bonuses):
+        super().__init__(game=game, icon=icon)
         self.passive = True
         self.name = name
         self.bonuses = {bonus: value for bonus, value in bonuses.items()}
@@ -208,8 +209,8 @@ class MeleeSkill(Skill):
         'right': 'midleft'
     }
 
-    def __init__(self, game, image):
-        super().__init__(game=game)
+    def __init__(self, game, icon, image):
+        super().__init__(game=game, icon=icon)
         self.stat_attrs = self.stat_attrs.union(self.mods)
 
         # basic
@@ -270,8 +271,8 @@ class LightningSkill(Skill):
 
     mods = {'ticks_per_sec', 'tick_damage', 'range', 'lock_range'}
 
-    def __init__(self, game):
-        super().__init__(game=game)
+    def __init__(self, game, icon):
+        super().__init__(game=game, icon=icon)
         self.stat_attrs = self.stat_attrs.union(self.mods)
 
         # basic
@@ -329,8 +330,8 @@ class DashSkill(Skill):
 
     mods = {'cooldown', 'duration', 'speed_mult'}
 
-    def __init__(self, game):
-        super().__init__(game=game)
+    def __init__(self, game, icon):
+        super().__init__(game=game, icon=icon)
         self.stat_attrs = self.stat_attrs.union(self.mods)
 
         # basic
@@ -429,6 +430,9 @@ class SkillCard:
             self.contents = [(stat, stat in self.game.unlocked_mods, stat == self.skill.focus) for stat in self.skill.stats]
 
         self.image.fill(colors.yellow if self.game.player.focus_skill == self.skill else colors.white)
+
+        icon = self.skill.icon
+        self.image.blit(icon, (self.width - icon.get_width() - 2, 2))
 
         name_text = self.font.render(self.skill.name + ' *FOCUS*' if self.game.player.focus_skill == self.skill else self.skill.name, True, colors.black)
         name_text_loc = (0, 0)
