@@ -426,6 +426,7 @@ class SkillCard:
         self.font = pg.font.Font(self.game.card_font, self.font_size)
         self.font.set_bold(True)
         self.font_height = get_font_height(self.font)
+        self.text_offset = 3
         self.skill = skill
         self.skilltype = None
         self.contents = None
@@ -448,7 +449,7 @@ class SkillCard:
         self.image.blit(icon, (self.width // 2 - icon.get_width() // 2, self.height - 2 - icon.get_height()))  # midbottom
 
         name_text = self.font.render(self.skill.name + ' *FOCUS*' if self.game.player.focus_skill == self.skill else self.skill.name, True, colors.black)
-        name_text_loc = (0, 0)
+        name_text_loc = (self.text_offset, 0)
         self.image.blit(name_text, name_text_loc)
 
         # test = self.skilltype
@@ -462,15 +463,14 @@ class SkillCard:
 
         # name_text_rect = name_text.get_rect()
         # self.image.blit(self.font.render(self.skill.name, True, colors.black), (0, 0))
-        self.image.blit(self.font.render(f'Type: {self.skilltype}', True, colors.blue), (0, self.font_height))
+        self.image.blit(self.font.render(f'Type: {self.skilltype}', True, colors.blue), (self.text_offset, self.font_height))
         for i, attribute in enumerate(self.contents, start=2):
             item, learned, focus = attribute
             color = colors.green if learned else colors.red
-            pos = (0, i * self.font_height)
+            pos = (self.text_offset, i * self.font_height)
             item_text = self.font.render(item + ' *FOCUS*' if self.skill.focus == item else item, True, color, colors.orange if focus else None)
             item_textbox = pg.Surface((self.width, item_text.get_height()), SRCALPHA)
-            item_textbox.blit(item_text, (0, 0
-                                          ))
+            item_textbox.blit(item_text, (0, 0))
             self.image.blit(item_textbox, pos)
             self.clickables[item] = {
                 'rect': pg.Rect(pos, item_textbox.get_size()),

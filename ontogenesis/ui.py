@@ -863,17 +863,6 @@ class ScrollableSurface(pg.Surface):
 
 class CardAlbum:
     def __init__(self, cards, num_rows=2, spacer_x=5, spacer_y=5):
-
-        # placeholder handling
-        # if not cards:
-        #     if getattr(sys, 'frozen', False):
-        #         self.game_folder = path.dirname(sys.executable)
-        #     else:
-        #         self.game_folder = path.dirname(path.realpath(__file__))
-        #     folder = path.join(self.game_folder, 'assets', 'images', 'placeholder')
-        #     temp_card = pg.image.load(path.join(folder, 'trading_card.jpg'))
-        #     self.cards = [temp_card] * 20
-        # else:
         self.cards = cards
 
         self.num_rows = num_rows
@@ -922,8 +911,5 @@ def add_border(surface, thickness, color):
     new_surface = pg.Surface((2 * thickness + surface.get_width(), 2 * thickness + surface.get_height()))
     new_surface.fill(color)
     new_surface.fill((0, 0, 0, 0), surface.get_rect(topleft=(thickness, thickness)))
-    # window = surface.copy()
-    # window.fill((255, 255, 255, 0))
-    # new_surface.blit(window, (thickness, thickness))
     new_surface.blit(surface, (thickness, thickness))
     return new_surface
