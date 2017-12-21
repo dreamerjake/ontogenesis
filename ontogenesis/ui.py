@@ -579,7 +579,7 @@ class Minimap(pg.sprite.Sprite):
 
     def draw(self, screen):
         bordered = add_border(self.image, 2, colors.white)
-        bordered.set_alpha(40)
+        # bordered.set_alpha(40)
         screen.blit(bordered, self.rect.topleft)
 
 
@@ -921,5 +921,9 @@ class CardAlbum:
 def add_border(surface, thickness, color):
     new_surface = pg.Surface((2 * thickness + surface.get_width(), 2 * thickness + surface.get_height()))
     new_surface.fill(color)
+    new_surface.fill((0, 0, 0, 0), surface.get_rect(topleft=(thickness, thickness)))
+    # window = surface.copy()
+    # window.fill((255, 255, 255, 0))
+    # new_surface.blit(window, (thickness, thickness))
     new_surface.blit(surface, (thickness, thickness))
     return new_surface
