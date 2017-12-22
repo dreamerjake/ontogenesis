@@ -217,8 +217,7 @@ class MeleeSkill(Skill):
         'SW': 'topright',
         'NW': 'bottomright',
         'SE': 'topleft',
-        # 'NE': 'bottomleft',
-        'NE': 'center',
+        'NE': 'bottomleft',
     }
 
     def __init__(self, game, icon, image):

@@ -119,8 +119,8 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
         # physics
         self.rect = self.image.get_rect(center=start_pos)
-        self.hit_rect = pg.Rect(0, 0, settings.TILESIZE - 5, settings.TILESIZE - 5)
-        self.hit_rect.center = self.rect.center
+        self.hit_rect = pg.Rect(0, 0, 30, 60)
+        self.hit_rect.midbottom = self.rect.midbottom
         self.vel = Vec2(0, 0)
         # self.vx, self.vy = 0, 0
         # self.x, self.y = start_pos
@@ -214,14 +214,14 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             'left': self.rect.midleft,
             'right': self.rect.midright,
             # 8-d
-            'N': self.rect.midtop,
+            'N': self.hit_rect.midtop,
             'NE': self.hit_rect.topright,
-            'E': self.rect.center,
-            'SE': self.rect.center,
-            'S': self.rect.center,
-            'SW': self.rect.center,
-            'W': self.rect.center,
-            'NW': self.rect.center,
+            'E': self.hit_rect.midright,
+            'SE': self.hit_rect.bottomright,
+            'S': self.hit_rect.midbottom,
+            'SW': self.hit_rect.bottomleft,
+            'W': self.hit_rect.midleft,
+            'NW': self.hit_rect.topleft,
         }
         return spawn_points[self.facing]
 

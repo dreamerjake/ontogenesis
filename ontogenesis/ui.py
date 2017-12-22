@@ -461,7 +461,7 @@ class UI:
         pg.display.flip()
 
     def draw_icon_bar(self):
-        spacer = 20
+        spacer = 12
         font = pg.font.Font(self.game.hud_font, 24)
         font.set_bold(True)
         font_height = get_font_height(font)
