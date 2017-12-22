@@ -87,6 +87,73 @@ class UI:
             caption='Start')
         start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
 
+        load_button = ImageButton(
+            self.game, settings.WIDTH // 2, 200,
+            groups=[self.all_buttons, self.main_menu_buttons],
+            up_img=self.game.button_up,
+            down_img=self.game.button_down,
+            highlight_img=self.game.button_hover,
+            caption='Load')
+        # start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
+
+        stats_button = ImageButton(
+            self.game, settings.WIDTH // 2, 300,
+            groups=[self.all_buttons, self.main_menu_buttons],
+            up_img=self.game.button_up,
+            down_img=self.game.button_down,
+            highlight_img=self.game.button_hover,
+            caption='Stats')
+        # start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
+
+        hall_button = ImageButton(
+            self.game, settings.WIDTH // 2, 400,
+            groups=[self.all_buttons, self.main_menu_buttons],
+            up_img=self.game.button_up,
+            down_img=self.game.button_down,
+            highlight_img=self.game.button_hover,
+            caption='Hall of Fame')
+        # start_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
+
+        settings_button = ImageButton(
+            self.game, settings.WIDTH // 2, 500,
+            groups=[self.all_buttons, self.main_menu_buttons],
+            up_img=self.game.button_up,
+            down_img=self.game.button_down,
+            highlight_img=self.game.button_hover,
+            caption='Settings')
+        # settings_button.callbacks['click'] = lambda x: self.game.fsm('new_game')
+
+        quit_button = ImageButton(
+            self.game, settings.WIDTH // 2, 600,
+            groups=[self.all_buttons, self.main_menu_buttons],
+            up_img=self.game.button_up,
+            down_img=self.game.button_down,
+            highlight_img=self.game.button_hover,
+            caption='Quit')
+        quit_button.callbacks['click'] = lambda x: self.game.quit()
+
+        reset_button = ImageButton(
+            self.game, 50, settings.HEIGHT - 50,
+            groups=[self.all_buttons, self.main_menu_buttons],
+            up_img=self.game.button_up,
+            down_img=self.game.button_down,
+            highlight_img=self.game.button_hover,
+            caption='Reset',
+            resize=(150, 44),
+            align='midleft')
+        # quit_button.callbacks['click'] = lambda x: self.game.quit()
+
+        credits_button = ImageButton(
+            self.game, settings.WIDTH - 50, settings.HEIGHT - 50,
+            groups=[self.all_buttons, self.main_menu_buttons],
+            up_img=self.game.button_up,
+            down_img=self.game.button_down,
+            highlight_img=self.game.button_hover,
+            caption='Credits',
+            resize=(150, 44),
+            align='midright')
+        # quit_button.callbacks['click'] = lambda x: self.game.quit()
+
         # windows
         # TODO: fix scroll button bugs
         # keybinds window
@@ -589,7 +656,7 @@ class Minimap(pg.sprite.Sprite):
 
 class ImageButton:
 
-    def __init__(self, game, x, y, groups, up_img, down_img, highlight_img, caption='', font=None):
+    def __init__(self, game, x, y, groups, up_img, down_img, highlight_img, caption='', font=None, resize=None, align='center'):
 
         # check for mismatched image sizes
         if up_img.get_size() != down_img.get_size() != highlight_img.get_size():
@@ -600,13 +667,20 @@ class ImageButton:
         for group in groups:
             group.add(self)
 
-        self.up_img = up_img
-        self.down_img = down_img
-        self.highlight_img = highlight_img
+        self.up_img = up_img.copy()
+        self.down_img = down_img.copy()
+        self.highlight_img = highlight_img.copy()
+
+        if resize:
+            self.up_img = pg.transform.scale(self.up_img, resize)
+            self.down_img = pg.transform.scale(self.down_img, resize)
+            self.highlight_img = pg.transform.scale(self.highlight_img, resize)
 
         self.width, self.height = self.up_img.get_size()
 
-        self.rect = pg.Rect(x - self.width // 2, y - self.height // 2, self.width, self.height)
+        # self.rect = pg.Rect(x - self.width // 2, y - self.height // 2, self.width, self.height)
+        self.rect = self.up_img.get_rect()
+        setattr(self.rect, align, (x, y))
 
         self.caption = caption
         self.font = pg.font.Font(font, self.game.configs.ui_button_text_size)

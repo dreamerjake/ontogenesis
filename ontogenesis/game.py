@@ -544,6 +544,8 @@ class Game:
                     print(self.player.sum_bonuses())
                 if event.key == pg.K_0:
                     self.mobs.empty()
+                if event.key == pg.K_8:
+                    print(f'Total Experience Gained: {self.player.xp_total}')
                 if event.key == pg.K_RETURN:
                     if self.fsm.current_state == 'select_destination' and not self.worldmap.destination_node:
                         # force the player to pick a destination
