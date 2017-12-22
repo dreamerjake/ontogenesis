@@ -191,7 +191,9 @@ class UI:
 
     def draw_food(self):
         food = int(self.game.player.food)
-        self.draw_text('Food Remaining: {}'.format(food), self.game.hud_font, 18, colors.white, settings.WIDTH - 5, 65, align='topright')
+        color = colors.white if food > 30 else colors.orange
+        if not food: color = colors.red
+        self.draw_text('Food Remaining: {}'.format(food), self.game.hud_font, 18, color, settings.WIDTH - 5, 65, align='topright')
 
     def draw_debug_warning(self):
         self.draw_text('DEBUG MODE', self.game.hud_font, 18, colors.white, settings.WIDTH - 5, 5, align='topright')

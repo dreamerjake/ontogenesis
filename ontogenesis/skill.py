@@ -234,7 +234,6 @@ class MeleeSkill(Skill):
         # self.kickback = 0
 
         # state
-        # self.focus = next(iter(self.mods))
         self.last_fired = 0
 
         # projectile
