@@ -713,6 +713,7 @@ class Game:
         images_folder = path.join(assets_folder, 'images')
         player_images_folder = path.join(images_folder, 'player')
         player_audio_folder = path.join(audio_folder, 'player')
+        ui_audio_folder = path.join(audio_folder, 'ui')
         mob_images_folder = path.join(images_folder, 'mob')
         ui_images_folder = path.join(images_folder, 'ui')
         skill_images_folder = path.join(images_folder, 'skill')
@@ -763,6 +764,7 @@ class Game:
         self.music_intro = path.join(music_folder, 'soliloquy.mp3')
         self.music_action = path.join(music_folder, 'action.mp3')
         self.player_sound_ow = pg.mixer.Sound(path.join(player_audio_folder, 'ow.wav'))
+        self.button_sound = pg.mixer.Sound(path.join(ui_audio_folder, 'button.wav'))
 
         # text
         self.intro_text = path.join(text_folder, 'intro_scene.txt')

@@ -746,6 +746,7 @@ class ImageButton:
             elif event.type == MOUSEBUTTONDOWN:
                 self.down = True
                 self.last_mousedown_over = True
+                self.game.button_sound.play()
                 self.callbacks['down'](event)
 
         # mouse up/down outside button => next up won't cause click
