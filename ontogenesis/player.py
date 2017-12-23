@@ -248,7 +248,8 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
     def load_images(self):
         # self.load_link()
-        self.load_8d()
+        # self.load_8d()
+        self.load_new_robot()
         # self.standing_frames = [self.game.player_move_spritesheet.get_image(256, 0, 64, 64, rot=-90)]
         # self.moving_frames = cycle([
         #     self.game.player_wobble_spritesheet.get_image(0, 0, 64, 64, rot=-90, scale_to=(48, 48)),
@@ -336,7 +337,8 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         size_mult = 1.2
         size = (int(45 * size_mult), int(90 * size_mult))
         self.standing_frames = {
-            'SW': cycle([self.game.eightdir_spritesheet.get_row(0, scale_to=size)[0]]),
+            # 'SW': cycle([self.game.eightdir_spritesheet.get_row(0, scale_to=size)[0]]),
+            'SW': cycle([self.game.new_robot_spritesheet.get_row(0, scale_to=None)[0]]),
             'S': cycle([self.game.eightdir_spritesheet.get_row(1, scale_to=size)[0]]),
             'SE': cycle([self.game.eightdir_spritesheet.get_row(2, scale_to=size)[0]]),
             'W': cycle([self.game.eightdir_spritesheet.get_row(3, scale_to=size)[0]]),
@@ -359,6 +361,33 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
 
         self.attacking_frames = self.moving_frames
 
+    def load_new_robot(self):
+        # size_mult = 1.2
+        # size = (int(45 * size_mult), int(90 * size_mult))
+        self.standing_frames = {
+            'N': cycle([self.game.new_robot_spritesheet.get_row(0, scale_to=None)[0]]),
+            'NE': cycle([self.game.new_robot_spritesheet.get_row(1, scale_to=None)[0]]),
+            'E': cycle([self.game.new_robot_spritesheet.get_row(2, scale_to=None)[0]]),
+            'SE': cycle([self.game.new_robot_spritesheet.get_row(3, scale_to=None)[0]]),
+            'S': cycle([self.game.new_robot_spritesheet.get_row(4, scale_to=None)[0]]),
+            'SW': cycle([self.game.new_robot_spritesheet.get_row(5, scale_to=None)[0]]),
+            'W': cycle([self.game.new_robot_spritesheet.get_row(6, scale_to=None)[0]]),
+            'NW': cycle([self.game.new_robot_spritesheet.get_row(7, scale_to=None)[0]]),
+        }
+
+        self.moving_frames = {
+            'N': cycle(self.game.new_robot_spritesheet.get_row(0, scale_to=None)),
+            'NE': cycle(self.game.new_robot_spritesheet.get_row(1, scale_to=None)),
+            'E': cycle(self.game.new_robot_spritesheet.get_row(2, scale_to=None)),
+            'SE': cycle(self.game.new_robot_spritesheet.get_row(3, scale_to=None)),
+            'S': cycle(self.game.new_robot_spritesheet.get_row(4, scale_to=None)),
+            'SW': cycle(self.game.new_robot_spritesheet.get_row(5, scale_to=None)),
+            'W': cycle(self.game.new_robot_spritesheet.get_row(6, scale_to=None)),
+            'NW': cycle(self.game.new_robot_spritesheet.get_row(7, scale_to=None)),
+        }
+
+        self.attacking_frames = self.moving_frames
+        
     def animate(self):
         now = pg.time.get_ticks()
         if now - self.last_update > self.frame_delay:
