@@ -3,6 +3,16 @@
 from math import sqrt
 
 
+def render_outlined_text(text, font, font_color, outline_color):
+    text_surface = font.render(text, True, font_color)
+    final_surface = text_surface.copy()
+    outline_surface = font.render(text, True, outline_color)
+    for point in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
+        final_surface.blit(outline_surface, point)
+    final_surface.blit(text_surface, (0, 0))
+    return final_surface
+
+
 def get_font_height(font):
     font_object = font.render('a', False, (0, 0, 0))
     return font_object.get_rect().height

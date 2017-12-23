@@ -9,7 +9,7 @@ from pygame.locals import MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN, SRCALPHA
 from pygame.math import Vector2 as Vec2
 
 import settings
-from helpers import get_font_height, calc_dist
+from helpers import get_font_height, calc_dist, render_outlined_text
 from map import Wall
 from settings import colors, layers, keybinds
 
@@ -160,9 +160,10 @@ class UI:
         TextScrollwindow(
             self.game,
             [self.all_windows, self.controls_menu_windows],
-            settings.WIDTH // 2 + 100, settings.HEIGHT - 100,
-            (0, 100),
-            ['{} : {}'.format(k, ', '.join([pg.key.name(button) for button in v])) for k, v in keybinds.items()],
+            settings.WIDTH - 100, settings.HEIGHT - 150,
+            (50, 100),
+            [k for k in keybinds.keys()],
+            [', '.join([pg.key.name(button) for button in v]) for v in keybinds.values()],
             self.game.settings_font, 28)
 
         # spacer = 10
@@ -773,7 +774,7 @@ class ImageButton:
 
 
 class TextScrollwindow(pg.sprite.Sprite):
-    def __init__(self, game, groups, width, height, pos, content, font_path, font_size):
+    def __init__(self, game, groups, width, height, pos, content_left, content_right, font_path, font_size):
         # pygame sprite stuff
         # self._layer = layers.ui
         # self.groups = game.ui_elements
@@ -785,7 +786,8 @@ class TextScrollwindow(pg.sprite.Sprite):
         for group in groups:
             group.add(self)
 
-        self.content = content
+        self.content_left = content_left
+        self.content_right = content_right
         self.index = 0
         self.highlight_index = None
         self.items_per_screen = 1
@@ -795,7 +797,7 @@ class TextScrollwindow(pg.sprite.Sprite):
         self.bg_color = colors.lightgrey
         self.text_color = colors.white
         self.highlight_color = colors.yellow
-        self.highlight_text_color = colors.black
+        self.text_border_color = colors.black
 
         self.width = width
         self.height = height
@@ -821,33 +823,41 @@ class TextScrollwindow(pg.sprite.Sprite):
             relative_pos = Vec2(event.pos) - Vec2(self.button_up.get_abs_offset()) - Vec2(self.rect.topleft)
             if self.button_up.get_rect().collidepoint(relative_pos):
                 print('button up clicked')
-                if self.index < len(self.content) - self.items_per_screen:  # - self.options_per_page (items_per_screen?)
+                if self.index < len(self.content_left) - self.items_per_screen:  # - self.options_per_page (items_per_screen?)
                     self.index += 1
 
-    def update(self, new_content=None):
-        # self.passives_window.update(new_content=[skill.name for skill in self.game.player.equipped['passives']])
-
-        if new_content:
-            self.content = new_content
+    def update(self, new_content_left=None, new_content_right=None):
+        if new_content_left:
+            self.content_left = new_content_left
+        if new_content_right:
+            self.content_right = new_content_right
 
         self.image.fill(self.bg_color)
 
         # update content
-        render_list = [self.font.render(item, 1, self.text_color) for item in self.content][self.index:]
-        if render_list:
-            max_height = max([item.get_height() for item in render_list])
+        # render_list_left = [self.font.render(item, 1, self.text_color) for item in self.content_left][self.index:]
+        # render_list_right = [self.font.render(item, 1, self.text_color) for item in self.content_right][self.index:]
+        render_list_left = [render_outlined_text(item, self.font, colors.white, colors.black) for item in self.content_left][self.index:]
+        render_list_right = [render_outlined_text(item, self.font, colors.white, colors.black) for item in self.content_right][self.index:]
+        if render_list_left or render_list_right:
+            max_height = max([item.get_height() for item in render_list_left] + [item.get_height() for item in render_list_right])
             self.items_per_screen = self.height // max_height
 
-            for i, item in enumerate(render_list):
+            for i, item in enumerate(zip(render_list_left, render_list_right)):
                 if self.index + i == self.highlight_index:
-                    tmp = pg.Surface((self.width - 30, item.get_height()))  # magic number button width
+                    tmp = pg.Surface((self.width - 30, item[0].get_height()))  # magic number button width
                     tmp.convert_alpha()
                     tmp.fill(colors.yellow)
-                    tmp.blit(item, (0, 0))
-                    tmp.blit(self.font.render(self.content[self.index + i], 1, self.highlight_text_color), (0, 0))
+                    tmp.blit(item[0], (5, 0))
+                    tmp.blit(item[1], (self.width - item[1].get_width() - 30 - 5, 0))
                     self.image.blit(tmp, (0, i * max_height))
                 else:
-                    self.image.blit(item, (5, i * max_height))
+                    tmp = pg.Surface((self.width - 30, item[0].get_height()))  # magic number button width
+                    tmp.convert_alpha()
+                    tmp.fill(self.bg_color)
+                    tmp.blit(item[0], (5, 0))
+                    tmp.blit(item[1], (self.width - item[1].get_width() - 30 - 5, 0))
+                    self.image.blit(tmp, (0, i * max_height))
 
         self.button_up.fill(colors.darkgrey)
 

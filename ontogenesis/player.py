@@ -8,7 +8,6 @@ from os import path
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
-import settings
 from enemy import Collider
 from helpers import require_attributes, get_direction
 from settings import layers, colors
@@ -233,8 +232,13 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         toughness_skill = PassiveSkill(self.game, 'Toughness', self.game.toughness_icon, hp_max=10)
         dash_skill = DashSkill(self.game, self.game.dash_icon)
         meditation_skill = PassiveSkill(self.game, 'Meditation', self.game.meditation_icon, rps_regen=.1)
+        a_skill = PassiveSkill(self.game, 'Meditation', self.game.meditation_icon, rps_regen=.1)
+        b_skill = PassiveSkill(self.game, 'Meditation', self.game.meditation_icon, rps_regen=.1)
+        c_skill = PassiveSkill(self.game, 'Meditation', self.game.meditation_icon, rps_regen=.1)
+        d_skill = PassiveSkill(self.game, 'Meditation', self.game.meditation_icon, rps_regen=.1)
+        e_skill = PassiveSkill(self.game, 'Meditation', self.game.meditation_icon, rps_regen=.1)
 
-        for skill in [running_skill, toughness_skill, meditation_skill]:
+        for skill in [running_skill, toughness_skill, meditation_skill, a_skill, b_skill, c_skill, d_skill, e_skill]:
             self.equip('passives', skill)
         self.equip('active_skill', lightning_skill)
         self.equip('melee_skill', melee_skill)
