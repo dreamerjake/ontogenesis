@@ -825,6 +825,14 @@ class TextScrollwindow(pg.sprite.Sprite):
                 print('button up clicked')
                 if self.index < len(self.content_left) - self.items_per_screen:  # - self.options_per_page (items_per_screen?)
                     self.index += 1
+        # scroll wheel up
+        elif event.type == pg.MOUSEBUTTONDOWN and event.button == 4:
+            if self.index:
+                self.index -= 1
+        # scroll wheel down
+        elif event.type == pg.MOUSEBUTTONDOWN and event.button == 5:
+            if self.index < len(self.content_left) - self.items_per_screen:
+                self.index += 1
 
     def update(self, new_content_left=None, new_content_right=None):
         if new_content_left:
