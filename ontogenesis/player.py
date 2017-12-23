@@ -448,6 +448,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
             FloatingMessage(self.game, self.rect.midtop, draw_text(str(damage), self.game.hud_font, 24, colors.white))
             self.game.message(f'{source.name} hit {self.name} for {damage}', colors.red)
             self.last_damage[source] = pg.time.get_ticks()
+            self.game.player_sound_ow.play()
             return True
         return False
 
