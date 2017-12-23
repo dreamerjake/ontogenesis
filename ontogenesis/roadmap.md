@@ -70,7 +70,7 @@
         * ~~Floating Damage Numbers~~
             * Dynamic coloring
         * ~~Melee attacks~~
-        
+
     * AI
         
     * Procedural Generation

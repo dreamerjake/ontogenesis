@@ -106,6 +106,7 @@ class Mob(pg.sprite.Sprite, Collider):
         self.hp_max = 100
         self.hps_regen = 0
         self.collision_damage = 10
+        self.damage_rate = 200
         self.collision_knockback = 20
         self.vision_distance = 300
         self.xp_value = 10

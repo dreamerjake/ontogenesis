@@ -8,8 +8,8 @@ from os import path
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
-from enemy import Collider
-from helpers import require_attributes, get_direction
+from enemy import Collider, FloatingMessage, draw_text, Mob
+from helpers import require_attributes, get_direction, calc_dist
 from settings import layers, colors
 from skill import Skill, PassiveSkill, LightningSkill, MeleeSkill, DashSkill
 
@@ -99,6 +99,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         super().__init__()
+        self.name = 'Player'
 
         # object references
         self.game = game
@@ -128,6 +129,7 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
         self.proj_offset = Vec2(15, 15)  # hardcoded to the placeholder graphics
 
         # state
+        self.last_damage = defaultdict(int)
         self.dead = False
         self.last_shot = 0
         self.last_skill_change = 0
@@ -438,6 +440,16 @@ class Player(pg.sprite.Sprite, Collider, Equippable):
     def gain_food(self, food):
         self.food += food
         self.game.message(f'Gained {food} food', colors.green)
+
+    def take_damage(self, source):
+        if pg.time.get_ticks() - self.last_damage[source] > source.damage_rate:
+            damage = source.collision_damage if isinstance(source, Mob) else source.damage
+            self.hp_current -= damage
+            FloatingMessage(self.game, self.rect.midtop, draw_text(str(damage), self.game.hud_font, 24, colors.white))
+            self.game.message(f'{source.name} hit {self.name} for {damage}', colors.red)
+            self.last_damage[source] = pg.time.get_ticks()
+            return True
+        return False
 
     def die(self):
         print('Player Died')

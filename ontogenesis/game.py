@@ -606,7 +606,8 @@ class Game:
         # mobs hit player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, Collider.collide_hit_rect)
         for hit in hits:
-            self.player.hp_current -= hit.collision_damage
+            # self.player.hp_current -= hit.collision_damage
+            self.player.take_damage(hits[0])
         if hits:
             # if :
             self.player.pos += Vec2(hits[0].collision_knockback, 0).rotate(-hits[0].rot)
