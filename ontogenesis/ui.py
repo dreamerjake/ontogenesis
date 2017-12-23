@@ -807,6 +807,7 @@ class TextScrollwindow(pg.sprite.Sprite):
         self.rect.topleft = pos
 
         self.button_up = self.image.subsurface(pg.Rect(self.width - 30, 0, 30, 50))
+        self.button_down = self.image.subsurface(pg.Rect(self.width - 30, self.height - 50, 30, 50))
 
     def highlight(self):
         mousex, mousey = pg.mouse.get_pos()
@@ -815,16 +816,23 @@ class TextScrollwindow(pg.sprite.Sprite):
             item_height = self.height // self.items_per_screen
             x, y = self.rect.topleft
             i = (mousey - y) // item_height
-            self.highlight_index = i
+            self.highlight_index = i + self.index
 
     def handle_event(self, event):
+        # left click
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
             self.highlight()
-            relative_pos = Vec2(event.pos) - Vec2(self.button_up.get_abs_offset()) - Vec2(self.rect.topleft)
-            if self.button_up.get_rect().collidepoint(relative_pos):
+            button_up_relative_pos = Vec2(event.pos) - Vec2(self.button_up.get_abs_offset()) - Vec2(self.rect.topleft)
+            button_down_relative_pos = Vec2(event.pos) - Vec2(self.button_down.get_abs_offset()) - Vec2(self.rect.topleft)
+            if self.button_up.get_rect().collidepoint(button_up_relative_pos):
                 print('button up clicked')
                 if self.index < len(self.content_left) - self.items_per_screen:  # - self.options_per_page (items_per_screen?)
                     self.index += 1
+            if self.button_down.get_rect().collidepoint(button_down_relative_pos):
+                print('button down clicked')
+                if self.index:
+                    self.index -= 1
+
         # scroll wheel up
         elif event.type == pg.MOUSEBUTTONDOWN and event.button == 4:
             if self.index:
@@ -868,6 +876,7 @@ class TextScrollwindow(pg.sprite.Sprite):
                     self.image.blit(tmp, (0, i * max_height))
 
         self.button_up.fill(colors.darkgrey)
+        self.button_down.fill(colors.darkgrey)
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
