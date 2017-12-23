@@ -935,7 +935,10 @@ class ScrollableSurface(pg.Surface):
                     if pg.mouse.get_pressed()[0]:
                         print(f'Clicked {clickable}')
                         if 'background' in clickable:
-                            skill_card.game.player.focus_skill = skill_card.skill
+                            if skill_card.clickables:
+                                skill_card.game.player.focus_skill = skill_card.skill
+                            else:
+                                skill_card.game.flash_message('Cannot focus: no mods unlocked', 2)
                         else:
                             skill_card.game.player.focus_skill = skill_card.skill
                             callback(callback_args) if callback else print('No callback')

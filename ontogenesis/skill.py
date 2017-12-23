@@ -493,8 +493,9 @@ class SkillCard:
             item_textbox = pg.Surface((self.width, item_text.get_height()), SRCALPHA)
             item_textbox.blit(item_text, (0, 0))
             self.image.blit(item_textbox, pos)
-            self.clickables[item] = {
-                'rect': pg.Rect(pos, item_textbox.get_size()),
-                'callback': self.skill.set_focus,
-                'callback_args': item,
-            }
+            if learned:
+                self.clickables[item] = {
+                    'rect': pg.Rect(pos, item_textbox.get_size()),
+                    'callback': self.skill.set_focus,
+                    'callback_args': item,
+                }
