@@ -826,7 +826,7 @@ class TextScrollwindow(pg.sprite.Sprite):
             button_down_relative_pos = Vec2(event.pos) - Vec2(self.button_down.get_abs_offset()) - Vec2(self.rect.topleft)
             if self.button_up.get_rect().collidepoint(button_up_relative_pos):
                 print('button up clicked')
-                if self.index < len(self.content_left) - self.items_per_screen:  # - self.options_per_page (items_per_screen?)
+                if self.index < len(self.content_left) - self.items_per_screen:
                     self.index += 1
             if self.button_down.get_rect().collidepoint(button_down_relative_pos):
                 print('button down clicked')

@@ -66,6 +66,9 @@ class MessageQueue:
     def getall(self):
         return self._queue
 
+    def clear(self):
+        self._queue = []
+
 
 def timeit(method):
     """ basic timing decorator that prints debug messages to stdout if SYSTEM_DEBUG is on"""
@@ -349,6 +352,7 @@ class Game:
         self.worldmap = None
         self.camera = None
         self.delayed_events = []
+        self.message_queue.clear()
 
         # self.check_player_refs()
         if self.player:
