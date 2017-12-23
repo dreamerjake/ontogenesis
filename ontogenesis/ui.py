@@ -937,6 +937,7 @@ class ScrollableSurface(pg.Surface):
                         if 'background' in clickable:
                             skill_card.game.player.focus_skill = skill_card.skill
                         else:
+                            skill_card.game.player.focus_skill = skill_card.skill
                             callback(callback_args) if callback else print('No callback')
 
         max_x_offset = self.sub_surface.get_width() - self.get_width()
