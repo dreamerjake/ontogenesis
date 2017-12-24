@@ -58,6 +58,7 @@ class UI:
         self.controls_menu_windows = set()
         self.map_menu_windows = set()
         self.skill_menu_windows = set()
+        self.character_creation_windows = set()
 
         self.skills_album = None
 
@@ -295,8 +296,27 @@ class UI:
             if window.visible:
                 window.update()
 
+    @menu
     def draw_character_creation_menu(self):
-        pass
+        # skill lists
+        passive = [skill for skill in self.game.starting_skills if skill.passive]
+        move = [skill for skill in self.game.starting_skills if 'movement' in skill.tags]
+        melee = [skill for skill in self.game.starting_skills if 'melee' in skill.tags]
+        primary = [skill for skill in self.game.starting_skills if 'primary' in skill.tags]
+
+        # skill albums
+        rescale = int(settings.card_width / 2), int(settings.card_height / 2)
+        passive_album = CardAlbum(cards=[skill.get_card(use_small=True) for skill in passive], num_rows=1)
+        move_album = CardAlbum(cards=[skill.get_card(use_small=True) for skill in move], num_rows=1)
+        melee_album = CardAlbum(cards=[skill.get_card(use_small=True) for skill in melee], num_rows=1)
+        primary_album = CardAlbum(cards=[skill.get_card(use_small=True) for skill in primary], num_rows=1)
+        skill_albums = [primary_album, melee_album, move_album, passive_album]
+
+        # scrollable windows
+        for i, album in enumerate(skill_albums):
+            ScrollableSurface([self.all_windows, self.character_creation_windows], (settings.WIDTH - 100, album.image.get_height()), (50, i * album.image.get_height() + 50), album.image, album=album)
+
+        self.show_group(self.character_creation_windows)
 
     @menu
     def draw_controls_menu(self):
@@ -843,12 +863,17 @@ class ScrollableSurface(pg.Surface):
 
 
 class CardAlbum:
-    def __init__(self, cards, num_rows=2, spacer_x=5, spacer_y=5):
+    def __init__(self, cards, num_rows=2, spacer_x=5, spacer_y=5):  # , rescale=None):
         self.cards = cards
 
         self.num_rows = num_rows
         self.spacer_x = spacer_x
         self.spacer_y = spacer_y
+
+        self.card_width = None
+        self.card_height = None
+        # if rescale:
+        #     self.card_width, self.card_height = rescale
 
         self.image = None
         self.card_rects = {}
@@ -863,17 +888,18 @@ class CardAlbum:
             # print('Skills card album now contains {} cards'.format(len(new_cards)))
         for card in self.cards:
             card.update()
-        card_width = self.cards[0].image.get_width()
-        card_height = self.cards[0].image.get_height()
+
+        self.card_width = self.cards[0].image.get_width() if not self.card_width else self.card_width
+        self.card_height = self.cards[0].image.get_height() if not self.card_height else self.card_height
         num_cards = len(self)
         cards_in_row = num_cards // self.num_rows
         if num_cards % 2 != 0:
             cards_in_row += 1
 
         spacer_width = self.spacer_x * (cards_in_row + 1)
-        cards_width = card_width * cards_in_row
+        cards_width = self.card_width * cards_in_row
         spacer_height = self.spacer_y * (self.num_rows + 1)
-        cards_height = card_height * self.num_rows
+        cards_height = self.card_height * self.num_rows
         self.image = pg.Surface((spacer_width + cards_width, spacer_height + cards_height))
         self.image.fill(colors.lightgrey)
 
@@ -882,10 +908,11 @@ class CardAlbum:
         for i, card in enumerate(self.cards):
             x = i % cards_in_row
             y = i // cards_in_row
-            top = self.spacer_y * (y + 1) + (card_height * y)
-            left = self.spacer_x * (x + 1) + (card_width * x)
+            top = self.spacer_y * (y + 1) + (self.card_height * y)
+            left = self.spacer_x * (x + 1) + (self.card_width * x)
+            # card_image = pg.transform.scale(card.image, (self.card_width, self.card_height))
             self.image.blit(card.image, (left, top))
-            self.card_rects[card] = pg.Rect(left, top, card_width, card_height)
+            self.card_rects[card] = pg.Rect(left, top, self.card_width, self.card_height)
 
 
 def add_border(surface, thickness, color, sides=None):

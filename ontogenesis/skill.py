@@ -21,6 +21,7 @@ class Skill:
         self.icon = icon
         self.owner = None
         self.bonuses = {}
+        self.tags = set()
         self.focus = None
         self.focus_options = None
         self.focus_options_cycle = None
@@ -68,8 +69,8 @@ class Skill:
             else:
                 setattr(self, self.focus, getattr(self, self.focus) * mult)
 
-    def get_card(self):
-        return SkillCard(self.game, self)
+    def get_card(self, use_small=False):
+        return SkillCard(self.game, self, use_small=use_small)
 
     # def generate_card(self):
     #     card_width = settings.card_width  # cards[0].width
@@ -193,6 +194,7 @@ def draw_lightning(surface, start_pos, end_pos):
 class PassiveSkill(Skill):
     def __init__(self, game, name, icon, **bonuses):
         super().__init__(game=game, icon=icon)
+        self.tags.add('passive')
         self.passive = True
         self.name = name
         self.bonuses = {bonus: value for bonus, value in bonuses.items()}
@@ -223,6 +225,7 @@ class MeleeSkill(Skill):
     def __init__(self, game, icon, image):
         super().__init__(game=game, icon=icon)
         self.stat_attrs = self.stat_attrs.union(self.mods)
+        self.tags.add('melee')
 
         # basic
         self.image = image
@@ -295,6 +298,7 @@ class LightningSkill(Skill):
     def __init__(self, game, icon):
         super().__init__(game=game, icon=icon)
         self.stat_attrs = self.stat_attrs.union(self.mods)
+        self.tags.add('primary')
 
         # basic
         self.name = 'Lightning'
@@ -366,6 +370,7 @@ class DashSkill(Skill):
     def __init__(self, game, icon):
         super().__init__(game=game, icon=icon)
         self.stat_attrs = self.stat_attrs.union(self.mods)
+        self.tags.add('movement')
 
         # basic
         self.name = 'Dash'
@@ -375,7 +380,6 @@ class DashSkill(Skill):
 
         # state
         self.active = False
-        # self.focus = next(iter(self.mods))
         self.last_fired = 0
 
         # stats
@@ -438,12 +442,14 @@ class Shadow(pg.sprite.Sprite):
 
 
 class SkillCard:
-    def __init__(self, game, skill):
+    def __init__(self, game, skill, use_small=False):
         self.game = game
         self.width = settings.card_width  # cards[0].width
         self.height = settings.card_height  # cards[0].height
         self.font_size = 24
+        self.use_small = use_small
         self.image = pg.Surface((self.width, self.height))
+        self.small_image = None
         self.font = pg.font.Font(self.game.card_font, self.font_size)
         self.font.set_bold(True)
         self.font_height = get_font_height(self.font)
@@ -459,8 +465,14 @@ class SkillCard:
         if self.skill.passive:
             self.skilltype = 'passive'
             self.contents = [(bonus, bonus in self.game.unlocked_mods, bonus == self.skill.focus) for bonus in self.skill.bonuses]
-        else:
-            self.skilltype = 'active'
+        elif 'movement' in self.skill.tags:
+            self.skilltype = 'active - movement'
+            self.contents = [(stat, stat in self.game.unlocked_mods, stat == self.skill.focus) for stat in self.skill.stats]
+        elif 'melee' in self.skill.tags:
+            self.skilltype = 'active - melee'
+            self.contents = [(stat, stat in self.game.unlocked_mods, stat == self.skill.focus) for stat in self.skill.stats]
+        elif 'primary' in self.skill.tags:
+            self.skilltype = 'active - primary'
             self.contents = [(stat, stat in self.game.unlocked_mods, stat == self.skill.focus) for stat in self.skill.stats]
 
         self.image.fill(colors.yellow if self.game.player.focus_skill == self.skill else colors.white)
@@ -493,9 +505,11 @@ class SkillCard:
             item_textbox = pg.Surface((self.width, item_text.get_height()), SRCALPHA)
             item_textbox.blit(item_text, (0, 0))
             self.image.blit(item_textbox, pos)
-            if learned:
+            if learned and not self.use_small:
                 self.clickables[item] = {
                     'rect': pg.Rect(pos, item_textbox.get_size()),
                     'callback': self.skill.set_focus,
                     'callback_args': item,
                 }
+        if self.use_small:
+            self.image = pg.transform.scale(self.image, (int(settings.card_width / 2), int(settings.card_height / 2)))

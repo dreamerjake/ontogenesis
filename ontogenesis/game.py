@@ -17,6 +17,7 @@ from helpers import calc_dist
 from map import Map, WorldMap, Camera, Wall
 from player import Player
 from settings import colors, game_configs
+from skill import LightningSkill, DashSkill, MeleeSkill, PassiveSkill
 from ui import UI
 
 
@@ -299,7 +300,8 @@ class Game:
     def create_char(self):
         if not self.player or self.player.dead:
             self.new()
-        self.ui.draw_placeholder_menu('CHARACTER CREATION')
+        # self.ui.draw_placeholder_menu('CHARACTER CREATION')
+        self.ui.draw_character_creation_menu()
 
     def playing(self):
         if self.current_music != self.music_action:
@@ -354,6 +356,7 @@ class Game:
         self.camera = None
         self.delayed_events = []
         self.message_queue.clear()
+        self.starting_skills = self.generate_starting_skills()
 
         # self.check_player_refs()
         if self.player:
@@ -444,6 +447,17 @@ class Game:
             if trigger_time <= pg.time.get_ticks():
                 event()
         self.delayed_events = [tup for tup in self.delayed_events if tup[0] > pg.time.get_ticks()]
+
+    def generate_starting_skills(self):
+        skills = [
+            LightningSkill(self, self.lightning_icon),
+            MeleeSkill(self, self.melee_icon, self.sword_img),
+            PassiveSkill(self, 'Running', self.dash_icon, speed=10),
+            PassiveSkill(self, 'Toughness', self.toughness_icon, hp_max=10),
+            DashSkill(self, self.dash_icon),
+            PassiveSkill(self, 'Meditation', self.meditation_icon, rps_regen=.1)
+        ]
+        return skills
 
     @timeit
     def generate_maptiles(self):
