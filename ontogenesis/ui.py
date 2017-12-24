@@ -19,7 +19,6 @@ def menu(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         self.hide_group(self.all_buttons, self.all_windows)
-        # self.show_group(self.controls_menu_windows)
         self.screen.fill(colors.black)
         func(self, *args, **kwargs)
         self.draw_menu_title()
@@ -61,24 +60,6 @@ class UI:
         self.skill_menu_windows = set()
 
         self.skills_album = None
-
-        # self.create_elements()
-
-        # self.draw_controls_menu = self.as_menu(self.draw_controls_menu)
-
-    # def as_menu(self, func):
-    #     def with_elements(*args, **kwargs):
-    #         self.hide_group(self.all_buttons, self.all_windows)
-    #         self.show_group(self.controls_menu_windows)
-    #         self.screen.fill(colors.black)
-    #
-    #         return func(*args, **kwargs)
-    #
-    #     self.update_visible_elements()
-    #     self.draw_visible_elements()
-    #     pg.display.flip()
-    #
-    #     return with_elements()
 
     def create_elements(self):
         """ make all the button and window objects and their corresponding groups"""
