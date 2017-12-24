@@ -632,13 +632,22 @@ class Minimap(pg.sprite.Sprite):
 
         size = self.rect.width / 30  # magic number for now
 
+        self.offscreen_mob_dirs = set()
         # draw non-player things
         for sprite in chain(self.game.walls, self.game.mobs):
             pos = self.game.camera.apply(sprite)
-            dist = calc_dist(pos, self.game.camera.apply(self.game.player))
+            player_pos = self.game.camera.apply(self.game.player)
+            dist = calc_dist(pos, player_pos)
             if dist < self.game.player.vision_radius:
                 color = colors.brown if isinstance(sprite, Wall) else colors.red
                 self.image.fill(color, [pos[0] / self.scalex, pos[1] / self.scaley, size, size])
+            else:
+                x = 'left' if player_pos.x > pos.x else 'right'
+                y = 'up' if player_pos.y > pos.y else 'down'
+                self.offscreen_mob_dirs.add(x)
+                self.offscreen_mob_dirs.add(y)
+
+        # print(offscreen_mob_dirs)
 
         # draw player
         # TODO: icon for player location?
@@ -650,7 +659,11 @@ class Minimap(pg.sprite.Sprite):
             size])
 
     def draw(self, screen):
-        bordered = add_border(self.image, 2, colors.white)
+        bordered = add_border(self.image, 4, colors.white)
+        if self.offscreen_mob_dirs:
+            bordered = add_border(bordered, 4, colors.yellow, sides=self.offscreen_mob_dirs)
+            bordered = add_border(bordered, 4, colors.orange, sides=self.offscreen_mob_dirs)
+            bordered = add_border(bordered, 4, colors.red, sides=self.offscreen_mob_dirs)
         # bordered.set_alpha(40)
         screen.blit(bordered, self.rect.topleft)
 
@@ -1017,9 +1030,40 @@ class CardAlbum:
             self.card_rects[card] = pg.Rect(left, top, card_width, card_height)
 
 
-def add_border(surface, thickness, color):
-    new_surface = pg.Surface((2 * thickness + surface.get_width(), 2 * thickness + surface.get_height()))
-    new_surface.fill(color)
-    new_surface.fill((0, 0, 0, 0), surface.get_rect(topleft=(thickness, thickness)))
-    new_surface.blit(surface, (thickness, thickness))
-    return new_surface
+def add_border(surface, thickness, color, sides=None):
+    if not sides:
+        new_surface = pg.Surface((2 * thickness + surface.get_width(), 2 * thickness + surface.get_height()))
+        new_surface.fill(color)
+        new_surface.fill((0, 0, 0, 0), surface.get_rect(topleft=(thickness, thickness)))
+        new_surface.blit(surface, (thickness, thickness))
+        return new_surface
+    else:
+        new_surface = pg.Surface((2 * thickness + surface.get_width(), 2 * thickness + surface.get_height()))
+        # new_surface.fill((0, 0, 0, 0))
+        border = surface.copy()
+        border.fill(color)
+        border_rect = border.get_rect()
+        if 'right' in sides:
+            tmp_rect = border_rect.copy()
+            tmp_rect.x += 2 * thickness
+            tmp_rect.y += thickness
+            new_surface.blit(border, tmp_rect)
+        if 'left' in sides:
+            tmp_rect = border_rect.copy()
+            # border_rect.x += 2 * thickness
+            tmp_rect.y += thickness
+            new_surface.blit(border, tmp_rect)
+        if 'up' in sides:
+            tmp_rect = border_rect.copy()
+            tmp_rect.x += thickness
+            # border_rect.y += thickness
+            new_surface.blit(border, tmp_rect)
+        if 'down' in sides:
+            tmp_rect = border_rect.copy()
+            tmp_rect.x += thickness
+            tmp_rect.y += 2 * thickness
+            new_surface.blit(border, tmp_rect)
+        new_surface.fill((0, 0, 0, 0), surface.get_rect(topleft=(thickness, thickness)))
+
+        new_surface.blit(surface, (thickness, thickness))
+        return new_surface
