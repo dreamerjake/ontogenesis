@@ -660,12 +660,15 @@ class Minimap(pg.sprite.Sprite):
 
     def draw(self, screen):
         bordered = add_border(self.image, 4, colors.white)
-        if self.offscreen_mob_dirs:
+        extra_border = 0
+        if len(self.offscreen_mob_dirs) < 3:
+            extra_border = 12
             bordered = add_border(bordered, 4, colors.yellow, sides=self.offscreen_mob_dirs)
             bordered = add_border(bordered, 4, colors.orange, sides=self.offscreen_mob_dirs)
             bordered = add_border(bordered, 4, colors.red, sides=self.offscreen_mob_dirs)
         # bordered.set_alpha(40)
-        screen.blit(bordered, self.rect.topleft)
+        x, y = self.rect.topleft
+        screen.blit(bordered, (x - extra_border, y - extra_border))
 
 
 class ImageButton:
