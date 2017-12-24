@@ -9,6 +9,7 @@ from pygame.locals import MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN, SRCALPHA
 from pygame.math import Vector2 as Vec2
 
 import settings
+from enemy import Mob
 from helpers import get_font_height, calc_dist, render_outlined_text
 from map import Wall
 from settings import colors, layers, keybinds
@@ -21,6 +22,10 @@ def menu(func):
         # self.show_group(self.controls_menu_windows)
         self.screen.fill(colors.black)
         func(self, *args, **kwargs)
+        self.draw_menu_title()
+        self.optional_messages()
+        if self.game.configs.debug:
+            self.debug_messages()
         self.update_visible_elements()
         self.draw_visible_elements()
         self.draw_flashed_messages()
@@ -155,7 +160,6 @@ class UI:
         # quit_button.callbacks['click'] = lambda x: self.game.quit()
 
         # windows
-        # TODO: fix scroll button bugs
         # keybinds window
         TextScrollwindow(
             self.game,
@@ -166,76 +170,9 @@ class UI:
             [', '.join([pg.key.name(button) for button in v]) for v in keybinds.values()],
             self.game.settings_font, 28)
 
-        # spacer = 10
-        # passive skills window
-        # TextScrollwindow(
-        #     self.game,
-        #     [self.all_windows, self.skill_menu_windows],
-        #     settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
-        #     (0 + spacer, 100),
-        #     # self.game.player.passive_names if hasattr(self.game, 'player') else None,
-        #     [],
-        #     self.game.settings_font, 28)
-        # active skills window
-        # TextScrollwindow(
-        #     self.game,
-        #     [self.all_windows, self.skill_menu_windows],
-        #     settings.WIDTH // 2 - spacer * 2, settings.HEIGHT - 100 - spacer,
-        #     (settings.WIDTH // 2 + spacer, 100),
-        #     ['Shoot', 'Fireball', 'Dash'],
-        #     self.game.settings_font, 28)
-
         # skill cards window
         self.skills_album = CardAlbum(cards=[skill.get_card() for skill in self.game.player.all_skills])
         ScrollableSurface([self.all_windows, self.skill_menu_windows], (settings.WIDTH - 100, settings.card_height * 2 + 15), (50, 100), self.skills_album.image, album=self.skills_album)
-
-    # def create_album(self, cards=None):  # , cards):
-    #     # TODO: dynamic card sizing based on window size
-    #     card_width = settings.card_width  # cards[0].width
-    #     card_height = settings.card_height  # cards[0].height
-    #     # print(type(cards))
-    #
-    #     if not cards:
-    #         folder = path.join(self.game.game_folder, 'assets', 'images', 'placeholder')
-    #         temp_card = pg.transform.scale(pg.image.load(path.join(folder, 'trading_card.jpg')), (card_width, card_height))
-    #         cards = [temp_card] * 20
-    #
-    #         # cards = [skill.generate_card() for skill in self.game.player.calc_all_skills()]
-    #
-    #     num_cards = len(cards)
-    #     # print(f'generating card album for {num_cards} cards')
-    #
-    #     num_rows = 2
-    #     cards_in_row = num_cards // num_rows
-    #     spacer_x = 5
-    #     spacer_y = 5
-    #     spacer_width = spacer_x * (cards_in_row + 1)
-    #     cards_width = card_width * cards_in_row
-    #     spacer_height = spacer_y * (num_rows + 1)
-    #     cards_height = card_height * num_rows
-    #     surface = pg.Surface((spacer_width + cards_width, spacer_height + cards_height))
-    #     surface.fill(colors.lightgrey)
-    #
-    #     # card_rects = []
-    #
-    #     for i, card in enumerate(cards):
-    #         x = i % cards_in_row
-    #         y = i // cards_in_row
-    #         surface.blit(card, (spacer_x * (x + 1) + (card_width * x), spacer_y * (y + 1) + (card_height * y)))
-    #         # card_rects.append(pg.Rect())
-    #
-    #     return surface  # , card_rects
-
-    # # TODO: figure out if this is necessary
-    # def new(self):
-    #     # hud
-    #     self.minimap = Minimap(self.game)
-    #
-    #     self.create_elements()
-
-    # def draw(self):
-    #     current_state = self.game.fsm.current_state
-    #     self.state_map[current_state]()
 
     def draw_menu_title(self):
         title = self.game.fsm.current_state
@@ -377,50 +314,20 @@ class UI:
             if window.visible:
                 window.update()
 
+    def draw_character_creation_menu(self):
+        pass
+
+    @menu
     def draw_controls_menu(self):
-        self.hide_group(self.all_buttons, self.all_windows)
         self.show_group(self.controls_menu_windows)
 
-        self.screen.fill(colors.black)
-
-        self.draw_menu_title()
-        self.optional_messages()
-        if self.game.configs.debug:
-            self.debug_messages()
-        self.draw_flashed_messages()
-
-        # TODO: this should be a general check for active/visible ui elements
-        # self.keybinds_window.update()
-        self.update_visible_elements()
-        self.draw_visible_elements()
-        pg.display.flip()
-
+    @menu
     def draw_main_menu(self):
-        self.hide_group(self.all_buttons, self.all_windows)
         self.show_group(self.main_menu_buttons)
-        self.screen.fill(colors.black)
 
-        self.update_visible_elements()
-        self.draw_visible_elements()
-
-        self.draw_menu_title()
-        self.optional_messages()
-        if self.game.configs.debug:
-            self.debug_messages()
-        self.draw_flashed_messages()
-        pg.display.flip()
-
+    @menu
     def draw_pause_menu(self):
-        self.hide_group(self.all_buttons, self.all_windows)
-
-        self.screen.fill(colors.black)
-        self.draw_menu_title()
-        self.optional_messages()
-        if self.game.configs.debug:
-            self.debug_messages()
-        self.draw_flashed_messages()
-
-        pg.display.flip()
+        pass
 
     def draw_info_skill(self):
         self.hide_group(self.all_buttons, self.all_windows)
@@ -440,13 +347,10 @@ class UI:
         self.skills_album.update(new_cards=[skill.get_card() for skill in self.game.player.all_skills])
         for win in self.skill_menu_windows:
             win.new(self.skills_album.image)
-        self.draw_menu_title()
 
+    @menu
     def draw_map_menu(self):
-        self.hide_group(self.all_buttons, self.all_windows)
         self.show_group(self.map_menu_windows)
-
-        self.screen.fill(colors.black)
         self.screen.blit(self.game.worldmap.image, (100, 100))
 
         # draw edges
@@ -483,52 +387,21 @@ class UI:
                 self.game.worldmap.scaley / 2)
             pg.draw.circle(self.screen, colors.green, destination_node_pos, 20, 10)
 
-        self.draw_menu_title()
-        self.optional_messages()
-        if self.game.configs.debug:
-            self.debug_messages()
-        self.draw_flashed_messages()
-        pg.display.flip()
-
+    @menu
     def draw_game_over(self):
-        self.hide_group(self.all_buttons, self.all_windows)
-
-        self.screen.fill(colors.black)
         self.draw_text('YOU DIED.', self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2, align='center')
-        self.draw_menu_title()
-        self.optional_messages()
-        if self.game.configs.debug:
-            self.debug_messages()
-        self.draw_flashed_messages()
-        pg.display.flip()
 
+    @menu
     def draw_placeholder_menu(self, name):
-        self.hide_group(self.all_buttons, self.all_windows)
-        self.screen.fill(colors.black)
-
         self.draw_text(name, self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2, align='center')
-        self.draw_menu_title()
-        self.optional_messages()
-        if self.game.configs.debug:
-            self.debug_messages()
-        self.draw_flashed_messages()
-        pg.display.flip()
 
+    @menu
     def draw_placeholder_splash(self, name, text=None):
-        self.hide_group(self.all_buttons, self.all_windows)
-        self.screen.fill(colors.black)
-
         self.draw_text(name, self.game.hud_font, 48, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2 - 50, align='center')
         if text:
             for i, line in enumerate(text):
                 self.draw_text(line, self.game.hud_font, 32, colors.white, settings.WIDTH // 2, settings.HEIGHT // 2 + (i * 32),
                                align='center')
-        # self.draw_menu_title()
-        # self.optional_messages()
-        # if self.game.configs.debug:
-        #     self.debug_messages()
-        # self.draw_flashed_messages()
-        pg.display.flip()
 
     def draw_icon_bar(self):
         spacer = 12
@@ -630,18 +503,19 @@ class Minimap(pg.sprite.Sprite):
         # clear to a low-alpha rectangle
         self.image.fill((0, 0, 0, 80))
 
-        size = self.rect.width / 30  # magic number for now
+        sizex = self.rect.width / 30
+        sizey = self.rect.height / 30  # magic number for now
 
         self.offscreen_mob_dirs = set()
         # draw non-player things
         for sprite in chain(self.game.walls, self.game.mobs):
             pos = self.game.camera.apply(sprite)
-            player_pos = self.game.camera.apply(self.game.player)
+            player_pos = self.game.camera.apply(self.game.player, hit_rect=True)
             dist = calc_dist(pos, player_pos)
             if dist < self.game.player.vision_radius:
                 color = colors.brown if isinstance(sprite, Wall) else colors.red
-                self.image.fill(color, [pos[0] / self.scalex, pos[1] / self.scaley, size, size])
-            else:
+                self.image.fill(color, [pos[0] / self.scalex, pos[1] / self.scaley, sizex, sizey])
+            elif isinstance(sprite, Mob):
                 x = 'left' if player_pos.x > pos.x else 'right'
                 y = 'up' if player_pos.y > pos.y else 'down'
                 self.offscreen_mob_dirs.add(x)
@@ -651,15 +525,15 @@ class Minimap(pg.sprite.Sprite):
 
         # draw player
         # TODO: icon for player location?
-        player_pos = self.game.camera.apply(self.game.player)
+        player_pos = self.game.camera.apply(self.game.player, hit_rect=True)
         self.image.fill(colors.green, [
             player_pos[0] / self.scalex,
             player_pos[1] / self.scaley,
-            size,
-            size])
+            sizex,
+            sizey])
 
     def draw(self, screen):
-        bordered = add_border(self.image, 4, colors.white)
+        bordered = add_border(self.image, 2, colors.white)
         extra_border = 0
         if len(self.offscreen_mob_dirs) < 3:
             extra_border = 12
